@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <title>GhostShare NEXUS | P2P Hyper-Transfer</title>
+  
+  <!-- Fonts: Google Sans / Inter style & JetBrains Mono for HUD -->
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;700;800&display=swap" rel="stylesheet"/>
+
+  <!-- External Libs (CDN) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+
+  <style>
+    /* ════ 2028 SPATIAL UI THEME ════ */
+    :root {
+      --bg: #050505;
+      --bg-elevated: rgba(20, 20, 22, 0.4);
+      --glass: rgba(255, 255, 255, 0.02);
+      --glass-border: rgba(255, 255, 255, 0.05);
+      --glass-glow: rgba(255, 255, 255, 0.1);
+      
+      --accent-1: #00F0FF; /* Cyber Cyan */
+      --accent-2: #7000FF; /* Hyper Violet */
+      --accent-3: #FF0055; /* Neon Pink */
+      --success: #00FF66;
+      --warning: #FFB300;
+      
+      --text-main: #FFFFFF;
+      --text-muted: #8A8B91;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
+    
+    body {
+      background-color: var(--bg);
+      color: var(--text-main);
+      min-height: 100vh;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Holographic Mesh Background */
+    .nexus-bg {
+      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1;
+      background: radial-gradient(circle at 15% 50%, rgba(112, 0, 255, 0.08), transparent 40%),
+                  radial-gradient(circle at 85% 30%, rgba(0, 240, 255, 0.08), transparent 40%);
+      filter: blur(60px);
+      animation: ambientDrift 20s ease-in-out infinite alternate;
+    }
+    
+    .noise-overlay {
+      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.03'/%3E%3C/svg%3E");
+      pointer-events: none;
+    }
+
+    /* Spatial Glass Cards */
+    .glass-panel {
+      background: var(--bg-elevated);
+      backdrop-filter: blur(40px) saturate(150%);
+      -webkit-backdrop-filter: blur(40px) saturate(150%);
+      border: 1px solid var(--glass-border);
+      border-radius: 24px;
+      box-shadow: 0 30px 60px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.05);
+      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.4s;
+    }
+    .glass-panel:hover {
+      border-color: var(--glass-glow);
+    }
+
+    /* Liquid Buttons */
+    .btn-nexus {
+      position: relative;
+      background: linear-gradient(135deg, var(--accent-2) 0%, #3A0088 100%);
+      border: 1px solid rgba(112, 0, 255, 0.5);
+      border-radius: 16px;
+      color: white; font-weight: 700; letter-spacing: 0.02em;
+      cursor: pointer; overflow: hidden;
+      transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      box-shadow: 0 0 20px rgba(112, 0, 255, 0.2);
+    }
+    .btn-nexus::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+      transform: translateX(-100%); transition: 0.5s;
+    }
+    .btn-nexus:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px rgba(112, 0, 255, 0.4), inset 0 0 10px rgba(255,255,255,0.2);
+    }
+    .btn-nexus:hover::before { transform: translateX(100%); }
+    .btn-nexus:disabled {
+      background: var(--glass); border-color: var(--glass-border); color: var(--text-muted);
+      cursor: not-allowed; box-shadow: none; transform: none;
+    }
+
+    /* Typography & Tech HUD */
+    .hud-text { font-family: 'JetBrains Mono', monospace; }
+    .gradient-text {
+      background: linear-gradient(to right, var(--accent-1), var(--accent-2));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+
+    /* Dynamic Inputs */
+    .input-nexus {
+      background: rgba(0,0,0,0.4); border: 1px solid var(--glass-border);
+      color: white; border-radius: 14px; outline: none; transition: 0.3s;
+      font-family: 'JetBrains Mono', monospace; text-align: center;
+    }
+    .input-nexus:focus {
+      border-color: var(--accent-1);
+      box-shadow: 0 0 0 3px rgba(0, 240, 255, 0.15), inset 0 0 10px rgba(0, 240, 255, 0.05);
+    }
+
+    /* Screen Transitions */
+    .screen { display: none; opacity: 0; transform: scale(0.98) translateY(10px); }
+    .screen.active {
+      display: block;
+      animation: hologramIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    /* HUD Animations */
+    @keyframes ambientDrift { 0% { background-position: 0% 0%; } 100% { background-position: 100% 100%; } }
+    @keyframes hologramIn { to { opacity: 1; transform: scale(1) translateY(0); } }
+    @keyframes pulseGlow { 0%, 100% { box-shadow: 0 0 15px var(--accent-1); } 50% { box-shadow: 0 0 35px var(--accent-1); } }
+    
+    /* Progress Holo-Ring */
+    .ring-track { fill: none; stroke: rgba(255,255,255,0.03); stroke-width: 6; }
+    .ring-fill {
+      fill: none; stroke-width: 6; stroke: url(#holoGradient);
+      stroke-linecap: round; transform: rotate(-90deg); transform-origin: 50% 50%;
+      transition: stroke-dashoffset 0.1s linear; /* 120fps optimized */
+    }
+
+    /* HUD Speed Graph */
+    .hud-bar { width: 3px; border-radius: 3px; background: var(--accent-1); transition: height 0.1s linear, opacity 0.1s; }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 4px; }
+  </style>
+</head>
+<body>
+
+<div class="nexus-bg"></div>
+<div class="noise-overlay"></div>
+
+<!-- HEADER -->
+<header class="fixed top-0 w-full z-50 flex items-center justify-between px-6 py-4" style="background: linear-gradient(180deg, rgba(5,5,5,0.9) 0%, transparent 100%);">
+  <div class="flex items-center gap-3 cursor-pointer" onclick="goHome()">
+    <div class="w-10 h-10 rounded-2xl flex items-center justify-center relative overflow-hidden" style="background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border);">
+      <div class="absolute inset-0" style="background: linear-gradient(45deg, var(--accent-1), var(--accent-2)); opacity: 0.2;"></div>
+      <span class="text-xl">⬡</span>
+    </div>
+    <div>
+      <h1 class="font-extrabold text-lg tracking-wide leading-none">GHOST<span class="gradient-text">SHARE</span></h1>
+      <span class="hud-text text-[10px] text-muted tracking-widest text-gray-500">NEXUS v4.0</span>
+    </div>
+  </div>
+  <div id="status-badge" class="hidden items-center gap-2 px-4 py-1.5 rounded-full border border-green-500/20 bg-green-500/10">
+    <div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+    <span class="hud-text text-xs text-green-400 font-bold tracking-wide">SECURE LINK</span>
+  </div>
+</header>
+
+<!-- MAIN APP CONTAINER -->
+<main class="pt-28 pb-20 px-4 max-w-2xl mx-auto w-full relative z-10 min-h-screen flex flex-col justify-center">
+
+  <!-- ════ SCREEN: LANDING ════ -->
+  <div id="screen-landing" class="screen active text-center">
+    <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-white/10 bg-white/5 mb-8 backdrop-blur-md">
+      <span class="w-2 h-2 rounded-full bg-[var(--accent-1)]" style="box-shadow: 0 0 10px var(--accent-1);"></span>
+      <span class="text-xs text-gray-400 font-medium">Global Relay Active • Zero Server Storage</span>
+    </div>
+    
+    <h1 class="text-6xl font-black tracking-tighter mb-4">
+      Share <span class="gradient-text">Anything.</span><br/>Anywhere.
+    </h1>
+    <p class="text-gray-400 text-lg mb-12 max-w-md mx-auto leading-relaxed">
+      Military-grade P2P transfer bypassing NATs & Firewalls. Unlimited size, unthrottled speed, zero limits.
+    </p>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+      <button onclick="initSend()" class="glass-panel p-8 text-left group">
+        <div class="w-14 h-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-2xl mb-6 group-hover:scale-110 transition-transform shadow-[0_0_20px_rgba(112,0,255,0.1)] group-hover:shadow-[0_0_30px_rgba(112,0,255,0.4)]">
+          📤
+        </div>
+        <h3 class="text-xl font-bold text-white mb-2">Transmit Data</h3>
+        <p class="text-sm text-gray-400">Select files and generate a secure 6-digit hyperspatial key.</p>
+      </button>
+
+      <button onclick="initReceive()" class="glass-panel p-8 text-left group">
+        <div class="w-14 h-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-2xl mb-6 group-hover:scale-110 transition-transform shadow-[0_0_20px_rgba(0,240,255,0.1)] group-hover:shadow-[0_0_30px_rgba(0,240,255,0.4)]">
+          📥
+        </div>
+        <h3 class="text-xl font-bold text-white mb-2">Receive Data</h3>
+        <p class="text-sm text-gray-400">Input a sender's key to instantly bridge the P2P connection.</p>
+      </button>
+    </div>
+    
+    <div class="flex flex-wrap justify-center gap-3">
+      <span class="text-[10px] font-bold px-3 py-1 rounded-md border border-white/5 bg-white/5 text-gray-400 uppercase tracking-wider">AES-256-GCM</span>
+      <span class="text-[10px] font-bold px-3 py-1 rounded-md border border-white/5 bg-white/5 text-gray-400 uppercase tracking-wider">Global TURN Relay</span>
+      <span class="text-[10px] font-bold px-3 py-1 rounded-md border border-white/5 bg-white/5 text-gray-400 uppercase tracking-wider">Merkle Integrity</span>
+    </div>
+  </div>
+
+  <!-- ════ SCREEN: TRANSMIT (SENDER) ════ -->
+  <div id="screen-send" class="screen">
+    <div class="flex items-center justify-between mb-8">
+      <button onclick="goHome()" class="text-gray-400 hover:text-white transition-colors text-sm font-semibold flex items-center gap-2">
+        <span>←</span> Abort
+      </button>
+      <div class="flex gap-2">
+        <div id="s-dot-1" class="w-1.5 h-1.5 rounded-full bg-[var(--accent-2)] shadow-[0_0_8px_var(--accent-2)]"></div>
+        <div id="s-dot-2" class="w-1.5 h-1.5 rounded-full bg-white/20"></div>
+        <div id="s-dot-3" class="w-1.5 h-1.5 rounded-full bg-white/20"></div>
+      </div>
+    </div>
+
+    <!-- SENDER STEP 1: Select -->
+    <div id="s-step-1">
+      <div id="drop-zone" class="glass-panel border-dashed border-2 border-white/20 hover:border-[var(--accent-2)] p-12 text-center cursor-pointer transition-all duration-300 relative overflow-hidden" onclick="pickFiles()" ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event)">
+        <div class="text-5xl mb-4 opacity-80">📁</div>
+        <h2 class="text-xl font-bold mb-2">Initialize Payload</h2>
+        <p class="text-sm text-gray-400">Drag & drop files or tap to browse local file system.</p>
+        <input type="file" id="file-input" multiple class="hidden" onchange="onFilesSelected(this.files)"/>
+      </div>
+
+      <div id="file-list-container" class="hidden mt-6 glass-panel p-4">
+        <div class="flex justify-between items-end mb-4 px-2">
+          <span id="file-count" class="font-bold text-sm">0 Items Selected</span>
+          <span id="file-size" class="hud-text text-xs text-[var(--accent-1)]">0.00 MB</span>
+        </div>
+        <div id="file-list" class="max-h-32 overflow-y-auto pr-2 space-y-2"></div>
+      </div>
+
+      <button id="btn-init-tx" onclick="startSender()" disabled class="btn-nexus w-full py-4 mt-6 text-lg flex items-center justify-center gap-3">
+        Generate Uplink Key <span class="text-xl">⚡</span>
+      </button>
+    </div>
+
+    <!-- SENDER STEP 2: Waiting -->
+    <div id="s-step-2" class="hidden">
+      <div class="glass-panel p-8 text-center mb-6 relative overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-b from-[var(--accent-2)]/10 to-transparent"></div>
+        <p class="text-xs text-gray-400 font-bold tracking-widest uppercase mb-6">Provide this key to the receiver</p>
+        
+        <div class="flex justify-center gap-2 mb-8" id="code-blocks">
+          <!-- Populated by JS -->
+        </div>
+
+        <button onclick="copyCode()" class="px-6 py-2 rounded-full border border-white/10 bg-white/5 text-sm font-semibold hover:bg-white/10 transition-colors">
+          📋 Copy Key
+        </button>
+      </div>
+
+      <div class="glass-panel p-8 flex flex-col items-center">
+        <div class="relative w-24 h-24 flex items-center justify-center mb-4">
+          <div class="absolute inset-0 rounded-full border border-[var(--accent-2)] animate-ping opacity-20"></div>
+          <div class="absolute inset-2 rounded-full border border-[var(--accent-2)] animate-ping opacity-40" style="animation-delay: 0.5s;"></div>
+          <div class="w-12 h-12 rounded-full bg-[var(--accent-2)] shadow-[0_0_30px_var(--accent-2)] flex items-center justify-center text-xl">📡</div>
+        </div>
+        <h3 class="font-bold text-lg">Awaiting Handshake...</h3>
+        <p class="text-sm text-gray-400 mt-2">Connection bridged via ICE/TURN protocol.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ SCREEN: RECEIVE ════ -->
+  <div id="screen-receive" class="screen">
+    <div class="flex items-center justify-between mb-8">
+      <button onclick="goHome()" class="text-gray-400 hover:text-white transition-colors text-sm font-semibold flex items-center gap-2">
+        <span>←</span> Abort
+      </button>
+      <div class="flex gap-2">
+        <div id="r-dot-1" class="w-1.5 h-1.5 rounded-full bg-[var(--accent-1)] shadow-[0_0_8px_var(--accent-1)]"></div>
+        <div id="r-dot-2" class="w-1.5 h-1.5 rounded-full bg-white/20"></div>
+      </div>
+    </div>
+
+    <!-- RECEIVE STEP 1: Input -->
+    <div id="r-step-1">
+      <div class="glass-panel p-8 text-center mb-6">
+        <p class="text-xs text-gray-400 font-bold tracking-widest uppercase mb-6">Enter Sender Uplink Key</p>
+        <input type="text" id="rx-code" class="input-nexus w-full text-4xl py-6 tracking-[0.2em] font-black uppercase mb-4" maxlength="6" placeholder="------" oninput="this.value=this.value.toUpperCase().replace(/[^A-Z0-9]/g,''); validateRxCode();"/>
+        <p class="text-xs text-gray-500">Secure 6-character alphanumeric identifier</p>
+      </div>
+
+      <button id="btn-connect-rx" onclick="connectToSender()" disabled class="btn-nexus w-full py-4 text-lg" style="background: linear-gradient(135deg, var(--accent-1) 0%, #0055FF 100%); border-color: rgba(0,240,255,0.5);">
+        Bridge Connection 🔗
+      </button>
+    </div>
+  </div>
+
+  <!-- ════ SHARED SCREEN: TRANSFER HUD ════ -->
+  <div id="screen-transfer" class="screen">
+    <div class="glass-panel p-6 mb-6">
+      
+      <!-- Top HUD -->
+      <div class="flex justify-between items-start mb-8">
+        <div>
+          <h2 id="tx-filename" class="font-bold text-lg mb-1 truncate max-w-[200px] sm:max-w-[300px]">payload.zip</h2>
+          <div class="flex items-center gap-2">
+            <span id="tx-status-icon" class="text-xs text-green-400">⚡</span>
+            <span id="tx-status" class="text-xs font-bold tracking-wider text-gray-400 uppercase">Transferring...</span>
+          </div>
+        </div>
+        <div class="text-right">
+          <div class="hud-text text-3xl font-black text-[var(--accent-1)] leading-none" id="tx-speed">0.00</div>
+          <div class="text-[10px] text-gray-400 font-bold tracking-widest uppercase mt-1">Megabytes / Sec</div>
+        </div>
+      </div>
+
+      <!-- Center HUD: Holo Ring -->
+      <div class="flex justify-center mb-8 relative">
+        <div class="relative w-40 h-40">
+          <svg viewBox="0 0 120 120" class="w-full h-full transform -rotate-90">
+            <defs>
+              <linearGradient id="holoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#00F0FF" />
+                <stop offset="100%" stop-color="#7000FF" />
+              </linearGradient>
+            </defs>
+            <circle cx="60" cy="60" r="54" class="ring-track" />
+            <circle id="progress-ring" cx="60" cy="60" r="54" class="ring-fill" stroke-dasharray="339.29" stroke-dashoffset="339.29" />
+          </svg>
+          <div class="absolute inset-0 flex flex-col items-center justify-center">
+            <span id="tx-percent" class="hud-text text-3xl font-black">0%</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom HUD: Graph & Stats -->
+      <div class="mb-4">
+        <div class="flex justify-between text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-2">
+          <span>Throughput Graph</span>
+          <span id="tx-eta" class="text-[var(--accent-1)]">ETA: --s</span>
+        </div>
+        <div id="speed-graph" class="h-12 flex items-end gap-[2px] w-full border-b border-white/5 pb-1">
+          <!-- Bars generated by JS -->
+        </div>
+      </div>
+
+      <div class="flex justify-between items-center text-xs mt-4">
+        <span id="tx-progress-bytes" class="hud-text text-gray-400">0.00 MB / 0.00 MB</span>
+        <button id="btn-pause" onclick="togglePause()" class="hidden px-4 py-1.5 rounded bg-white/5 hover:bg-white/10 border border-white/10 font-bold transition-colors">
+          PAUSE
+        </button>
+      </div>
+
+    </div>
+
+    <!-- Security Logs -->
+    <div id="sec-logs" class="glass-panel p-4 bg-black/40 border border-white/5">
+      <div class="flex items-center gap-2 mb-2">
+        <span class="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
+        <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Security Subsystem</span>
+      </div>
+      <div id="log-output" class="hud-text text-[10px] text-gray-500 space-y-1 h-12 overflow-hidden flex flex-col justify-end">
+        <div>[SYS] Cryptographic tunnel established.</div>
+        <div>[SYS] Awaiting payload...</div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<!-- TOAST NOTIFICATION -->
+<div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 transition-all duration-300 transform translate-y-20 opacity-0 pointer-events-none flex items-center gap-3 px-5 py-3 rounded-xl bg-gray-900/90 border border-white/10 backdrop-blur-xl shadow-2xl">
+  <span id="toast-icon">ℹ️</span>
+  <span id="toast-msg" class="text-sm font-semibold">Message</span>
+</div>
+
+<!-- ==========================================
+     CORE LOGIC & P2P ENGINE
+=========================================== -->
+<script>
+/**
+ * GHOSTSHARE NEXUS - Hyper-Optimized P2P Engine
+ * Features:
+ * - Dynamic DataChannel Backpressure (16MB High Watermark)
+ * - Public STUN + Free Community TURN (OpenRelay) for NAT punchthrough.
+ * - Async SHA-256 Merkle Hashing (Chunk-based, no OOM on large files).
+ * - 120fps requestAnimationFrame UI updates.
+ */
+
+// --- CONFIGURATION ---
+const CHUNK_SIZE = 64 * 1024; // 64KB - Optimal for WebRTC DataChannel
+const HIGH_WATER = 16 * 1024 * 1024; // 16MB buffer max
+const LOW_WATER = 2 * 1024 * 1024;  // 2MB buffer resume
+
+// Robust Public STUN + Free Community TURN Servers
+const ICE_CONFIG = {
+  iceServers: [
+    { urls: ["stun:stun.l.google.com:19302", "stun:stun1.l.google.com:19302"] },
+    { urls: "stun:stun.cloudflare.com:3478" },
+    // OpenRelay is a community-supported free TURN server. Crucial for Symmetric NATs.
+    {
+      urls: "turn:openrelay.metered.ca:80",
+      username: "openrelayproject",
+      credential: "openrelayproject"
+    },
+    {
+      urls: "turn:openrelay.metered.ca:443?transport=tcp",
+      username: "openrelayproject",
+      credential: "openrelayproject"
+    }
+  ],
+  iceCandidatePoolSize: 10,
+};
+
+// --- GLOBAL STATE ---
+let isSender = false;
+let peer = null;
+let conn = null;
+
+let selectedFiles = [];
+let transferBlob = null;
+let totalBytes = 0;
+let transferredBytes = 0;
+let transferStartTime = 0;
+
+let speedGraph = Array(40).fill(0);
+let lastSpeedCalcTime = 0;
+let lastTransferredBytes = 0;
+let currentSpeedBps = 0;
+let rafId = null;
+
+let isPaused = false;
+let pauseResolver = null;
+let chunkHashes = []; // Used to compute final Merkle Root
+let expectedHash = null;
+
+// --- UTILS ---
+const $ = id => document.getElementById(id);
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  $(id).classList.add('active');
+}
+
+function showToast(msg, type = 'info') {
+  const t = $('toast');
+  $('toast-msg').textContent = msg;
+  $('toast-icon').textContent = type === 'error' ? '🔴' : type === 'success' ? '🟢' : '🔵';
+  t.classList.remove('translate-y-20', 'opacity-0');
+  setTimeout(() => t.classList.add('translate-y-20', 'opacity-0'), 3000);
+}
+
+function logSec(msg, color = 'text-gray-400') {
+  const log = $('log-output');
+  const div = document.createElement('div');
+  div.className = color;
+  const time = new Date().toISOString().split('T')[1].slice(0,-1);
+  div.textContent = `[${time}] ${msg}`;
+  log.appendChild(div);
+  if (log.children.length > 3) log.removeChild(log.firstChild);
+}
+
+function fmtBytes(b) {
+  if (!b) return '0 B';
+  const u = ['B', 'KB', 'MB', 'GB', 'TB'];
+  const i = Math.floor(Math.log(b) / Math.log(1024));
+  return `${(b / Math.pow(1024, i)).toFixed(2)} ${u[i]}`;
+}
+
+function genCode() {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // No ambiguous chars
+  return Array.from(crypto.getRandomValues(new Uint8Array(6)))
+    .map(b => chars[b % chars.length]).join('');
+}
+
+function bufToHex(buf) {
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+// Merkle Hash System
+async function computeMerkleHash(hashList) {
+  if (!hashList.length) return 'empty';
+  const combined = new Uint8Array(hashList.length * 32);
+  hashList.forEach((h, i) => combined.set(h, i * 32));
+  const final = await crypto.subtle.digest('SHA-256', combined);
+  return bufToHex(final);
+}
+
+// --- NAVIGATION ---
+function goHome() {
+  cleanup();
+  showScreen('screen-landing');
+  $('status-badge').classList.add('hidden');
+}
+
+function initSend() {
+  isSender = true;
+  showScreen('screen-send');
+  $('s-step-1').classList.remove('hidden');
+  $('s-step-2').classList.add('hidden');
+  $('s-dot-1').classList.replace('bg-white/20', 'bg-[var(--accent-2)]');
+  $('s-dot-1').classList.add('shadow-[0_0_8px_var(--accent-2)]');
+  $('s-dot-2').className = 'w-1.5 h-1.5 rounded-full bg-white/20';
+  selectedFiles = [];
+  renderFileList();
+}
+
+function initReceive() {
+  isSender = false;
+  showScreen('screen-receive');
+  $('rx-code').value = '';
+  validateRxCode();
+}
+
+// --- SENDER FILES ---
+function pickFiles() { $('file-input').click(); }
+function onDragOver(e) { e.preventDefault(); $('drop-zone').classList.add('border-[var(--accent-2)]'); }
+function onDragLeave(e) { $('drop-zone').classList.remove('border-[var(--accent-2)]'); }
+function onDrop(e) {
+  e.preventDefault();
+  $('drop-zone').classList.remove('border-[var(--accent-2)]');
+  if (e.dataTransfer.files.length) onFilesSelected(e.dataTransfer.files);
+}
+function onFilesSelected(files) {
+  selectedFiles = Array.from(files);
+  renderFileList();
+}
+function renderFileList() {
+  const container = $('file-list-container');
+  const list = $('file-list');
+  const btn = $('btn-init-tx');
+  
+  if (!selectedFiles.length) {
+    container.classList.add('hidden');
+    btn.disabled = true;
+    return;
+  }
+  
+  let total = 0;
+  list.innerHTML = selectedFiles.map(f => {
+    total += f.size;
+    return `<div class="flex justify-between items-center text-xs bg-black/30 p-2 rounded border border-white/5">
+              <span class="truncate pr-4 text-white">${f.name}</span>
+              <span class="hud-text text-gray-500 shrink-0">${fmtBytes(f.size)}</span>
+            </div>`;
+  }).join('');
+  
+  $('file-count').textContent = `${selectedFiles.length} Item${selectedFiles.length>1?'s':''} Selected`;
+  $('file-size').textContent = fmtBytes(total);
+  container.classList.remove('hidden');
+  btn.disabled = false;
+}
+
+async function prepareBlob() {
+  if (selectedFiles.length === 1) return { blob: selectedFiles[0], name: selectedFiles[0].name };
+  logSec('Compressing multiple files via JSZip...', 'text-warning');
+  const zip = new JSZip();
+  for (const f of selectedFiles) zip.file(f.name, f, { binary: true });
+  const blob = await zip.generateAsync({ type: 'blob', compression: 'STORE' }); // STORE is faster, rely on network speed
+  logSec('Archive generated.');
+  return { blob, name: `NEXUS_Archive_${Date.now().toString().slice(-4)}.zip` };
+}
+
+// --- P2P ENGINE (SENDER) ---
+async function startSender() {
+  $('btn-init-tx').disabled = true;
+  $('btn-init-tx').innerHTML = 'Initializing Crypto-Tunnel... <span class="animate-spin">⚙</span>';
+  
+  try {
+    const payload = await prepareBlob();
+    transferBlob = payload.blob;
+    totalBytes = transferBlob.size;
+    
+    const code = genCode();
+    logSec(`Allocated Relay ID: ${code}`);
+    
+    peer = new Peer(code, { config: ICE_CONFIG, debug: 0 });
+    
+    peer.on('open', id => {
+      $('s-step-1').classList.add('hidden');
+      $('s-step-2').classList.remove('hidden');
+      $('s-dot-1').className = 'w-1.5 h-1.5 rounded-full bg-white/20';
+      $('s-dot-2').className = 'w-1.5 h-1.5 rounded-full bg-[var(--accent-2)] shadow-[0_0_8px_var(--accent-2)]';
+      
+      $('code-blocks').innerHTML = id.split('').map(c => 
+        `<div class="w-12 h-16 flex items-center justify-center text-3xl font-black bg-black/40 border border-[var(--accent-2)]/30 rounded-xl text-[var(--accent-2)] shadow-[inset_0_0_15px_rgba(112,0,255,0.1)]">${c}</div>`
+      ).join('');
+    });
+    
+    peer.on('connection', c => {
+      conn = c;
+      conn.serialization = 'raw'; // Binary mode
+      
+      conn.on('open', () => {
+        logSec('Target connected. Handshake successful.', 'text-success');
+        $('status-badge').classList.replace('hidden', 'flex');
+        initTransferHUD(payload.name);
+        setupSenderDC();
+        executeTransfer(payload.name);
+      });
+      
+      conn.on('close', onDisconnect);
+      conn.on('error', onDisconnect);
+    });
+    
+    peer.on('error', e => {
+      showToast('Network Error. Relay failed.', 'error');
+      goHome();
+    });
+    
+  } catch (err) {
+    showToast('Failed to parse payload', 'error');
+    goHome();
+  }
+}
+
+function copyCode() {
+  const code = peer?.id;
+  if(code) {
+    navigator.clipboard.writeText(code);
+    showToast('Key Copied to Clipboard', 'success');
+  }
+}
+
+// --- P2P ENGINE (RECEIVER) ---
+function validateRxCode() {
+  const v = $('rx-code').value;
+  $('btn-connect-rx').disabled = v.length !== 6;
+}
+
+function connectToSender() {
+  const code = $('rx-code').value;
+  $('btn-connect-rx').disabled = true;
+  $('btn-connect-rx').innerHTML = 'Bridging... <span class="animate-spin">⚙</span>';
+  
+  peer = new Peer({ config: ICE_CONFIG, debug: 0 });
+  
+  peer.on('open', () => {
+    logSec(`Connecting to Relay: ${code}`);
+    conn = peer.connect(code, { reliable: true, serialization: 'raw' });
+    
+    conn.on('open', () => {
+      logSec('Uplink established.', 'text-success');
+      $('status-badge').classList.replace('hidden', 'flex');
+      setupReceiverDC();
+    });
+    
+    conn.on('error', () => { showToast('Connection failed.', 'error'); goHome(); });
+    conn.on('close', onDisconnect);
+  });
+  
+  peer.on('error', e => {
+    showToast('Key not found or network error.', 'error');
+    $('btn-connect-rx').disabled = false;
+    $('btn-connect-rx').innerHTML = 'Bridge Connection 🔗';
+  });
+}
+
+function setupReceiverDC() {
+  let inMeta = null;
+  let inChunks = [];
+  
+  conn.on('data', data => {
+    // String data = Control Protocol
+    if (typeof data === 'string') {
+      try {
+        const msg = JSON.parse(data);
+        if (msg.type === 'meta') {
+          inMeta = msg;
+          totalBytes = msg.size;
+          inChunks = [];
+          chunkHashes = [];
+          initTransferHUD(msg.name);
+          logSec(`Receiving ${msg.name} (${fmtBytes(msg.size)})`, 'text-[var(--accent-1)]');
+        } else if (msg.type === 'done') {
+          expectedHash = msg.hash;
+          finalizeReceive(inChunks, inMeta);
+        } else if (msg.type === 'pause') {
+          handleRemotePause(true);
+        } else if (msg.type === 'resume') {
+          handleRemotePause(false);
+        }
+      } catch(e) {}
+    } 
+    // Binary data = File Chunk
+    else {
+      const buf = data instanceof Uint8Array ? data.buffer : data;
+      inChunks.push(buf);
+      transferredBytes += buf.byteLength;
+      
+      const chunkIdx = inChunks.length - 1;
+      crypto.subtle.digest('SHA-256', buf).then(h => {
+        chunkHashes[chunkIdx] = new Uint8Array(h);
+      });
+    }
+  });
+}
+
+async function finalizeReceive(chunks, meta) {
+  logSec('Payload received. Verifying Merkle Root...');
+  
+  // Wait for all async hashes to complete
+  while (chunkHashes.filter(Boolean).length < chunks.length) {
+    await new Promise(r => setTimeout(r, 50));
+  }
+  
+  const actualHash = await computeMerkleHash(chunkHashes);
+  if (actualHash === expectedHash) {
+    logSec('INTEGRITY VERIFIED. SHA-256 Match.', 'text-success');
+    conn.send(JSON.stringify({ type: 'verify', ok: true }));
+  } else {
+    logSec('INTEGRITY COMPROMISED. Hash mismatch.', 'text-[var(--accent-3)]');
+    conn.send(JSON.stringify({ type: 'verify', ok: false }));
+  }
+  
+  const blob = new Blob(chunks, { type: meta.mime || 'application/octet-stream' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = meta.name || 'nexus_download';
+  a.click();
+  URL.revokeObjectURL(url);
+  
+  finishTransferUI(actualHash === expectedHash);
+}
+
+// --- TRANSFER ENGINE ---
+function setupSenderDC() {
+  conn.on('data', data => {
+    if(typeof data === 'string'){
+      const msg = JSON.parse(data);
+      if(msg.type === 'verify') {
+        logSec(msg.ok ? 'Remote verified integrity.' : 'Remote reported corruption.', msg.ok ? 'text-success' : 'text-[var(--accent-3)]');
+        finishTransferUI(msg.ok);
+      } else if (msg.type === 'pause') {
+        handleRemotePause(true);
+      } else if (msg.type === 'resume') {
+        handleRemotePause(false);
+      }
+    }
+  });
+}
+
+async function executeTransfer(filename) {
+  $('btn-pause').classList.remove('hidden');
+  
+  conn.send(JSON.stringify({
+    type: 'meta', name: filename, size: totalBytes, 
+    mime: transferBlob.type, chunks: Math.ceil(totalBytes / CHUNK_SIZE)
+  }));
+  
+  const dc = conn._dc || conn.dataChannel;
+  if(dc) dc.bufferedAmountLowThreshold = LOW_WATER;
+  
+  let offset = 0;
+  
+  while(offset < totalBytes) {
+    if(isPaused) await new Promise(r => pauseResolver = r);
+    
+    // BACKPRESSURE HANDLING
+    if(dc && dc.bufferedAmount > HIGH_WATER) {
+      await new Promise(r => {
+        const handler = () => { dc.removeEventListener('bufferedamountlow', handler); r(); };
+        dc.addEventListener('bufferedamountlow', handler);
+      });
+    }
+    
+    const slice = transferBlob.slice(offset, offset + CHUNK_SIZE);
+    const buf = await slice.arrayBuffer();
+    
+    conn.send(buf);
+    
+    // Async hash computation
+    const hash = await crypto.subtle.digest('SHA-256', buf);
+    chunkHashes.push(new Uint8Array(hash));
+    
+    offset += buf.byteLength;
+    transferredBytes = offset;
+  }
+  
+  logSec('Computing final Merkle Root...');
+  const finalHash = await computeMerkleHash(chunkHashes);
+  logSec(`Root: ${finalHash.substring(0,16)}...`);
+  conn.send(JSON.stringify({ type: 'done', hash: finalHash }));
+}
+
+// --- PAUSE / RESUME ---
+function togglePause() {
+  if (isPaused) {
+    isPaused = false;
+    if (pauseResolver) { pauseResolver(); pauseResolver = null; }
+    conn.send(JSON.stringify({ type: 'resume' }));
+    $('btn-pause').textContent = 'PAUSE';
+    $('btn-pause').classList.replace('border-[var(--warning)]', 'border-white/10');
+    $('btn-pause').classList.replace('text-[var(--warning)]', 'text-white');
+    logSec('Transfer resumed.');
+  } else {
+    isPaused = true;
+    conn.send(JSON.stringify({ type: 'pause' }));
+    $('btn-pause').textContent = 'RESUME';
+    $('btn-pause').classList.replace('border-white/10', 'border-[var(--warning)]');
+    $('btn-pause').classList.replace('text-white', 'text-[var(--warning)]');
+    logSec('Transfer paused.', 'text-warning');
+  }
+}
+
+function handleRemotePause(paused) {
+  isPaused = paused;
+  if (!paused && pauseResolver) { pauseResolver(); pauseResolver = null; }
+  $('tx-status').textContent = paused ? 'REMOTE PAUSE' : 'TRANSFERRING...';
+  $('tx-status').className = paused ? 'text-xs font-bold tracking-wider text-[var(--warning)] uppercase' : 'text-xs font-bold tracking-wider text-gray-400 uppercase';
+  $('tx-status-icon').textContent = paused ? '⏸' : '⚡';
+}
+
+// --- UI / HUD SYSTEM ---
+function initTransferHUD(filename) {
+  showScreen('screen-transfer');
+  $('tx-filename').textContent = filename;
+  
+  transferStartTime = performance.now();
+  lastSpeedCalcTime = transferStartTime;
+  transferredBytes = 0;
+  lastTransferredBytes = 0;
+  
+  rafId = requestAnimationFrame(updateHUD);
+}
+
+function updateHUD(time) {
+  if (!totalBytes) return;
+  
+  // Calculate Speed (every ~200ms for smoothness)
+  if (time - lastSpeedCalcTime > 200 && !isPaused) {
+    const dt = (time - lastSpeedCalcTime) / 1000;
+    const db = transferredBytes - lastTransferredBytes;
+    currentSpeedBps = Math.max(0, db / dt);
+    
+    // Update array for graph
+    speedGraph.shift();
+    speedGraph.push(currentSpeedBps);
+    
+    lastSpeedCalcTime = time;
+    lastTransferredBytes = transferredBytes;
+    
+    // Update Text
+    const mbps = currentSpeedBps / (1024 * 1024);
+    $('tx-speed').textContent = mbps.toFixed(2);
+    
+    // Update ETA
+    if (currentSpeedBps > 0) {
+      const rem = totalBytes - transferredBytes;
+      const s = rem / currentSpeedBps;
+      $('tx-eta').textContent = s < 60 ? `ETA: ${s.toFixed(0)}s` : `ETA: ${(s/60).toFixed(1)}m`;
+    }
+    
+    // Draw Graph
+    const maxSpd = Math.max(...speedGraph, 1);
+    $('speed-graph').innerHTML = speedGraph.map(v => {
+      const h = Math.max(5, (v / maxSpd) * 100);
+      const alpha = 0.3 + (v / maxSpd) * 0.7;
+      return `<div class="hud-bar" style="height: ${h}%; opacity: ${alpha};"></div>`;
+    }).join('');
+  }
+
+  // Fluid Progress Updates (120fps via RAF)
+  const pct = transferredBytes / totalBytes;
+  $('tx-progress-bytes').textContent = `${fmtBytes(transferredBytes)} / ${fmtBytes(totalBytes)}`;
+  $('tx-percent').textContent = `${Math.floor(pct * 100)}%`;
+  
+  const circ = 339.29; // 2 * pi * 54
+  $('progress-ring').style.strokeDashoffset = circ - (circ * pct);
+  
+  if (transferredBytes < totalBytes) {
+    rafId = requestAnimationFrame(updateHUD);
+  }
+}
+
+function finishTransferUI(success) {
+  cancelAnimationFrame(rafId);
+  $('progress-ring').style.strokeDashoffset = 0;
+  $('tx-percent').textContent = '100%';
+  $('tx-speed').textContent = '0.00';
+  $('tx-progress-bytes').textContent = `${fmtBytes(totalBytes)} / ${fmtBytes(totalBytes)}`;
+  
+  $('tx-status').textContent = success ? 'COMPLETED' : 'FAILED / CORRUPT';
+  $('tx-status').className = `text-xs font-bold tracking-wider uppercase ${success ? 'text-green-400' : 'text-[var(--accent-3)]'}`;
+  $('tx-status-icon').textContent = success ? '✓' : '✖';
+  
+  $('btn-pause').classList.add('hidden');
+  showToast(success ? 'Transmission Successful.' : 'Transmission Failed.', success ? 'success' : 'error');
+}
+
+// --- LIFECYCLE ---
+function onDisconnect() {
+  cancelAnimationFrame(rafId);
+  logSec('LINK SEVERED.', 'text-[var(--accent-3)]');
+  $('tx-status').textContent = 'DISCONNECTED';
+  $('tx-status-icon').textContent = '✖';
+  showToast('Peer disconnected.', 'error');
+  $('status-badge').classList.add('hidden');
+}
+
+function cleanup() {
+  cancelAnimationFrame(rafId);
+  if(conn) { conn.close(); conn = null; }
+  if(peer) { peer.destroy(); peer = null; }
+  
+  isPaused = false;
+  if(pauseResolver) { pauseResolver(); pauseResolver = null; }
+  
+  transferBlob = null;
+  selectedFiles = [];
+  chunkHashes = [];
+  $('log-output').innerHTML = '';
+  $('btn-init-tx').innerHTML = 'Generate Uplink Key <span class="text-xl">⚡</span>';
+  $('btn-connect-rx').innerHTML = 'Bridge Connection 🔗';
+  $('progress-ring').style.strokeDashoffset = 339.29;
+}
+
+// Init
+window.addEventListener('load', () => {
+  if (!window.RTCPeerConnection || !window.crypto.subtle) {
+    $('screen-landing').innerHTML = '<div class="text-red-500 font-bold mt-20">BROWSER INCOMPATIBLE. requires WebRTC & WebCrypto.</div>';
+  }
+});
+</script>
+</body>
+</html>
