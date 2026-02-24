@@ -1,1688 +1,1403 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Ghost Share — P2P File Transfer</title>
-
-    <!-- ╔══════════════════════════════════════════════════════════╗
-     ║  SCRIPTS ARE AT THE BOTTOM OF <body> — NOT HERE.        ║
-     ║  If scripts are in <head>, the DOM elements don't exist  ║
-     ║  yet when JS runs → "cannot read property of null".      ║
-     ║  Loading at bottom = DOM fully parsed first.             ║
-     ╚══════════════════════════════════════════════════════════╝ -->
-
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
-        rel="stylesheet" />
-
-    <style>
-        :root {
-            --violet: #7B5CF6;
-            --violet-dim: rgba(123, 92, 246, 0.15);
-            --cyan: #06B6D4;
-            --cyan-dim: rgba(6, 182, 212, 0.15);
-            --bg: #030610;
-            --surface: rgba(255, 255, 255, 0.028);
-            --border: rgba(255, 255, 255, 0.07);
-            --border-glow: rgba(123, 92, 246, 0.35);
-            --text-muted: rgba(255, 255, 255, 0.38);
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        html {
-            scroll-behavior: smooth;
-        }
-
-        body {
-            font-family: 'Outfit', sans-serif;
-            background-color: var(--bg);
-            color: #fff;
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
-
-        body::before {
-            content: '';
-            position: fixed;
-            inset: 0;
-            z-index: 0;
-            pointer-events: none;
-            background:
-                radial-gradient(ellipse 60% 50% at 15% 40%, rgba(123, 92, 246, 0.12) 0%, transparent 70%),
-                radial-gradient(ellipse 50% 60% at 85% 20%, rgba(6, 182, 212, 0.08) 0%, transparent 65%),
-                radial-gradient(ellipse 40% 40% at 50% 90%, rgba(123, 92, 246, 0.06) 0%, transparent 60%);
-        }
-
-        body::after {
-            content: '';
-            position: fixed;
-            inset: 0;
-            z-index: 0;
-            pointer-events: none;
-            background-image:
-                linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
-            background-size: 48px 48px;
-            mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%);
-        }
-
-        /* ── GLASS ── */
-        .glass {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            backdrop-filter: blur(24px);
-            -webkit-backdrop-filter: blur(24px);
-        }
-
-        .glass-card {
-            background: rgba(255, 255, 255, 0.035);
-            border: 1px solid var(--border);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-radius: 16px;
-            transition: border-color 0.3s;
-        }
-
-        .glass-card:hover {
-            border-color: var(--border-glow);
-        }
-
-        /* ── BUTTONS ── */
-        .btn-primary {
-            background: linear-gradient(135deg, #6d40f5 0%, #2563eb 100%);
-            border: 1px solid rgba(109, 64, 245, 0.5);
-            border-radius: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
-            color: #fff;
-            transition: transform 0.2s, box-shadow 0.3s;
-        }
-
-        .btn-primary::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.12), transparent);
-            transition: left 0.45s ease;
-        }
-
-        .btn-primary:hover::before {
-            left: 100%;
-        }
-
-        .btn-primary:hover {
-            box-shadow: 0 0 28px rgba(109, 64, 245, 0.55), 0 4px 20px rgba(0, 0, 0, 0.4);
-            transform: translateY(-1px);
-        }
-
-        .btn-primary:active {
-            transform: translateY(0);
-        }
-
-        .btn-primary:disabled {
-            opacity: 0.35;
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
-        }
-
-        .btn-ghost {
-            background: rgba(255, 255, 255, 0.045);
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            cursor: pointer;
-            color: #fff;
-            transition: background 0.2s, border-color 0.2s;
-        }
-
-        .btn-ghost:hover {
-            background: rgba(255, 255, 255, 0.07);
-            border-color: rgba(255, 255, 255, 0.14);
-        }
-
-        /* ── TYPOGRAPHY ── */
-        .mono {
-            font-family: 'JetBrains Mono', monospace;
-        }
-
-        .label {
-            font-size: 11px;
-            font-weight: 500;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-            color: var(--text-muted);
-        }
-
-        /* ── FORMS ── */
-        textarea,
-        input[type="text"],
-        input[type="url"] {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 11px;
-            background: rgba(0, 0, 0, 0.4);
-            border: 1px solid var(--border);
-            color: rgba(255, 255, 255, 0.8);
-            outline: none;
-            border-radius: 10px;
-            transition: border-color 0.25s, box-shadow 0.25s;
-            resize: none;
-        }
-
-        textarea:focus,
-        input:focus {
-            border-color: rgba(123, 92, 246, 0.5);
-            box-shadow: 0 0 0 3px rgba(123, 92, 246, 0.1);
-        }
-
-        textarea::placeholder,
-        input::placeholder {
-            color: rgba(255, 255, 255, 0.2);
-        }
-
-        /* ── SCREENS ── */
-        .screen {
-            display: none;
-            position: relative;
-            z-index: 1;
-        }
-
-        .screen.active {
-            display: block;
-            animation: fadeUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        @keyframes fadeUp {
-            from {
-                opacity: 0;
-                transform: translateY(14px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* ── ANIMATIONS ── */
-        @keyframes logoPulse {
-
-            0%,
-            100% {
-                box-shadow: 0 0 0 0 rgba(123, 92, 246, 0.5);
-            }
-
-            50% {
-                box-shadow: 0 0 0 10px rgba(123, 92, 246, 0);
-            }
-        }
-
-        .logo-icon {
-            animation: logoPulse 3s ease-in-out infinite;
-        }
-
-        @keyframes connectedPulse {
-
-            0%,
-            100% {
-                box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.6);
-            }
-
-            50% {
-                box-shadow: 0 0 0 5px rgba(34, 197, 94, 0);
-            }
-        }
-
-        .conn-dot {
-            animation: connectedPulse 2s ease-in-out infinite;
-        }
-
-        @keyframes activePulseRing {
-            0% {
-                transform: scale(0.85);
-                opacity: 0.8;
-            }
-
-            100% {
-                transform: scale(1.5);
-                opacity: 0;
-            }
-        }
-
-        @keyframes activePulseDot {
-
-            0%,
-            100% {
-                transform: scale(1);
-            }
-
-            50% {
-                transform: scale(1.12);
-            }
-        }
-
-        .pulse-wrap {
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .pulse-ring-el {
-            position: absolute;
-            inset: 0;
-            border-radius: 50%;
-            animation: activePulseRing 1.8s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
-        }
-
-        .pulse-core {
-            animation: activePulseDot 2.2s ease-in-out infinite;
-        }
-
-        @keyframes floatY {
-
-            0%,
-            100% {
-                transform: translateY(0) rotate(-2deg);
-            }
-
-            50% {
-                transform: translateY(-8px) rotate(2deg);
-            }
-        }
-
-        .float-icon {
-            animation: floatY 4s ease-in-out infinite;
-        }
-
-        @keyframes barPulse {
-
-            0%,
-            100% {
-                opacity: .8
-            }
-
-            50% {
-                opacity: 1
-            }
-        }
-
-        .speed-bar {
-            animation: barPulse 1.1s ease-in-out infinite;
-            border-radius: 3px 3px 0 0;
-        }
-
-        /* ── PROGRESS RING ── */
-        .progress-ring-track {
-            fill: none;
-            stroke: rgba(255, 255, 255, 0.04);
-            stroke-width: 7;
-        }
-
-        .progress-ring-fill {
-            fill: none;
-            stroke-width: 7;
-            stroke: url(#ringGradient);
-            stroke-linecap: round;
-            transform: rotate(-90deg);
-            transform-origin: 50% 50%;
-            transition: stroke-dashoffset 0.35s ease;
-        }
-
-        /* ── DROP ZONE ── */
-        .drop-zone {
-            border: 2px dashed rgba(123, 92, 246, 0.3);
-            transition: all 0.3s;
-            cursor: pointer;
-        }
-
-        .drop-zone:hover,
-        .drop-zone.drag-active {
-            border-color: rgba(123, 92, 246, 0.7);
-            background: rgba(123, 92, 246, 0.04);
-        }
-
-        /* ── STEP DOTS ── */
-        .step-dot {
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.12);
-            transition: all 0.3s;
-        }
-
-        .step-dot.active {
-            background: var(--violet);
-            box-shadow: 0 0 8px rgba(123, 92, 246, 0.7);
-        }
-
-        /* ── CONFIG PANEL ── */
-        .config-content {
-            overflow: hidden;
-            max-height: 0;
-            transition: max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        .config-content.open {
-            max-height: 600px;
-        }
-
-        /* ── SCROLLBAR ── */
-        ::-webkit-scrollbar {
-            width: 3px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: rgba(123, 92, 246, 0.4);
-            border-radius: 2px;
-        }
-
-        /* ── TOAST ── */
-        @keyframes toastIn {
-            from {
-                opacity: 0;
-                transform: translate(-50%, 20px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translate(-50%, 0);
-            }
-        }
-
-        #toast.visible {
-            animation: toastIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        /* ── BADGES ── */
-        .badge-violet {
-            background: var(--violet-dim);
-            border: 1px solid rgba(123, 92, 246, 0.25);
-        }
-
-        .badge-cyan {
-            background: var(--cyan-dim);
-            border: 1px solid rgba(6, 182, 212, 0.25);
-        }
-    </style>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>GhostShare — P2P File Transfer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet"/>
+
+  <style>
+    :root {
+      --violet: #7B5CF6;
+      --violet-dim: rgba(123,92,246,0.15);
+      --cyan: #06B6D4;
+      --cyan-dim: rgba(6,182,212,0.15);
+      --green: #22c55e;
+      --red: #ef4444;
+      --bg: #030610;
+      --surface: rgba(255,255,255,0.028);
+      --border: rgba(255,255,255,0.07);
+      --border-glow: rgba(123,92,246,0.35);
+      --text-muted: rgba(255,255,255,0.38);
+    }
+    *{box-sizing:border-box;margin:0;padding:0;}
+    html{scroll-behavior:smooth;}
+    body{
+      font-family:'Outfit',sans-serif;
+      background-color:var(--bg);
+      color:#fff;
+      min-height:100vh;
+      overflow-x:hidden;
+    }
+    body::before{
+      content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+      background:
+        radial-gradient(ellipse 60% 50% at 15% 40%, rgba(123,92,246,0.12) 0%, transparent 70%),
+        radial-gradient(ellipse 50% 60% at 85% 20%, rgba(6,182,212,0.08) 0%, transparent 65%),
+        radial-gradient(ellipse 40% 40% at 50% 90%, rgba(123,92,246,0.06) 0%, transparent 60%);
+    }
+    body::after{
+      content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+      background-image:linear-gradient(rgba(255,255,255,0.02) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(255,255,255,0.02) 1px,transparent 1px);
+      background-size:48px 48px;
+      mask-image:radial-gradient(ellipse at center,black 30%,transparent 80%);
+    }
+
+    /* ── GLASS ── */
+    .glass{background:var(--surface);border:1px solid var(--border);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);}
+    .glass-card{
+      background:rgba(255,255,255,0.035);border:1px solid var(--border);
+      backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+      border-radius:16px;transition:border-color 0.3s;
+    }
+    .glass-card:hover{border-color:var(--border-glow);}
+
+    /* ── BUTTONS ── */
+    .btn-primary{
+      background:linear-gradient(135deg,#6d40f5 0%,#2563eb 100%);
+      border:1px solid rgba(109,64,245,0.5);border-radius:12px;
+      font-weight:600;cursor:pointer;position:relative;overflow:hidden;color:#fff;
+      transition:transform 0.2s,box-shadow 0.3s;
+    }
+    .btn-primary::before{
+      content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;
+      background:linear-gradient(90deg,transparent,rgba(255,255,255,0.12),transparent);
+      transition:left 0.45s ease;
+    }
+    .btn-primary:hover::before{left:100%;}
+    .btn-primary:hover{box-shadow:0 0 28px rgba(109,64,245,0.55),0 4px 20px rgba(0,0,0,0.4);transform:translateY(-1px);}
+    .btn-primary:active{transform:translateY(0);}
+    .btn-primary:disabled{opacity:0.35;cursor:not-allowed;transform:none;box-shadow:none;}
+
+    .btn-ghost{
+      background:rgba(255,255,255,0.045);border:1px solid var(--border);
+      border-radius:10px;cursor:pointer;color:#fff;
+      transition:background 0.2s,border-color 0.2s;
+    }
+    .btn-ghost:hover{background:rgba(255,255,255,0.07);border-color:rgba(255,255,255,0.14);}
+
+    .btn-pause{
+      background:rgba(234,179,8,0.12);border:1px solid rgba(234,179,8,0.3);
+      border-radius:10px;cursor:pointer;color:#eab308;font-weight:600;
+      transition:background 0.2s;
+    }
+    .btn-pause:hover{background:rgba(234,179,8,0.2);}
+    .btn-resume{
+      background:rgba(34,197,94,0.12);border:1px solid rgba(34,197,94,0.3);
+      border-radius:10px;cursor:pointer;color:#22c55e;font-weight:600;
+      transition:background 0.2s;
+    }
+    .btn-resume:hover{background:rgba(34,197,94,0.2);}
+
+    /* ── TYPOGRAPHY ── */
+    .mono{font-family:'JetBrains Mono',monospace;}
+    .label{font-size:11px;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);}
+
+    /* ── FORMS ── */
+    textarea,input[type="text"],input[type="url"]{
+      font-family:'JetBrains Mono',monospace;font-size:11px;
+      background:rgba(0,0,0,0.4);border:1px solid var(--border);
+      color:rgba(255,255,255,0.8);outline:none;border-radius:10px;
+      transition:border-color 0.25s,box-shadow 0.25s;resize:none;
+    }
+    textarea:focus,input:focus{
+      border-color:rgba(123,92,246,0.5);
+      box-shadow:0 0 0 3px rgba(123,92,246,0.1);
+    }
+    textarea::placeholder,input::placeholder{color:rgba(255,255,255,0.2);}
+
+    /* ── CODE DISPLAY BOXES (sender) ── */
+    .code-boxes{display:flex;gap:8px;justify-content:center;margin:8px 0;}
+    .code-box{
+      width:52px;height:64px;
+      display:flex;align-items:center;justify-content:center;
+      font-family:'JetBrains Mono',monospace;
+      font-size:28px;font-weight:700;
+      background:rgba(123,92,246,0.1);
+      border:1.5px solid rgba(123,92,246,0.35);
+      border-radius:14px;color:#fff;
+      animation:codeGlow 2.5s ease-in-out infinite alternate;
+      transition:all 0.3s;
+    }
+    @keyframes codeGlow{
+      from{box-shadow:0 0 8px rgba(123,92,246,0.2);border-color:rgba(123,92,246,0.35);}
+      to{box-shadow:0 0 22px rgba(123,92,246,0.55),inset 0 0 8px rgba(123,92,246,0.08);border-color:rgba(123,92,246,0.7);}
+    }
+    /* ── CODE INPUT (receiver) ── */
+    .code-input-field{
+      font-family:'JetBrains Mono',monospace;
+      font-size:36px;font-weight:700;
+      letter-spacing:0.35em;text-align:center;
+      text-transform:uppercase;
+      padding:18px 24px;
+      background:rgba(0,0,0,0.5);
+      border:1.5px solid var(--border);
+      border-radius:16px;width:100%;color:#fff;
+      outline:none;transition:border-color 0.25s,box-shadow 0.25s;
+    }
+    .code-input-field:focus{
+      border-color:rgba(123,92,246,0.6);
+      box-shadow:0 0 0 4px rgba(123,92,246,0.12),0 0 30px rgba(123,92,246,0.15);
+    }
+    .code-input-field::placeholder{color:rgba(255,255,255,0.12);letter-spacing:0.4em;}
+
+    /* ── SCREENS ── */
+    .screen{display:none;position:relative;z-index:1;}
+    .screen.active{display:block;animation:fadeUp 0.4s cubic-bezier(0.16,1,0.3,1);}
+    @keyframes fadeUp{
+      from{opacity:0;transform:translateY(14px);}
+      to{opacity:1;transform:translateY(0);}
+    }
+
+    /* ── ANIMATIONS ── */
+    @keyframes logoPulse{
+      0%,100%{box-shadow:0 0 0 0 rgba(123,92,246,0.5);}
+      50%{box-shadow:0 0 0 10px rgba(123,92,246,0);}
+    }
+    .logo-icon{animation:logoPulse 3s ease-in-out infinite;}
+
+    @keyframes connectedPulse{
+      0%,100%{box-shadow:0 0 0 0 rgba(34,197,94,0.6);}
+      50%{box-shadow:0 0 0 5px rgba(34,197,94,0);}
+    }
+    .conn-dot{animation:connectedPulse 2s ease-in-out infinite;}
+
+    @keyframes activePulseRing{
+      0%{transform:scale(0.85);opacity:0.8;}
+      100%{transform:scale(1.5);opacity:0;}
+    }
+    @keyframes activePulseDot{
+      0%,100%{transform:scale(1);}
+      50%{transform:scale(1.12);}
+    }
+    .pulse-wrap{position:relative;display:flex;align-items:center;justify-content:center;}
+    .pulse-ring-el{
+      position:absolute;inset:0;border-radius:50%;
+      animation:activePulseRing 1.8s cubic-bezier(0.215,0.61,0.355,1) infinite;
+    }
+    .pulse-core{animation:activePulseDot 2.2s ease-in-out infinite;}
+
+    @keyframes floatY{
+      0%,100%{transform:translateY(0) rotate(-2deg);}
+      50%{transform:translateY(-8px) rotate(2deg);}
+    }
+    .float-icon{animation:floatY 4s ease-in-out infinite;}
+
+    @keyframes barPulse{0%,100%{opacity:.8}50%{opacity:1}}
+    .speed-bar{animation:barPulse 1.1s ease-in-out infinite;border-radius:3px 3px 0 0;}
+
+    @keyframes shimmer{
+      0%{background-position:-200% 0;}
+      100%{background-position:200% 0;}
+    }
+    .shimmer-text{
+      background:linear-gradient(90deg,#a78bfa,#38bdf8,#a78bfa);
+      background-size:200% auto;
+      -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+      animation:shimmer 3s linear infinite;
+    }
+
+    /* ── PROGRESS RING ── */
+    .progress-ring-track{fill:none;stroke:rgba(255,255,255,0.04);stroke-width:7;}
+    .progress-ring-fill{
+      fill:none;stroke-width:7;stroke:url(#ringGradient);stroke-linecap:round;
+      transform:rotate(-90deg);transform-origin:50% 50%;
+      transition:stroke-dashoffset 0.35s ease;
+    }
+
+    /* ── DROP ZONE ── */
+    .drop-zone{border:2px dashed rgba(123,92,246,0.3);transition:all 0.3s;cursor:pointer;}
+    .drop-zone:hover,.drop-zone.drag-active{border-color:rgba(123,92,246,0.7);background:rgba(123,92,246,0.04);}
+
+    /* ── STEP DOTS ── */
+    .step-dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,0.12);transition:all 0.3s;}
+    .step-dot.active{background:var(--violet);box-shadow:0 0 8px rgba(123,92,246,0.7);}
+
+    /* ── CONFIG PANEL ── */
+    .config-content{overflow:hidden;max-height:0;transition:max-height 0.4s cubic-bezier(0.16,1,0.3,1);}
+    .config-content.open{max-height:600px;}
+
+    /* ── HASH STATUS ── */
+    .hash-ok{background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.25);border-radius:10px;padding:10px 14px;}
+    .hash-fail{background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.25);border-radius:10px;padding:10px 14px;}
+    .hash-wait{background:rgba(234,179,8,0.08);border:1px solid rgba(234,179,8,0.2);border-radius:10px;padding:10px 14px;}
+
+    /* ── PAUSE OVERLAY ── */
+    @keyframes pausedPulse{0%,100%{opacity:0.7;}50%{opacity:1;}}
+    .paused-label{animation:pausedPulse 1.5s ease-in-out infinite;}
+
+    /* ── SCROLLBAR ── */
+    ::-webkit-scrollbar{width:3px;}
+    ::-webkit-scrollbar-track{background:transparent;}
+    ::-webkit-scrollbar-thumb{background:rgba(123,92,246,0.4);border-radius:2px;}
+
+    /* ── TOAST ── */
+    @keyframes toastIn{
+      from{opacity:0;transform:translate(-50%,20px);}
+      to{opacity:1;transform:translate(-50%,0);}
+    }
+    #toast.visible{animation:toastIn 0.3s cubic-bezier(0.16,1,0.3,1);}
+
+    /* ── BADGES ── */
+    .badge-violet{background:var(--violet-dim);border:1px solid rgba(123,92,246,0.25);}
+    .badge-cyan{background:var(--cyan-dim);border:1px solid rgba(6,182,212,0.25);}
+    .badge-green{background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.25);}
+  </style>
 </head>
-
 <body>
 
-    <!-- HEADER -->
-    <header class="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-5 py-3"
-        style="background:rgba(3,6,16,0.7);border-bottom:1px solid var(--border);backdrop-filter:blur(20px);">
-        <div class="flex items-center gap-3">
-            <div class="logo-icon w-8 h-8 rounded-xl flex items-center justify-center"
-                style="background:linear-gradient(135deg,#7B5CF6,#2563eb);font-size:16px;">👻</div>
-            <span style="font-weight:700;font-size:15px;letter-spacing:-0.02em;">
-                Ghost<span style="color:var(--violet);">Share</span>
-            </span>
-            <span class="mono" style="font-size:10px;color:rgba(255,255,255,0.2);">v2.0</span>
-        </div>
-        <div id="conn-badge" style="display:none;" class="items-center gap-2 px-3 py-1.5 rounded-full"
-            style2="background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.25);">
-            <div class="conn-dot w-2 h-2 rounded-full" style="background:#22c55e;"></div>
-            <span style="font-size:12px;font-weight:600;color:#22c55e;">Connected</span>
-        </div>
-    </header>
+<!-- ══ HEADER ══ -->
+<header class="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-5 py-3"
+  style="background:rgba(3,6,16,0.75);border-bottom:1px solid var(--border);backdrop-filter:blur(20px);">
+  <div class="flex items-center gap-3">
+    <div class="logo-icon w-8 h-8 rounded-xl flex items-center justify-center"
+      style="background:linear-gradient(135deg,#7B5CF6,#2563eb);font-size:16px;">👻</div>
+    <span style="font-weight:800;font-size:15px;letter-spacing:-0.02em;">
+      Ghost<span style="color:var(--violet);">Share</span>
+    </span>
+    <span class="mono" style="font-size:10px;color:rgba(255,255,255,0.2);">v3.0</span>
+  </div>
+  <div id="conn-badge" style="display:none;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;
+    background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.25);">
+    <div class="conn-dot w-2 h-2 rounded-full" style="background:#22c55e;"></div>
+    <span style="font-size:12px;font-weight:600;color:#22c55e;" id="conn-label">Connected</span>
+  </div>
+</header>
 
-    <!-- MAIN -->
-    <main
-        style="padding-top:80px;padding-bottom:64px;padding-left:16px;padding-right:16px;max-width:640px;margin:0 auto;">
+<!-- ══ MAIN ══ -->
+<main style="padding-top:80px;padding-bottom:64px;padding-left:16px;padding-right:16px;max-width:640px;margin:0 auto;">
 
-        <!-- ══ LANDING ══ -->
-        <div id="screen-landing" class="screen active">
-            <div class="text-center" style="padding:48px 0 32px;">
-                <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full mb-8"
-                    style="background:rgba(255,255,255,0.04);border:1px solid var(--border);">
-                    <span
-                        style="width:6px;height:6px;border-radius:50%;background:var(--violet);display:inline-block;box-shadow:0 0 8px var(--violet);"></span>
-                    <span style="font-size:12px;color:var(--text-muted);">Zero server · Zero cloud · Pure P2P</span>
-                </div>
-                <h1 style="font-size:52px;font-weight:800;letter-spacing:-0.04em;line-height:1.05;margin-bottom:16px;">
-                    Ghost<span
-                        style="background:linear-gradient(135deg,#a78bfa,#38bdf8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">Share</span>
-                </h1>
-                <p style="color:var(--text-muted);font-size:16px;line-height:1.6;max-width:340px;margin:0 auto 48px;">
-                    Browser-native encrypted P2P file transfer. WebRTC DataChannels.
-                    No servers. No accounts. No file size limits.
-                </p>
+  <!-- ════ LANDING ════ -->
+  <div id="screen-landing" class="screen active">
+    <div class="text-center" style="padding:48px 0 32px;">
+      <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full mb-8"
+        style="background:rgba(255,255,255,0.04);border:1px solid var(--border);">
+        <span style="width:6px;height:6px;border-radius:50%;background:var(--violet);display:inline-block;box-shadow:0 0 8px var(--violet);"></span>
+        <span style="font-size:12px;color:var(--text-muted);">6-char code · Zero server · Pure P2P</span>
+      </div>
+      <h1 style="font-size:52px;font-weight:900;letter-spacing:-0.04em;line-height:1.05;margin-bottom:16px;">
+        Ghost<span class="shimmer-text">Share</span>
+      </h1>
+      <p style="color:var(--text-muted);font-size:16px;line-height:1.6;max-width:360px;margin:0 auto 12px;">
+        Share a 6-character code. No accounts, no uploads, no limits.
+      </p>
+      <p style="font-family:'JetBrains Mono';font-size:13px;color:var(--violet);margin-bottom:40px;opacity:0.8;">
+        A1B2C3 → instant encrypted transfer
+      </p>
 
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:40px;">
-                    <button onclick="initSend()" class="glass-card text-left" style="padding:28px;cursor:pointer;">
-                        <div
-                            style="width:48px;height:48px;border-radius:16px;display:flex;align-items:center;justify-content:center;
-                      margin-bottom:20px;background:rgba(123,92,246,0.15);border:1px solid rgba(123,92,246,0.2);font-size:22px;">
-                            📤</div>
-                        <div style="font-size:17px;font-weight:700;margin-bottom:4px;">Send Files</div>
-                        <div style="font-size:13px;color:var(--text-muted);line-height:1.5;">Create a session and beam
-                            files to anyone</div>
-                    </button>
-                    <button onclick="initReceive()" class="glass-card text-left" style="padding:28px;cursor:pointer;">
-                        <div
-                            style="width:48px;height:48px;border-radius:16px;display:flex;align-items:center;justify-content:center;
-                      margin-bottom:20px;background:rgba(6,182,212,0.12);border:1px solid rgba(6,182,212,0.2);font-size:22px;">
-                            📥</div>
-                        <div style="font-size:17px;font-weight:700;margin-bottom:4px;">Receive Files</div>
-                        <div style="font-size:13px;color:var(--text-muted);line-height:1.5;">Join a session and download
-                            instantly</div>
-                    </button>
-                </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:40px;">
+        <button onclick="initSend()" class="glass-card text-left" style="padding:28px;cursor:pointer;">
+          <div style="width:48px;height:48px;border-radius:16px;display:flex;align-items:center;justify-content:center;
+            margin-bottom:20px;background:rgba(123,92,246,0.15);border:1px solid rgba(123,92,246,0.2);font-size:22px;">📤</div>
+          <div style="font-size:17px;font-weight:700;margin-bottom:4px;">Send Files</div>
+          <div style="font-size:13px;color:var(--text-muted);line-height:1.5;">Get a code, share it, done</div>
+        </button>
+        <button onclick="initReceive()" class="glass-card text-left" style="padding:28px;cursor:pointer;">
+          <div style="width:48px;height:48px;border-radius:16px;display:flex;align-items:center;justify-content:center;
+            margin-bottom:20px;background:rgba(6,182,212,0.12);border:1px solid rgba(6,182,212,0.2);font-size:22px;">📥</div>
+          <div style="font-size:17px;font-weight:700;margin-bottom:4px;">Receive Files</div>
+          <div style="font-size:13px;color:var(--text-muted);line-height:1.5;">Enter a 6-char code, download</div>
+        </button>
+      </div>
 
-                <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;">
-                    <span class="badge-violet"
-                        style="padding:6px 12px;border-radius:999px;font-size:11px;font-weight:500;">🔒 DTLS
-                        Encrypted</span>
-                    <span class="badge-violet"
-                        style="padding:6px 12px;border-radius:999px;font-size:11px;font-weight:500;">∞ Unlimited
-                        Size</span>
-                    <span class="badge-cyan"
-                        style="padding:6px 12px;border-radius:999px;font-size:11px;font-weight:500;">📡 Firewall
-                        Bypass</span>
-                    <span class="badge-cyan"
-                        style="padding:6px 12px;border-radius:999px;font-size:11px;font-weight:500;">⚡ Max
-                        Throughput</span>
-                </div>
-            </div>
-        </div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;">
+        <span class="badge-violet" style="padding:6px 12px;border-radius:999px;font-size:11px;font-weight:500;">🔒 DTLS Encrypted</span>
+        <span class="badge-violet" style="padding:6px 12px;border-radius:999px;font-size:11px;font-weight:500;">∞ Unlimited Size</span>
+        <span class="badge-cyan"   style="padding:6px 12px;border-radius:999px;font-size:11px;font-weight:500;">📡 Firewall Bypass</span>
+        <span class="badge-cyan"   style="padding:6px 12px;border-radius:999px;font-size:11px;font-weight:500;">⚡ Max Throughput</span>
+        <span class="badge-green"  style="padding:6px 12px;border-radius:999px;font-size:11px;font-weight:500;">🔐 SHA-256 Verified</span>
+        <span class="badge-green"  style="padding:6px 12px;border-radius:999px;font-size:11px;font-weight:500;">⏸ Pause / Resume</span>
+      </div>
+    </div>
+  </div>
 
-        <!-- ══ SEND ══ -->
-        <div id="screen-send" class="screen">
-            <div style="display:flex;align-items:center;gap:12px;margin-top:16px;margin-bottom:24px;">
-                <button onclick="goHome()" class="btn-ghost" style="padding:8px 14px;">← Back</button>
-                <div>
-                    <div style="font-size:17px;font-weight:700;">Send Files</div>
-                    <div style="font-size:11px;color:var(--text-muted);">3-step handshake</div>
-                </div>
-                <div style="flex:1;"></div>
-                <div style="display:flex;gap:6px;">
-                    <div class="step-dot active" id="sdot-1"></div>
-                    <div class="step-dot" id="sdot-2"></div>
-                    <div class="step-dot" id="sdot-3"></div>
-                </div>
-            </div>
-
-            <!-- STEP 1 -->
-            <div id="s-step-1">
-                <!-- Network Config -->
-                <div class="glass-card" style="padding:0;overflow:hidden;margin-bottom:16px;">
-                    <button onclick="toggleConf('s')" style="width:100%;display:flex;align-items:center;justify-content:space-between;
-                       padding:14px 16px;cursor:pointer;background:transparent;border:none;color:#fff;">
-                        <span
-                            style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:500;color:rgba(255,255,255,0.65);">
-                            📡 Network Config <span style="font-size:11px;color:var(--text-muted);">STUN / TURN</span>
-                        </span>
-                        <span id="chev-s"
-                            style="transition:transform 0.3s;font-size:12px;color:var(--text-muted);">▼</span>
-                    </button>
-                    <div class="config-content" id="conf-s">
-                        <div style="padding:0 16px 16px;">
-                            <div class="label" style="margin-bottom:8px;">Built-in STUN Servers</div>
-                            <div class="mono glass"
-                                style="font-size:10px;line-height:1.8;color:rgba(123,92,246,0.8);padding:12px;border-radius:10px;margin-bottom:16px;">
-                                stun.l.google.com:19302<br />stun1.l.google.com:19302<br />stun.cloudflare.com:3478<br />stun.mozilla.com<br />stun.stunprotocol.org:3478<br />stun.nextcloud.com:443
-                            </div>
-                            <div class="label" style="margin-bottom:8px;">TURN Relay (for school/office firewalls)</div>
-                            <input type="url" id="turn-url-s" placeholder="turn:openrelay.metered.ca:80"
-                                style="width:100%;padding:10px 12px;margin-bottom:8px;" />
-                            <div style="display:flex;gap:8px;">
-                                <input type="text" id="turn-user-s" placeholder="username"
-                                    style="flex:1;padding:10px 12px;" />
-                                <input type="text" id="turn-pass-s" placeholder="password"
-                                    style="flex:1;padding:10px 12px;" />
-                            </div>
-                            <p class="mono" style="font-size:10px;color:var(--text-muted);margin-top:8px;">Free:
-                                openrelay.metered.ca · relay.expressturn.com:3478</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Drop Zone -->
-                <div id="drop-zone" class="drop-zone glass-card"
-                    style="padding:40px;text-align:center;border-radius:20px;margin-bottom:16px;" onclick="pickFiles()"
-                    ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event)">
-                    <div class="float-icon" style="display:inline-block;margin-bottom:16px;font-size:40px;">📄</div>
-                    <div style="font-size:16px;font-weight:600;margin-bottom:6px;">Drop files or click to browse</div>
-                    <div style="font-size:13px;color:var(--text-muted);">Any type · Any size · Multi-file auto-zipped
-                    </div>
-                    <input type="file" id="file-fallback" multiple style="display:none;"
-                        onchange="onFileInput(this.files)" />
-                </div>
-
-                <!-- File list -->
-                <div id="files-panel" style="display:none;" class="glass-card">
-                    <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 16px 0;">
-                        <div style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;">
-                            📦 <span id="files-count-lbl">0 files</span>
-                        </div>
-                        <span class="mono" id="files-size-lbl" style="font-size:11px;color:var(--text-muted);"></span>
-                    </div>
-                    <div id="files-list" style="padding:12px 16px 16px;max-height:140px;overflow-y:auto;"></div>
-                </div>
-
-                <div style="margin-top:16px;">
-                    <button id="btn-offer" onclick="createOffer()" disabled class="btn-primary"
-                        style="width:100%;padding:14px 24px;font-size:15px;display:flex;align-items:center;justify-content:center;gap:8px;">
-                        📡 Generate Connection Offer
-                    </button>
-                </div>
-            </div>
-
-            <!-- STEP 2 -->
-            <div id="s-step-2" style="display:none;">
-                <div class="glass-card" style="padding:16px;margin-bottom:16px;">
-                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
-                        <div class="label">📶 Your Offer Signal</div>
-                        <button onclick="copyText('offer-out','Offer')" class="btn-ghost"
-                            style="padding:6px 12px;font-size:12px;">📋 Copy</button>
-                    </div>
-                    <textarea id="offer-out" readonly rows="5" style="width:100%;padding:10px 12px;"></textarea>
-                    <p style="font-size:11px;color:var(--text-muted);margin-top:8px;">Send this to the receiver via
-                        chat, email, or QR below</p>
-                </div>
-                <div class="glass-card" style="padding:20px;margin-bottom:16px;text-align:center;">
-                    <div class="label" style="margin-bottom:12px;">🔲 QR Code (scan on mobile)</div>
-                    <div id="qr-sender" style="display:flex;justify-content:center;"></div>
-                    <p style="font-size:10px;color:var(--text-muted);margin-top:10px;">If QR is too large, use
-                        copy-paste above</p>
-                </div>
-                <div class="glass-card" style="padding:16px;">
-                    <div class="label" style="margin-bottom:12px;">📎 Paste Receiver's Answer</div>
-                    <textarea id="answer-in" rows="5" placeholder="Paste the answer signal from the receiver..."
-                        style="width:100%;padding:10px 12px;margin-bottom:12px;"></textarea>
-                    <button onclick="applyAnswer()" class="btn-primary"
-                        style="width:100%;padding:14px 24px;font-size:15px;display:flex;align-items:center;justify-content:center;gap:8px;">
-                        🔗 Connect &amp; Begin Transfer
-                    </button>
-                </div>
-            </div>
-
-            <!-- STEP 3 -->
-            <div id="s-step-3" style="display:none;">
-                <div id="sender-progress-area"></div>
-            </div>
-        </div><!-- /screen-send -->
-
-        <!-- ══ RECEIVE ══ -->
-        <div id="screen-receive" class="screen">
-            <div style="display:flex;align-items:center;gap:12px;margin-top:16px;margin-bottom:24px;">
-                <button onclick="goHome()" class="btn-ghost" style="padding:8px 14px;">← Back</button>
-                <div>
-                    <div style="font-size:17px;font-weight:700;">Receive Files</div>
-                    <div style="font-size:11px;color:var(--text-muted);">2-step join handshake</div>
-                </div>
-                <div style="flex:1;"></div>
-                <div style="display:flex;gap:6px;">
-                    <div class="step-dot active" id="rdot-1"></div>
-                    <div class="step-dot" id="rdot-2"></div>
-                </div>
-            </div>
-
-            <!-- STEP 1 -->
-            <div id="r-step-1">
-                <div class="glass-card" style="padding:0;overflow:hidden;margin-bottom:16px;">
-                    <button onclick="toggleConf('r')" style="width:100%;display:flex;align-items:center;justify-content:space-between;
-                       padding:14px 16px;cursor:pointer;background:transparent;border:none;color:#fff;">
-                        <span
-                            style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:500;color:rgba(255,255,255,0.65);">
-                            📡 Network Config <span style="font-size:11px;color:var(--text-muted);">optional TURN
-                                relay</span>
-                        </span>
-                        <span id="chev-r"
-                            style="transition:transform 0.3s;font-size:12px;color:var(--text-muted);">▼</span>
-                    </button>
-                    <div class="config-content" id="conf-r">
-                        <div style="padding:0 16px 16px;">
-                            <div class="label" style="margin-bottom:8px;">TURN Relay</div>
-                            <input type="url" id="turn-url-r" placeholder="turn:openrelay.metered.ca:80"
-                                style="width:100%;padding:10px 12px;margin-bottom:8px;" />
-                            <div style="display:flex;gap:8px;">
-                                <input type="text" id="turn-user-r" placeholder="username"
-                                    style="flex:1;padding:10px 12px;" />
-                                <input type="text" id="turn-pass-r" placeholder="password"
-                                    style="flex:1;padding:10px 12px;" />
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="glass-card" style="padding:16px;margin-bottom:16px;">
-                    <div class="label" style="margin-bottom:12px;">📎 Paste Sender's Offer Signal</div>
-                    <textarea id="offer-in" rows="7" placeholder="Paste the offer signal from the sender..."
-                        style="width:100%;padding:10px 12px;"></textarea>
-                </div>
-                <button onclick="createAnswer()" class="btn-primary"
-                    style="width:100%;padding:14px 24px;font-size:15px;display:flex;align-items:center;justify-content:center;gap:8px;">
-                    ↩ Generate Answer
-                </button>
-            </div>
-
-            <!-- STEP 2 -->
-            <div id="r-step-2" style="display:none;">
-                <div class="glass-card" style="padding:16px;margin-bottom:16px;">
-                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
-                        <div class="label">📶 Your Answer Signal</div>
-                        <button onclick="copyText('answer-out','Answer')" class="btn-ghost"
-                            style="padding:6px 12px;font-size:12px;">📋 Copy</button>
-                    </div>
-                    <textarea id="answer-out" readonly rows="5" style="width:100%;padding:10px 12px;"></textarea>
-                    <p style="font-size:11px;color:var(--text-muted);margin-top:8px;">Send this back to the sender —
-                        they'll paste it to connect</p>
-                </div>
-                <div class="glass-card" style="padding:20px;margin-bottom:16px;text-align:center;">
-                    <div class="label" style="margin-bottom:12px;">🔲 QR Code</div>
-                    <div id="qr-receiver" style="display:flex;justify-content:center;"></div>
-                </div>
-                <div id="recv-status-area">
-                    <div id="recv-waiting" class="glass-card" style="padding:32px;text-align:center;">
-                        <div class="pulse-wrap" style="width:64px;height:64px;margin:0 auto 20px;position:relative;">
-                            <div class="pulse-ring-el"
-                                style="background:rgba(6,182,212,0.15);inset:0;position:absolute;border-radius:50%;">
-                            </div>
-                            <div class="pulse-core"
-                                style="width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;
-                                           background:rgba(6,182,212,0.2);border:1px solid rgba(6,182,212,0.3);position:relative;z-index:1;font-size:18px;">
-                                📶</div>
-                        </div>
-                        <div style="font-size:15px;font-weight:600;margin-bottom:6px;">Waiting for sender...</div>
-                        <div style="font-size:13px;color:var(--text-muted);">Connection establishes automatically once
-                            the sender pastes your answer</div>
-                    </div>
-                </div>
-            </div>
-        </div><!-- /screen-receive -->
-
-    </main>
-
-    <!-- TOAST -->
-    <div id="toast" style="display:none;position:fixed;z-index:9999;bottom:24px;left:50%;transform:translateX(-50%);
-     background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.1);
-     backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
-     padding:12px 16px;border-radius:12px;
-     align-items:center;gap:10px;min-width:220px;max-width:380px;white-space:nowrap;">
-        <span id="toast-icon-el" style="font-size:16px;"></span>
-        <span id="toast-msg" style="font-size:13px;font-weight:500;"></span>
+  <!-- ════ SEND ════ -->
+  <div id="screen-send" class="screen">
+    <div style="display:flex;align-items:center;gap:12px;margin-top:16px;margin-bottom:24px;">
+      <button onclick="goHome()" class="btn-ghost" style="padding:8px 14px;">← Back</button>
+      <div>
+        <div style="font-size:17px;font-weight:700;">Send Files</div>
+        <div style="font-size:11px;color:var(--text-muted);">Share a 6-char code</div>
+      </div>
+      <div style="flex:1;"></div>
+      <div style="display:flex;gap:6px;">
+        <div class="step-dot active" id="sdot-1"></div>
+        <div class="step-dot" id="sdot-2"></div>
+        <div class="step-dot" id="sdot-3"></div>
+      </div>
     </div>
 
+    <!-- SEND STEP 1: file select -->
+    <div id="s-step-1">
+      <!-- Network Config -->
+      <div class="glass-card" style="padding:0;overflow:hidden;margin-bottom:16px;">
+        <button onclick="toggleConf('s')" style="width:100%;display:flex;align-items:center;justify-content:space-between;
+          padding:14px 16px;cursor:pointer;background:transparent;border:none;color:#fff;">
+          <span style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:500;color:rgba(255,255,255,0.65);">
+            📡 Network Config <span style="font-size:11px;color:var(--text-muted);">STUN / TURN</span>
+          </span>
+          <span id="chev-s" style="transition:transform 0.3s;font-size:12px;color:var(--text-muted);">▼</span>
+        </button>
+        <div class="config-content" id="conf-s">
+          <div style="padding:0 16px 16px;">
+            <div class="label" style="margin-bottom:8px;">Built-in STUN Servers</div>
+            <div class="mono glass" style="font-size:10px;line-height:1.8;color:rgba(123,92,246,0.8);padding:12px;border-radius:10px;margin-bottom:16px;">
+              stun.l.google.com:19302<br/>stun1.l.google.com:19302<br/>stun.cloudflare.com:3478<br/>stun.mozilla.com<br/>stun.stunprotocol.org:3478<br/>stun.nextcloud.com:443
+            </div>
+            <div class="label" style="margin-bottom:8px;">TURN Relay (for firewalls)</div>
+            <input type="url" id="turn-url-s" placeholder="turn:openrelay.metered.ca:80" style="width:100%;padding:10px 12px;margin-bottom:8px;"/>
+            <div style="display:flex;gap:8px;">
+              <input type="text" id="turn-user-s" placeholder="username" style="flex:1;padding:10px 12px;"/>
+              <input type="text" id="turn-pass-s" placeholder="password" style="flex:1;padding:10px 12px;"/>
+            </div>
+            <p class="mono" style="font-size:10px;color:var(--text-muted);margin-top:8px;">Free: openrelay.metered.ca · relay.expressturn.com:3478</p>
+          </div>
+        </div>
+      </div>
 
-    <!-- ══════════════════════════════════════════════════════════════
-     SCRIPTS — all at the bottom of body so the DOM is ready.
-     Load order: Tailwind (CSS) → QRCode → JSZip → App script
-══════════════════════════════════════════════════════════════ -->
+      <!-- Drop Zone -->
+      <div id="drop-zone" class="drop-zone glass-card"
+        style="padding:40px;text-align:center;border-radius:20px;margin-bottom:16px;"
+        onclick="pickFiles()" ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event)">
+        <div class="float-icon" style="display:inline-block;margin-bottom:16px;font-size:40px;">📄</div>
+        <div style="font-size:16px;font-weight:600;margin-bottom:6px;">Drop files or click to browse</div>
+        <div style="font-size:13px;color:var(--text-muted);">Any type · Any size · Multi-file auto-zipped</div>
+        <input type="file" id="file-fallback" multiple style="display:none;" onchange="onFileInput(this.files)"/>
+      </div>
 
-    <!-- Tailwind (CDN warning is advisory only — fine for a self-contained tool) -->
-    <script src="https://cdn.tailwindcss.com"></script>
+      <!-- File list -->
+      <div id="files-panel" style="display:none;" class="glass-card">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 16px 0;">
+          <div style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;">
+            📦 <span id="files-count-lbl">0 files</span>
+          </div>
+          <span class="mono" id="files-size-lbl" style="font-size:11px;color:var(--text-muted);"></span>
+        </div>
+        <div id="files-list" style="padding:12px 16px 16px;max-height:140px;overflow-y:auto;"></div>
+      </div>
 
-    <!-- QRCode.js — pinned version, cdnjs is reliable and not blocked by tracking prevention -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" crossorigin="anonymous"
-        onerror="console.error('[GhostShare:BOOT] QRCode CDN failed to load!')"></script>
+      <div style="margin-top:16px;">
+        <button id="btn-start" onclick="startSenderSession()" disabled class="btn-primary"
+          style="width:100%;padding:16px 24px;font-size:15px;display:flex;align-items:center;justify-content:center;gap:10px;">
+          🚀 Generate Code &amp; Start Session
+        </button>
+      </div>
+    </div>
 
-    <!-- JSZip — pinned on cdnjs -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js" crossorigin="anonymous"
-        onerror="console.error('[GhostShare:BOOT] JSZip CDN failed to load!')"></script>
+    <!-- SEND STEP 2: show code, wait for receiver -->
+    <div id="s-step-2" style="display:none;">
+      <div class="glass-card" style="padding:28px;text-align:center;margin-bottom:16px;">
+        <div class="label" style="margin-bottom:16px;">📶 Share this code with the receiver</div>
+        <div class="code-boxes" id="code-display"></div>
+        <div style="display:flex;align-items:center;justify-content:center;gap:10px;margin-top:16px;">
+          <button onclick="copyCode()" class="btn-ghost" style="padding:8px 16px;font-size:12px;">📋 Copy Code</button>
+          <span class="mono" style="font-size:11px;color:var(--text-muted);">Expires when you leave</span>
+        </div>
+      </div>
 
-    <!--
-  Lucide Icons — using jsDelivr with a pinned version.
-  WHY jsDelivr INSTEAD OF unpkg?
-    - unpkg can be slow / blocked by some corporate/school proxies.
-    - jsDelivr has better global CDN coverage and is rarely blocked.
-  WHY A PINNED VERSION (0.344.0)?
-    - "@latest" resolves at request time → different versions on different refreshes.
-    - Pinned version is cached reliably by CDN edge nodes.
-  NOTE: We don't rely on lucide in this version. All icons use emoji as fallbacks,
-        so the app is 100% functional even if Lucide fails to load.
--->
-    <script src="https://cdn.jsdelivr.net/npm/lucide@0.344.0/dist/umd/lucide.min.js" crossorigin="anonymous"
-        onerror="console.warn('[GhostShare:BOOT] Lucide CDN failed — emoji fallbacks active, app still works fine')"></script>
+      <div class="glass-card" style="padding:20px;margin-bottom:16px;text-align:center;">
+        <div class="label" style="margin-bottom:12px;">🔲 QR Code (scan on mobile)</div>
+        <div id="qr-sender" style="display:flex;justify-content:center;"></div>
+        <p style="font-size:10px;color:var(--text-muted);margin-top:10px;">Receiver scans → opens app → enters code automatically</p>
+      </div>
 
-    <!-- ══════════════════════════════════════════════════════════
-     MAIN APPLICATION SCRIPT
-══════════════════════════════════════════════════════════════ -->
-    <script>
-        'use strict';
+      <div class="glass-card" style="padding:32px;text-align:center;">
+        <div class="pulse-wrap" style="width:64px;height:64px;margin:0 auto 20px;position:relative;">
+          <div class="pulse-ring-el" style="background:rgba(123,92,246,0.15);inset:0;position:absolute;border-radius:50%;"></div>
+          <div class="pulse-core" style="width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+            background:rgba(123,92,246,0.2);border:1px solid rgba(123,92,246,0.3);position:relative;z-index:1;font-size:18px;">📶</div>
+        </div>
+        <div style="font-size:15px;font-weight:600;margin-bottom:6px;">Waiting for receiver...</div>
+        <div style="font-size:13px;color:var(--text-muted);">They enter the code → connection establishes automatically</div>
+      </div>
+    </div>
 
-        // ══════════════════════════════════════════════════════════════
-        //  DEBUG LOGGER
-        //  Every function call, state change, and error goes through here.
-        //  Format: [GhostShare:SECTION] +T.TTTs message [data]
-        // ══════════════════════════════════════════════════════════════
-        const _t0 = performance.now();
-        function dbg(sec, msg, data) {
-            const ts = ((performance.now() - _t0) / 1000).toFixed(3);
-            data !== undefined
-                ? console.log(`[GhostShare:${sec}] +${ts}s`, msg, data)
-                : console.log(`[GhostShare:${sec}] +${ts}s`, msg);
-        }
-        function dbgWarn(sec, msg, data) {
-            const ts = ((performance.now() - _t0) / 1000).toFixed(3);
-            console.warn(`[GhostShare:${sec}] ⚠ +${ts}s`, msg, data !== undefined ? data : '');
-        }
-        function dbgError(sec, msg, err) {
-            const ts = ((performance.now() - _t0) / 1000).toFixed(3);
-            console.error(`[GhostShare:${sec}] ✖ +${ts}s`, msg, err !== undefined ? err : '');
-        }
+    <!-- SEND STEP 3: transfer progress -->
+    <div id="s-step-3" style="display:none;">
+      <div id="sender-progress-area"></div>
+    </div>
+  </div><!-- /screen-send -->
 
-        dbg('BOOT', '══════════ Ghost Share initializing ══════════');
-        dbg('BOOT', 'Script eval started at document.readyState =', document.readyState);
-        dbg('BOOT', 'User agent:', navigator.userAgent);
-        dbg('BOOT', 'Window location origin:', window.location.origin);
+  <!-- ════ RECEIVE ════ -->
+  <div id="screen-receive" class="screen">
+    <div style="display:flex;align-items:center;gap:12px;margin-top:16px;margin-bottom:24px;">
+      <button onclick="goHome()" class="btn-ghost" style="padding:8px 14px;">← Back</button>
+      <div>
+        <div style="font-size:17px;font-weight:700;">Receive Files</div>
+        <div style="font-size:11px;color:var(--text-muted);">Enter the sender's 6-char code</div>
+      </div>
+      <div style="flex:1;"></div>
+      <div style="display:flex;gap:6px;">
+        <div class="step-dot active" id="rdot-1"></div>
+        <div class="step-dot" id="rdot-2"></div>
+      </div>
+    </div>
 
+    <!-- RECEIVE STEP 1: code input -->
+    <div id="r-step-1">
+      <!-- Network Config -->
+      <div class="glass-card" style="padding:0;overflow:hidden;margin-bottom:16px;">
+        <button onclick="toggleConf('r')" style="width:100%;display:flex;align-items:center;justify-content:space-between;
+          padding:14px 16px;cursor:pointer;background:transparent;border:none;color:#fff;">
+          <span style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:500;color:rgba(255,255,255,0.65);">
+            📡 Network Config <span style="font-size:11px;color:var(--text-muted);">optional TURN relay</span>
+          </span>
+          <span id="chev-r" style="transition:transform 0.3s;font-size:12px;color:var(--text-muted);">▼</span>
+        </button>
+        <div class="config-content" id="conf-r">
+          <div style="padding:0 16px 16px;">
+            <div class="label" style="margin-bottom:8px;">TURN Relay</div>
+            <input type="url" id="turn-url-r" placeholder="turn:openrelay.metered.ca:80" style="width:100%;padding:10px 12px;margin-bottom:8px;"/>
+            <div style="display:flex;gap:8px;">
+              <input type="text" id="turn-user-r" placeholder="username" style="flex:1;padding:10px 12px;"/>
+              <input type="text" id="turn-pass-r" placeholder="password" style="flex:1;padding:10px 12px;"/>
+            </div>
+          </div>
+        </div>
+      </div>
 
-        // ══════════════════════════════════════════════════════════════
-        //  DEPENDENCY CHECKER
-        // ══════════════════════════════════════════════════════════════
-        function checkDependencies() {
-            dbg('DEPS', '--- Checking all dependencies ---');
+      <div class="glass-card" style="padding:24px;margin-bottom:16px;">
+        <div class="label" style="margin-bottom:16px;text-align:center;">Enter the sender's code</div>
+        <input type="text" id="code-input" class="code-input-field" maxlength="6"
+          placeholder="● ● ● ● ● ●"
+          oninput="this.value=this.value.toUpperCase().replace(/[^A-Z0-9]/g,'');checkCodeReady()"
+          onkeydown="if(event.key==='Enter')connectToSender()"/>
+        <p style="font-size:12px;color:var(--text-muted);text-align:center;margin-top:12px;">6 letters and numbers, no spaces</p>
+      </div>
 
-            const deps = {
-                'RTCPeerConnection (WebRTC)': typeof RTCPeerConnection !== 'undefined',
-                'QRCode.js': typeof QRCode !== 'undefined',
-                'JSZip': typeof JSZip !== 'undefined',
-                'Lucide Icons': typeof lucide !== 'undefined',
-                'File System Access API': typeof showOpenFilePicker !== 'undefined',
-                'Clipboard API': !!navigator.clipboard,
-                'navigator.mediaDevices': !!navigator.mediaDevices,
-            };
+      <button id="btn-connect" onclick="connectToSender()" disabled class="btn-primary"
+        style="width:100%;padding:16px 24px;font-size:15px;display:flex;align-items:center;justify-content:center;gap:10px;">
+        🔗 Connect &amp; Receive
+      </button>
+    </div>
 
-            for (const [name, ok] of Object.entries(deps)) {
-                if (ok) dbg('DEPS', `  ✔ ${name}`);
-                else dbgWarn('DEPS', `  ✘ ${name} — NOT available`);
-            }
+    <!-- RECEIVE STEP 2: transfer progress -->
+    <div id="r-step-2" style="display:none;">
+      <div id="recv-progress-area"></div>
+    </div>
+  </div><!-- /screen-receive -->
 
-            // Critical deps check
-            if (!deps['RTCPeerConnection (WebRTC)']) {
-                dbgError('DEPS', 'CRITICAL: WebRTC not supported in this browser — app cannot function');
-                showToast('WebRTC not supported in this browser', '❌', 'red');
-            }
-            if (!deps['JSZip']) {
-                dbgWarn('DEPS', 'JSZip missing — multi-file zipping will fail. Single-file transfer still works.');
-            }
-            if (!deps['QRCode.js']) {
-                dbgWarn('DEPS', 'QRCode missing — QR generation will be skipped. Copy-paste still works.');
-            }
+</main>
 
-            // Try to call lucide.createIcons() if library loaded
-            if (typeof lucide !== 'undefined') {
-                dbg('DEPS', 'Lucide loaded — version:', lucide.VERSION || 'unknown');
-                try {
-                    lucide.createIcons();
-                    dbg('DEPS', 'lucide.createIcons() succeeded');
-                } catch (e) {
-                    dbgWarn('DEPS', 'lucide.createIcons() threw (non-critical):', e.message);
-                }
-            } else {
-                dbgWarn('DEPS', 'Lucide not loaded — all icons use emoji fallbacks (app fully functional)');
-            }
+<!-- TOAST -->
+<div id="toast" style="display:none;position:fixed;z-index:9999;bottom:24px;left:50%;transform:translateX(-50%);
+  background:rgba(10,12,28,0.9);border:1px solid rgba(255,255,255,0.1);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  padding:12px 18px;border-radius:14px;
+  align-items:center;gap:10px;min-width:220px;max-width:400px;white-space:nowrap;">
+  <span id="toast-icon-el" style="font-size:16px;"></span>
+  <span id="toast-msg" style="font-size:13px;font-weight:500;"></span>
+</div>
 
-            dbg('DEPS', '--- Dependency check complete ---');
-        }
+<!-- ══════ SCRIPTS ══════ -->
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" crossorigin="anonymous"
+  onerror="console.warn('[GS] QRCode CDN failed')"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js" crossorigin="anonymous"
+  onerror="console.warn('[GS] JSZip CDN failed')"></script>
+<script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js" crossorigin="anonymous"
+  onerror="console.warn('[GS] PeerJS CDN failed')"></script>
 
-        // ══════════════════════════════════════════════════════════════
-        //  CONSTANTS
-        // ══════════════════════════════════════════════════════════════
+<script>
+'use strict';
 
-        /**
-         * CHUNK_SIZE: Each file is split into 64 KB pieces before sending.
-         * Why 64 KB?
-         *  - Keeps per-chunk RAM usage tiny (~64KB in memory at any moment)
-         *  - Below the WebRTC DataChannel maximum message size on most browsers
-         *  - Industry standard for browser P2P file transfer
-         */
-        const CHUNK_SIZE = 64 * 1024;   // 64 KB
+// ══════════════════════════════════════════════════════════════
+//  DEBUG LOGGER
+// ══════════════════════════════════════════════════════════════
+const _t0 = performance.now();
+function dbg(sec,msg,data){
+  const ts=((performance.now()-_t0)/1000).toFixed(3);
+  data!==undefined
+    ?console.log(`[GS:${sec}] +${ts}s`,msg,data)
+    :console.log(`[GS:${sec}] +${ts}s`,msg);
+}
+function dbgWarn(sec,msg,data){const ts=((performance.now()-_t0)/1000).toFixed(3);console.warn(`[GS:${sec}] ⚠ +${ts}s`,msg,data||'');}
+function dbgErr(sec,msg,e){const ts=((performance.now()-_t0)/1000).toFixed(3);console.error(`[GS:${sec}] ✖ +${ts}s`,msg,e||'');}
 
-        /**
-         * BACKPRESSURE thresholds:
-         *  HIGH_WATER_MARK = stop sending when send buffer exceeds 1 MB
-         *  LOW_WATER_MARK  = resume when buffer drains back to 256 KB
-         *
-         *  Without backpressure: buffer grows unbounded → browser tab crash on large files.
-         *  With backpressure:    saturate the network perfectly, zero buffer overflow.
-         */
-        const HIGH_WATER_MARK = 1 * 1024 * 1024;   // 1 MB
-        const LOW_WATER_MARK = 256 * 1024;         // 256 KB
+dbg('BOOT','══════════ GhostShare v3 initializing ══════════');
 
-        /**
-         * STUN_SERVERS: Help each peer discover its public-facing IP and port.
-         * 6 servers from 4 different providers for maximum reliability.
-         * If ALL STUN fails (symmetric NAT, very strict firewall), the user's
-         * TURN relay takes over — TURN relays traffic through a server, guaranteeing
-         * connectivity at the cost of some latency.
-         */
-        const STUN_SERVERS = [
-            { urls: 'stun:stun.l.google.com:19302' },
-            { urls: 'stun:stun1.l.google.com:19302' },
-            { urls: 'stun:stun.cloudflare.com:3478' },
-            { urls: 'stun:stun.mozilla.com' },
-            { urls: 'stun:stun.stunprotocol.org:3478' },
-            { urls: 'stun:stun.nextcloud.com:443' },
-        ];
+// ══════════════════════════════════════════════════════════════
+//  CONSTANTS
+// ══════════════════════════════════════════════════════════════
+/**
+ * CHUNK_SIZE: Files are split into 64KB pieces.
+ * - Below WebRTC DataChannel browser limits (~64–256KB depending on browser)
+ * - Small enough for low RAM usage; reading one chunk at a time = O(1) memory
+ */
+const CHUNK_SIZE = 64 * 1024; // 64 KB
 
-        dbg('CONFIG', 'CHUNK_SIZE =', `${CHUNK_SIZE / 1024} KB`);
-        dbg('CONFIG', 'HIGH_WATER_MARK =', `${HIGH_WATER_MARK / 1024} KB`);
-        dbg('CONFIG', 'LOW_WATER_MARK =', `${LOW_WATER_MARK / 1024} KB`);
-        dbg('CONFIG', 'STUN servers =', STUN_SERVERS.length);
+/**
+ * BACKPRESSURE thresholds:
+ *  HIGH_WATER_MARK: pause sending when DC buffer exceeds 8MB
+ *  LOW_WATER_MARK:  resume when buffer drains to 1MB
+ *
+ * Larger window = more pipeline fill = higher throughput on fast links.
+ * If browser crashes, reduce HIGH_WATER_MARK.
+ */
+const HIGH_WATER = 8 * 1024 * 1024;   // 8 MB — aggressive for maximum speed
+const LOW_WATER  = 1 * 1024 * 1024;   // 1 MB
 
+/**
+ * STUN_SERVERS: Help discover public IP/ports via ICE.
+ * 6 servers from 4 providers for maximum reliability.
+ */
+const STUN_SERVERS = [
+  { urls:'stun:stun.l.google.com:19302' },
+  { urls:'stun:stun1.l.google.com:19302' },
+  { urls:'stun:stun.cloudflare.com:3478' },
+  { urls:'stun:stun.mozilla.com' },
+  { urls:'stun:stun.stunprotocol.org:3478' },
+  { urls:'stun:stun.nextcloud.com:443' },
+];
 
-        // ══════════════════════════════════════════════════════════════
-        //  GLOBAL STATE
-        // ══════════════════════════════════════════════════════════════
-        let pc = null;   // RTCPeerConnection
-        let dc = null;   // RTCDataChannel
-        let isSender = false;
-        let selectedFiles = [];     // File[] chosen by sender
-        let totalBytes = 0;
-        let sentBytes = 0;
-        let recvBytes = 0;
-        let xferStart = 0;
-        let lastPerfTime = 0;
-        let lastPerfBytes = 0;
-        let speedWindow = [];     // rolling speed samples (bytes/s)
-        let speedHistory = [];     // for bar chart
-        let inMeta = null;   // metadata from sender: {name,size,mime,chunks}
-        let inChunks = [];     // ArrayBuffer[] accumulating received binary data
-        let elapsedTimer = null;
+dbg('CONFIG',`CHUNK_SIZE=${CHUNK_SIZE/1024}KB HIGH_WATER=${HIGH_WATER/1024/1024}MB LOW_WATER=${LOW_WATER/1024}KB`);
 
-        dbg('STATE', 'All global variables initialized to defaults');
+// ══════════════════════════════════════════════════════════════
+//  GLOBAL STATE
+// ══════════════════════════════════════════════════════════════
+let peer        = null;   // PeerJS Peer
+let conn        = null;   // PeerJS DataConnection
+let isSender    = false;
 
+// File state
+let selectedFiles = [];
+let transferBlob  = null; // final blob to send (single or zip)
+let totalBytes    = 0;
+let sentBytes     = 0;
+let recvBytes     = 0;
+let xferStart     = 0;
 
-        // ══════════════════════════════════════════════════════════════
-        //  DOM HELPERS
-        // ══════════════════════════════════════════════════════════════
-        function $(id) {
-            const el = document.getElementById(id);
-            if (!el) dbgWarn('DOM', `getElementById("${id}") returned null — element missing?`);
-            return el;
-        }
-        function show(id) { const e = $(id); if (e) { e.style.display = ''; dbg('DOM', `show("${id}")`); } }
-        function hide(id) { const e = $(id); if (e) { e.style.display = 'none'; dbg('DOM', `hide("${id}")`); } }
-        function showFlex(id) { const e = $(id); if (e) { e.style.display = 'flex'; dbg('DOM', `showFlex("${id}")`); } }
+// Speed measurement
+let lastPerfTime  = 0;
+let lastPerfBytes = 0;
+let speedWindow   = [];  // rolling samples (bytes/s)
+let speedHistory  = [];  // for bar chart
 
+// Receive state
+let inMeta        = null;   // {name,size,mime,chunks}
+let inChunks      = [];     // ArrayBuffer[] accumulated
 
-        // ══════════════════════════════════════════════════════════════
-        //  NAVIGATION
-        // ══════════════════════════════════════════════════════════════
-        function showScreen(id) {
-            dbg('NAV', `showScreen("${id}")`);
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            const t = $(id);
-            if (t) { t.classList.add('active'); dbg('NAV', `Screen "${id}" is now active`); }
-            else dbgError('NAV', `Screen "${id}" not found in DOM!`);
-        }
+// Pause state
+let isPaused      = false;
+let pauseResolve  = null;
 
-        function goHome() {
-            dbg('NAV', 'goHome() called');
-            cleanup();
-            showScreen('screen-landing');
-            hide('conn-badge');
-            dbg('NAV', 'Back on landing screen');
-        }
+// Hash state (Merkle)
+let senderChunkHashes = [];
+let recvChunkHashes   = [];
 
-        function initSend() {
-            dbg('NAV', 'initSend() — user selected SEND mode');
-            isSender = true;
-            showScreen('screen-send');
-            resetSendUI();
-        }
+// Timers
+let elapsedTimer  = null;
 
-        function initReceive() {
-            dbg('NAV', 'initReceive() — user selected RECEIVE mode');
-            isSender = false;
-            showScreen('screen-receive');
-            resetReceiveUI();
-        }
+// PeerJS peer code
+let myCode        = null;
 
-        function resetSendUI() {
-            dbg('UI', 'resetSendUI()');
-            show('s-step-1'); hide('s-step-2'); hide('s-step-3');
-            setStepDots(['sdot-1', 'sdot-2', 'sdot-3'], 0);
-            const btn = $('btn-offer');
-            if (btn) { btn.disabled = true; dbg('UI', 'btn-offer disabled (no files yet)'); }
-            hide('files-panel');
-            const fl = $('files-list');
-            if (fl) fl.innerHTML = '';
-            selectedFiles = [];
-        }
+dbg('STATE','All state variables initialized');
 
-        function resetReceiveUI() {
-            dbg('UI', 'resetReceiveUI()');
-            show('r-step-1'); hide('r-step-2');
-            setStepDots(['rdot-1', 'rdot-2'], 0);
-        }
+// ══════════════════════════════════════════════════════════════
+//  UTILITIES
+// ══════════════════════════════════════════════════════════════
 
-        function setStepDots(ids, activeIdx) {
-            dbg('UI', `setStepDots([${ids}], active=${activeIdx})`);
-            ids.forEach((id, i) => {
-                const el = $(id);
-                if (!el) return;
-                el.classList.toggle('active', i === activeIdx);
-            });
-        }
+/**
+ * Generate a 6-character code using an alphabet that avoids
+ * ambiguous chars (0/O, 1/I) for easy verbal/visual sharing.
+ */
+function genCode(){
+  const chars='ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // 32 chars → 32^6 ≈ 1B combos
+  const bytes=new Uint8Array(6);
+  crypto.getRandomValues(bytes);
+  return Array.from(bytes).map(b=>chars[b%chars.length]).join('');
+}
 
+function bufToHex(buf){
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
 
-        // ══════════════════════════════════════════════════════════════
-        //  NETWORK CONFIG PANEL
-        // ══════════════════════════════════════════════════════════════
-        function toggleConf(side) {
-            dbg('UI', `toggleConf("${side}")`);
-            const panel = $(`conf-${side}`);
-            const chev = $(`chev-${side}`);
-            if (!panel) return;
-            const open = panel.classList.toggle('open');
-            if (chev) chev.style.transform = open ? 'rotate(180deg)' : '';
-            dbg('UI', `Config panel "${side}" is now ${open ? 'OPEN' : 'CLOSED'}`);
-        }
+/**
+ * MERKLE HASH:
+ * Compute a file fingerprint by:
+ *   1. Hashing each 64KB chunk individually (SHA-256)
+ *   2. Concatenating all chunk hashes
+ *   3. SHA-256 of that concatenation = the file's Merkle root
+ *
+ * WHY NOT SHA-256 OF THE WHOLE FILE?
+ *   For large files (>1GB), loading the entire file into RAM for
+ *   crypto.subtle.digest() would crash the tab. Merkle hashing
+ *   uses O(1) memory: only one chunk is in RAM at a time.
+ *
+ * WHY IS THIS STILL SECURE?
+ *   If any byte changes in any chunk, that chunk's hash changes,
+ *   which changes the final Merkle root. A collision is as hard
+ *   as breaking SHA-256.
+ */
+async function computeMerkleHash(chunkHashList){
+  if(!chunkHashList.length) return 'empty';
+  const combined=new Uint8Array(chunkHashList.length*32);
+  chunkHashList.forEach((h,i)=>combined.set(h,i*32));
+  const final=await crypto.subtle.digest('SHA-256',combined);
+  return bufToHex(final);
+}
 
-        function buildIceConfig(side) {
-            dbg('ICE', `buildIceConfig("${side}")`);
-            const iceServers = [...STUN_SERVERS];
+function fmtBytes(b){
+  if(!b||b===0) return '0 B';
+  const u=['B','KB','MB','GB','TB'];
+  const i=Math.floor(Math.log(b)/Math.log(1024));
+  return `${(b/Math.pow(1024,i)).toFixed(i>0?1:0)} ${u[i]}`;
+}
 
-            const url = ($(`turn-url-${side}`)?.value || '').trim();
-            const user = ($(`turn-user-${side}`)?.value || '').trim();
-            const pass = ($(`turn-pass-${side}`)?.value || '').trim();
+function escHtml(s){
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
 
-            if (url) {
-                dbg('ICE', `User-supplied TURN server: ${url}`, { user: user || '(none)', pass: pass ? '***' : '(none)' });
-                iceServers.push({ urls: url, username: user || undefined, credential: pass || undefined });
-            } else {
-                dbg('ICE', 'No TURN server provided — STUN-only mode');
-            }
+function fileEmoji(name){
+  const ext=(name.split('.').pop()||'').toLowerCase();
+  return ({pdf:'📄',doc:'📝',docx:'📝',txt:'📝',md:'📝',
+           jpg:'🖼',jpeg:'🖼',png:'🖼',gif:'🖼',webp:'🖼',svg:'🖼',
+           mp4:'🎬',mov:'🎬',mkv:'🎬',avi:'🎬',webm:'🎬',
+           mp3:'🎵',wav:'🎵',flac:'🎵',aac:'🎵',
+           zip:'📦',tar:'📦',gz:'📦',rar:'📦','7z':'📦',
+           js:'💻',ts:'💻',py:'💻',html:'💻',css:'💻',json:'💻',
+           xlsx:'📊',csv:'📊',exe:'⚙',dmg:'⚙'}[ext]||'📄');
+}
 
-            const cfg = { iceServers, iceCandidatePoolSize: 10 };
-            dbg('ICE', `RTCConfiguration assembled with ${iceServers.length} ICE servers`);
-            return cfg;
-        }
+// ══════════════════════════════════════════════════════════════
+//  DOM HELPERS
+// ══════════════════════════════════════════════════════════════
+function $(id){
+  const el=document.getElementById(id);
+  if(!el) dbgWarn('DOM',`getElementById("${id}") is null`);
+  return el;
+}
+function show(id){const e=$(id);if(e){e.style.display='';}}
+function hide(id){const e=$(id);if(e){e.style.display='none';}}
+function showFlex(id){const e=$(id);if(e){e.style.display='flex';}}
 
+// ══════════════════════════════════════════════════════════════
+//  NAVIGATION
+// ══════════════════════════════════════════════════════════════
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  const t=$(id);
+  if(t) t.classList.add('active');
+}
+function goHome(){
+  dbg('NAV','goHome()');
+  cleanup();
+  showScreen('screen-landing');
+  hide('conn-badge');
+}
+function initSend(){
+  dbg('NAV','initSend()');
+  isSender=true;
+  showScreen('screen-send');
+  resetSendUI();
+}
+function initReceive(){
+  dbg('NAV','initReceive()');
+  isSender=false;
+  showScreen('screen-receive');
+  resetReceiveUI();
+}
+function resetSendUI(){
+  show('s-step-1');hide('s-step-2');hide('s-step-3');
+  setStepDots(['sdot-1','sdot-2','sdot-3'],0);
+  const btn=$('btn-start');if(btn) btn.disabled=true;
+  hide('files-panel');
+  const fl=$('files-list');if(fl) fl.innerHTML='';
+  selectedFiles=[];
+}
+function resetReceiveUI(){
+  show('r-step-1');hide('r-step-2');
+  setStepDots(['rdot-1','rdot-2'],0);
+  const inp=$('code-input');if(inp){inp.value='';checkCodeReady();}
+}
+function setStepDots(ids,activeIdx){
+  ids.forEach((id,i)=>{
+    const el=$(id);if(!el) return;
+    el.classList.toggle('active',i===activeIdx);
+  });
+}
+function showSendStep(n){
+  hide('s-step-1');hide('s-step-2');hide('s-step-3');
+  show(`s-step-${n}`);
+  setStepDots(['sdot-1','sdot-2','sdot-3'],n-1);
+}
+function showReceiveStep(n){
+  hide('r-step-1');hide('r-step-2');
+  show(`r-step-${n}`);
+  setStepDots(['rdot-1','rdot-2'],n-1);
+}
 
-        // ══════════════════════════════════════════════════════════════
-        //  FILE SELECTION
-        // ══════════════════════════════════════════════════════════════
-        async function pickFiles() {
-            dbg('FILES', 'pickFiles() called');
-            const fsaAvailable = 'showOpenFilePicker' in window;
-            dbg('FILES', `File System Access API available: ${fsaAvailable}`);
+// ══════════════════════════════════════════════════════════════
+//  NETWORK CONFIG
+// ══════════════════════════════════════════════════════════════
+function toggleConf(side){
+  const panel=$(`conf-${side}`);
+  const chev=$(`chev-${side}`);
+  if(!panel) return;
+  const open=panel.classList.toggle('open');
+  if(chev) chev.style.transform=open?'rotate(180deg)':'';
+}
 
-            if (fsaAvailable) {
-                dbg('FILES', 'Using showOpenFilePicker() — streams files without loading them into RAM');
-                try {
-                    const handles = await window.showOpenFilePicker({ multiple: true });
-                    dbg('FILES', `User selected ${handles.length} file handle(s)`);
-                    selectedFiles = await Promise.all(handles.map(h => h.getFile()));
-                    dbg('FILES', 'Resolved handles → Files:', selectedFiles.map(f => `${f.name}(${fmtBytes(f.size)})`));
-                    renderFileList(selectedFiles);
-                } catch (e) {
-                    if (e.name === 'AbortError') {
-                        dbg('FILES', 'User pressed Cancel in file picker (AbortError) — no action');
-                    } else {
-                        dbgWarn('FILES', `showOpenFilePicker threw unexpected error: ${e.message} — falling back to <input>`);
-                        $('file-fallback').click();
-                    }
-                }
-            } else {
-                dbg('FILES', 'FSA not available — triggering hidden <input type="file">');
-                $('file-fallback').click();
-            }
-        }
+function buildIceConfig(side){
+  const iceServers=[...STUN_SERVERS];
+  const url=($(`turn-url-${side}`)?.value||'').trim();
+  const user=($(`turn-user-${side}`)?.value||'').trim();
+  const pass=($(`turn-pass-${side}`)?.value||'').trim();
+  if(url){
+    dbg('ICE',`User TURN: ${url}`);
+    iceServers.push({urls:url,username:user||undefined,credential:pass||undefined});
+  }
+  return {iceServers,iceCandidatePoolSize:10};
+}
 
-        function onFileInput(fileList) {
-            dbg('FILES', `onFileInput() — <input> returned ${fileList.length} file(s)`);
-            selectedFiles = Array.from(fileList);
-            dbg('FILES', 'Files:', selectedFiles.map(f => `${f.name}(${fmtBytes(f.size)})`));
-            renderFileList(selectedFiles);
-        }
-
-        function onDragOver(e) {
-            e.preventDefault();
-            dbg('FILES', 'onDragOver — drag detected over drop zone');
-            $('drop-zone')?.classList.add('drag-active');
-        }
-
-        function onDragLeave(e) {
-            dbg('FILES', 'onDragLeave — drag left drop zone');
-            $('drop-zone')?.classList.remove('drag-active');
-        }
-
-        function onDrop(e) {
-            e.preventDefault();
-            dbg('FILES', 'onDrop fired!');
-            $('drop-zone')?.classList.remove('drag-active');
-            selectedFiles = Array.from(e.dataTransfer.files);
-            dbg('FILES', `Dropped ${selectedFiles.length} file(s):`, selectedFiles.map(f => f.name));
-            if (selectedFiles.length) renderFileList(selectedFiles);
-            else dbgWarn('FILES', 'Drop event had no files');
-        }
-
-        function renderFileList(files) {
-            dbg('UI', `renderFileList() — ${files.length} file(s)`);
-            if (!files.length) { dbgWarn('UI', 'renderFileList: empty array'); return; }
-
-            const total = files.reduce((s, f) => s + f.size, 0);
-            dbg('UI', `Total size: ${fmtBytes(total)}`);
-
-            const countEl = $('files-count-lbl');
-            const sizeEl = $('files-size-lbl');
-            const listEl = $('files-list');
-            const panel = $('files-panel');
-            const btn = $('btn-offer');
-
-            if (countEl) countEl.textContent = `${files.length} file${files.length > 1 ? 's' : ''}`;
-            if (sizeEl) sizeEl.textContent = fmtBytes(total);
-            if (listEl) listEl.innerHTML = files.map(f => `
+// ══════════════════════════════════════════════════════════════
+//  FILE SELECTION
+// ══════════════════════════════════════════════════════════════
+async function pickFiles(){
+  dbg('FILES','pickFiles()');
+  if('showOpenFilePicker' in window){
+    try{
+      const handles=await window.showOpenFilePicker({multiple:true});
+      selectedFiles=await Promise.all(handles.map(h=>h.getFile()));
+      dbg('FILES',`FSA: ${selectedFiles.length} files`);
+      renderFileList(selectedFiles);
+    }catch(e){
+      if(e.name!=='AbortError'){
+        dbgWarn('FILES','FSA threw, fallback:',e.message);
+        $('file-fallback').click();
+      }
+    }
+  }else{
+    $('file-fallback').click();
+  }
+}
+function onFileInput(fileList){
+  selectedFiles=Array.from(fileList);
+  dbg('FILES',`<input>: ${selectedFiles.length} files`);
+  renderFileList(selectedFiles);
+}
+function onDragOver(e){e.preventDefault();$('drop-zone')?.classList.add('drag-active');}
+function onDragLeave(e){$('drop-zone')?.classList.remove('drag-active');}
+function onDrop(e){
+  e.preventDefault();
+  $('drop-zone')?.classList.remove('drag-active');
+  selectedFiles=Array.from(e.dataTransfer.files);
+  if(selectedFiles.length) renderFileList(selectedFiles);
+}
+function renderFileList(files){
+  if(!files.length) return;
+  const total=files.reduce((s,f)=>s+f.size,0);
+  const cl=$('files-count-lbl'),sl=$('files-size-lbl'),ll=$('files-list'),pl=$('files-panel'),btn=$('btn-start');
+  if(cl) cl.textContent=`${files.length} file${files.length>1?'s':''}`;
+  if(sl) sl.textContent=fmtBytes(total);
+  if(ll) ll.innerHTML=files.map(f=>`
     <div style="display:flex;align-items:center;gap:8px;font-size:12px;padding:3px 0;">
       <span>${fileEmoji(f.name)}</span>
       <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:rgba(255,255,255,0.65);">${escHtml(f.name)}</span>
       <span class="mono" style="color:var(--text-muted);">${fmtBytes(f.size)}</span>
     </div>`).join('');
-
-            if (panel) { panel.style.display = 'block'; dbg('UI', 'files-panel shown'); }
-            if (btn) { btn.disabled = false; dbg('UI', 'btn-offer ENABLED — files selected'); }
-        }
-
-
-        // ══════════════════════════════════════════════════════════════
-        //  WEBRTC SIGNALING — FULL EXPLANATION
-        // ══════════════════════════════════════════════════════════════
-        /**
-         *  HOW COPY-PASTE SIGNALING WORKS:
-         *
-         *  Normal WebRTC uses a "signaling server" to relay SDP/ICE between peers.
-         *  We replace the server with the USER copying JSON text between two tabs/devices.
-         *
-         *  STEP 1 — SENDER generates an "Offer" SDP:
-         *    - Creates RTCPeerConnection + DataChannel
-         *    - Calls pc.createOffer() → browser generates SDP (Session Description Protocol)
-         *    - SDP describes: audio/video codecs, encryption keys, ICE candidates (network paths)
-         *    - Sets it as localDescription
-         *    - Waits for ICE gathering = 'complete' (all network paths found via STUN/TURN)
-         *    - Encodes final SDP as JSON → user copies it → sends to receiver
-         *
-         *  STEP 2 — RECEIVER processes Offer, generates "Answer":
-         *    - Creates its own RTCPeerConnection
-         *    - Sets sender's SDP as remoteDescription
-         *    - Calls pc.createAnswer() → generates its own SDP
-         *    - Waits for its own ICE gathering
-         *    - Encodes Answer as JSON → user copies it → sends back to sender
-         *
-         *  STEP 3 — SENDER processes Answer:
-         *    - Sets receiver's SDP as remoteDescription
-         *    - Both peers now have each other's network paths
-         *    - ICE negotiation begins automatically
-         *    - DataChannel opens → file transfer starts
-         */
-
-        // ── CREATE OFFER (Sender) ─────────────────────────────────
-        async function createOffer() {
-            dbg('SIGNAL', '══ createOffer() START ══');
-            if (!selectedFiles.length) {
-                dbgWarn('SIGNAL', 'createOffer: no files selected — aborting');
-                showToast('Select files first', '⚠️', 'red');
-                return;
-            }
-            dbg('SIGNAL', `Files ready: ${selectedFiles.length}`);
-            showToast('Generating offer...', '⏳', 'violet');
-
-            dbg('SIGNAL', 'Creating RTCPeerConnection (sender)');
-            const iceCfg = buildIceConfig('s');
-            pc = new RTCPeerConnection(iceCfg);
-            dbg('SIGNAL', 'pc created, signalingState:', pc.signalingState);
-
-            /**
-             * DataChannel must be created by the OFFERER (sender) before createOffer().
-             * ordered:true = TCP-like delivery — chunks arrive in order, no duplicates.
-             * This is CRITICAL for file integrity. Without ordering, chunks could arrive
-             * out of sequence and the file would be corrupted.
-             */
-            dbg('SIGNAL', 'Creating DataChannel "ghost" with ordered:true');
-            dc = pc.createDataChannel('ghost', { ordered: true });
-            dbg('SIGNAL', 'DataChannel created, readyState:', dc.readyState);
-            setupDataChannel(dc, 'sender');
-
-            monitorPeer(pc, 'sender');
-
-            dbg('SIGNAL', 'Calling pc.createOffer()...');
-            const offer = await pc.createOffer();
-            dbg('SIGNAL', `Offer SDP created — type:"${offer.type}" length:${offer.sdp.length} chars`);
-
-            dbg('SIGNAL', 'pc.setLocalDescription(offer)...');
-            await pc.setLocalDescription(offer);
-            dbg('SIGNAL', 'localDescription set, signalingState:', pc.signalingState);
-
-            dbg('SIGNAL', `Waiting for ICE gathering... current state: "${pc.iceGatheringState}"`);
-            await waitForIceDone(pc);
-            dbg('SIGNAL', '✅ ICE gathering complete');
-
-            const signal = JSON.stringify({ type: 'offer', sdp: pc.localDescription.sdp });
-            dbg('SIGNAL', `Offer JSON string length: ${signal.length} chars`);
-
-            const el = $('offer-out');
-            if (el) { el.value = signal; dbg('SIGNAL', 'Offer written to textarea'); }
-
-            genQR('qr-sender', signal, '#7B5CF6');
-
-            hide('s-step-1'); show('s-step-2');
-            setStepDots(['sdot-1', 'sdot-2', 'sdot-3'], 1);
-            showToast('Offer ready — share with receiver!', '✅', 'green');
-            dbg('SIGNAL', '══ createOffer() DONE ══');
-        }
-
-        // ── APPLY ANSWER (Sender) ─────────────────────────────────
-        async function applyAnswer() {
-            dbg('SIGNAL', '══ applyAnswer() START ══');
-            const raw = ($('answer-in')?.value || '').trim();
-            dbg('SIGNAL', `Answer input: ${raw.length} chars`);
-
-            if (!raw) {
-                dbgWarn('SIGNAL', 'applyAnswer: textarea is empty');
-                showToast('Paste the answer signal first', '⚠️', 'red');
-                return;
-            }
-
-            let sig;
-            try {
-                sig = JSON.parse(raw);
-                dbg('SIGNAL', 'Answer JSON parsed OK, type:', sig.type);
-            } catch (e) {
-                dbgError('SIGNAL', 'JSON.parse failed on answer input:', e);
-                showToast('Invalid signal — check you pasted it correctly', '❌', 'red');
-                return;
-            }
-
-            if (!sig.sdp) {
-                dbgError('SIGNAL', 'Parsed answer missing .sdp field:', sig);
-                showToast('Answer signal malformed (no SDP)', '❌', 'red');
-                return;
-            }
-
-            try {
-                dbg('SIGNAL', 'pc.setRemoteDescription(answer)... signalingState before:', pc.signalingState);
-                await pc.setRemoteDescription(new RTCSessionDescription({ type: 'answer', sdp: sig.sdp }));
-                dbg('SIGNAL', '✅ remoteDescription set, signalingState:', pc.signalingState);
-                showToast('Connecting...', '🔗', 'violet');
-                dbg('SIGNAL', 'ICE negotiation will now proceed automatically');
-            } catch (e) {
-                dbgError('SIGNAL', 'setRemoteDescription(answer) threw:', e);
-                showToast('Connection failed — see console for details', '❌', 'red');
-            }
-            dbg('SIGNAL', '══ applyAnswer() DONE ══');
-        }
-
-        // ── CREATE ANSWER (Receiver) ──────────────────────────────
-        async function createAnswer() {
-            dbg('SIGNAL', '══ createAnswer() START ══');
-            const raw = ($('offer-in')?.value || '').trim();
-            dbg('SIGNAL', `Offer input: ${raw.length} chars`);
-
-            if (!raw) {
-                dbgWarn('SIGNAL', 'createAnswer: textarea is empty');
-                showToast('Paste the offer signal first', '⚠️', 'red');
-                return;
-            }
-
-            let sig;
-            try {
-                sig = JSON.parse(raw);
-                dbg('SIGNAL', 'Offer JSON parsed OK, type:', sig.type);
-            } catch (e) {
-                dbgError('SIGNAL', 'JSON.parse failed on offer input:', e);
-                showToast('Invalid offer signal — check pasting', '❌', 'red');
-                return;
-            }
-
-            if (!sig.sdp) {
-                dbgError('SIGNAL', 'Offer missing .sdp field');
-                showToast('Offer malformed (no SDP)', '❌', 'red');
-                return;
-            }
-
-            try {
-                dbg('SIGNAL', 'Creating RTCPeerConnection (receiver)');
-                const iceCfg = buildIceConfig('r');
-                pc = new RTCPeerConnection(iceCfg);
-                dbg('SIGNAL', 'Receiver pc created, signalingState:', pc.signalingState);
-
-                monitorPeer(pc, 'receiver');
-
-                /**
-                 * The RECEIVER never calls createDataChannel().
-                 * Instead, it listens for ondatachannel — the browser delivers the
-                 * sender's DataChannel automatically once the SDP is negotiated.
-                 */
-                pc.ondatachannel = (evt) => {
-                    dbg('SIGNAL', '🔔 ondatachannel fired on receiver');
-                    dbg('SIGNAL', `  Channel label: "${evt.channel.label}" | readyState: ${evt.channel.readyState}`);
-                    dc = evt.channel;
-                    setupDataChannel(dc, 'receiver');
-                };
-
-                dbg('SIGNAL', 'pc.setRemoteDescription(offer)... signalingState before:', pc.signalingState);
-                await pc.setRemoteDescription(new RTCSessionDescription({ type: 'offer', sdp: sig.sdp }));
-                dbg('SIGNAL', 'remoteDescription set, signalingState:', pc.signalingState);
-
-                dbg('SIGNAL', 'pc.createAnswer()...');
-                const answer = await pc.createAnswer();
-                dbg('SIGNAL', `Answer SDP — type:"${answer.type}" length:${answer.sdp.length}`);
-
-                dbg('SIGNAL', 'pc.setLocalDescription(answer)...');
-                await pc.setLocalDescription(answer);
-                dbg('SIGNAL', 'localDescription set, signalingState:', pc.signalingState);
-
-                dbg('SIGNAL', `Waiting for receiver ICE... current: "${pc.iceGatheringState}"`);
-                await waitForIceDone(pc);
-                dbg('SIGNAL', '✅ Receiver ICE gathering complete');
-
-                const signal = JSON.stringify({ type: 'answer', sdp: pc.localDescription.sdp });
-                dbg('SIGNAL', `Answer JSON length: ${signal.length} chars`);
-
-                const el = $('answer-out');
-                if (el) { el.value = signal; dbg('SIGNAL', 'Answer written to textarea'); }
-
-                genQR('qr-receiver', signal, '#06B6D4');
-
-                hide('r-step-1'); show('r-step-2');
-                setStepDots(['rdot-1', 'rdot-2'], 1);
-                showToast('Answer ready — send it to sender!', '✅', 'green');
-                dbg('SIGNAL', '══ createAnswer() DONE ══');
-
-            } catch (e) {
-                dbgError('SIGNAL', 'createAnswer() failed:', e);
-                showToast('Failed to generate answer — see console', '❌', 'red');
-            }
-        }
-
-        // ── WAIT FOR ICE GATHERING ────────────────────────────────
-        function waitForIceDone(peerConn) {
-            dbg('ICE', `waitForIceDone() — initial state: "${peerConn.iceGatheringState}"`);
-            return new Promise(resolve => {
-                if (peerConn.iceGatheringState === 'complete') {
-                    dbg('ICE', 'Already complete — resolving immediately');
-                    resolve(); return;
-                }
-                const handler = () => {
-                    dbg('ICE', `iceGatheringState → "${peerConn.iceGatheringState}"`);
-                    if (peerConn.iceGatheringState === 'complete') {
-                        peerConn.removeEventListener('icegatheringstatechange', handler);
-                        dbg('ICE', '✅ ICE gathering done — resolving');
-                        resolve();
-                    }
-                };
-                peerConn.addEventListener('icegatheringstatechange', handler);
-                // Safety net: 15s timeout in case gathering never completes
-                setTimeout(() => {
-                    dbgWarn('ICE', '15s timeout reached — resolving waitForIceDone anyway (partial candidates)');
-                    resolve();
-                }, 15000);
-            });
-        }
-
-
-        // ══════════════════════════════════════════════════════════════
-        //  DATACHANNEL SETUP
-        // ══════════════════════════════════════════════════════════════
-        function setupDataChannel(channel, role) {
-            dbg('CHANNEL', `setupDataChannel() role="${role}" readyState="${channel.readyState}"`);
-
-            /**
-             * binaryType = 'arraybuffer':
-             * Received binary data arrives as ArrayBuffer (synchronous, zero-copy view).
-             * The alternative 'blob' would require async reading and is slower.
-             * ArrayBuffer → we can push it directly into our inChunks array.
-             */
-            channel.binaryType = 'arraybuffer';
-            dbg('CHANNEL', 'binaryType set to "arraybuffer"');
-
-            channel.onopen = () => {
-                dbg('CHANNEL', `★ DataChannel OPEN ★ — role="${role}" readyState="${channel.readyState}"`);
-                dbg('CHANNEL', 'maxMessageSize:', channel.maxMessageSize ?? 'n/a (browser default)');
-
-                // Show connected badge
-                const badge = $('conn-badge');
-                if (badge) {
-                    badge.style.display = 'flex';
-                    badge.style.background = 'rgba(34,197,94,0.1)';
-                    badge.style.border = '1px solid rgba(34,197,94,0.25)';
-                    dbg('UI', 'Connection badge shown in header');
-                }
-
-                if (role === 'sender') {
-                    dbg('CHANNEL', 'Sender: channel open → switching to Step 3, starting transfer');
-                    hide('s-step-2'); show('s-step-3');
-                    setStepDots(['sdot-1', 'sdot-2', 'sdot-3'], 2);
-                    beginTransfer();
-                } else {
-                    dbg('CHANNEL', 'Receiver: channel open → showing progress area (replacing wait state)');
-                    const area = $('recv-status-area');
-                    if (area) {
-                        area.innerHTML = '<div id="recv-progress-area"></div>';
-                        dbg('UI', 'recv-progress-area injected into DOM');
-                    }
-                }
-            };
-
-            channel.onclose = () => {
-                dbgWarn('CHANNEL', `DataChannel CLOSED — role="${role}"`);
-                onDisconnect();
-            };
-
-            channel.onerror = (e) => {
-                dbgError('CHANNEL', `DataChannel ERROR — role="${role}"`, e);
-                onDisconnect();
-            };
-
-            if (role === 'receiver') {
-                dbg('CHANNEL', 'Attaching onmessage handler for receiver');
-                channel.onmessage = (evt) => {
-                    const isString = typeof evt.data === 'string';
-                    if (isString) {
-                        dbg('RECV', `String msg received, length=${evt.data.length}`);
-                    } else {
-                        if (inChunks.length % 64 === 0) {
-                            dbg('RECV', `Binary chunk #${inChunks.length} — ${fmtBytes(evt.data.byteLength)} | total so far: ${fmtBytes(recvBytes)}`);
-                        }
-                    }
-                    handleIncoming(evt.data);
-                };
-            } else {
-                dbg('CHANNEL', 'Sender role: onmessage not attached (sender only sends, never receives data back)');
-            }
-        }
-
-        // ── PEER CONNECTION MONITORING ────────────────────────────
-        function monitorPeer(peerConn, role) {
-            dbg('PEER', `monitorPeer() — role="${role}"`);
-
-            peerConn.onconnectionstatechange = () => {
-                const s = peerConn.connectionState;
-                dbg('PEER', `connectionState → "${s}"`);
-                if (s === 'connected') dbg('PEER', '✅ Peer connection ESTABLISHED');
-                else if (s === 'failed') { dbgError('PEER', 'Connection FAILED'); onDisconnect(); }
-                else if (s === 'disconnected') { dbgWarn('PEER', 'Connection DISCONNECTED'); onDisconnect(); }
-                else if (s === 'closed') dbg('PEER', 'Connection closed (clean)');
-            };
-
-            peerConn.oniceconnectionstatechange = () => {
-                const s = peerConn.iceConnectionState;
-                dbg('ICE', `iceConnectionState → "${s}"`);
-                if (s === 'failed') {
-                    dbgWarn('ICE', 'ICE FAILED — calling restartIce()');
-                    peerConn.restartIce?.();
-                } else if (s === 'connected' || s === 'completed') {
-                    dbg('ICE', `✅ ICE ${s} — direct P2P path active`);
-                }
-            };
-
-            peerConn.onsignalingstatechange = () => {
-                dbg('PEER', `signalingState → "${peerConn.signalingState}"`);
-            };
-
-            peerConn.onicecandidate = (evt) => {
-                if (evt.candidate) {
-                    dbg('ICE', `New candidate: type="${evt.candidate.type}" proto="${evt.candidate.protocol}" addr="${evt.candidate.address || 'hidden'}"`);
-                } else {
-                    dbg('ICE', 'End of ICE candidates (null candidate)');
-                }
-            };
-        }
-
-        function onDisconnect() {
-            dbgWarn('PEER', 'onDisconnect() — connection lost');
-            clearInterval(elapsedTimer);
-            const badge = $('conn-badge');
-            if (badge) badge.style.display = 'none';
-            showToast('Connection dropped — refresh to retry', '📡', 'red');
-            const statusEl = document.getElementById('xfer-status');
-            if (statusEl) { statusEl.textContent = '⚠ Disconnected'; statusEl.style.color = '#ef4444'; }
-        }
-
-
-        // ══════════════════════════════════════════════════════════════
-        //  TRANSFER ENGINE — SENDING
-        // ══════════════════════════════════════════════════════════════
-        async function beginTransfer() {
-            dbg('XFER', '════ beginTransfer() START ════');
-            dbg('XFER', `Files: ${selectedFiles.length}`);
-            selectedFiles.forEach((f, i) => dbg('XFER', `  [${i}] "${f.name}" ${fmtBytes(f.size)} ${f.type || 'unknown type'}`));
-
-            let blob, name;
-
-            if (selectedFiles.length === 1) {
-                dbg('XFER', 'Single file — sending directly (no zip needed)');
-                blob = selectedFiles[0];
-                name = selectedFiles[0].name;
-            } else {
-                dbg('XFER', `${selectedFiles.length} files — bundling with JSZip (DEFLATE level 3)`);
-                showToast('Zipping files...', '📦', 'violet');
-
-                if (typeof JSZip === 'undefined') {
-                    dbgError('XFER', 'JSZip not loaded — cannot zip multiple files!');
-                    showToast('JSZip failed to load — try refreshing', '❌', 'red');
-                    return;
-                }
-
-                const zip = new JSZip();
-                for (const f of selectedFiles) {
-                    dbg('XFER', `  zip.file("${f.name}")`);
-                    zip.file(f.name, f, { binary: true });
-                }
-
-                dbg('XFER', 'Generating zip blob...');
-                blob = await zip.generateAsync(
-                    { type: 'blob', compression: 'DEFLATE', compressionOptions: { level: 3 } },
-                    (meta) => { if (meta.percent % 25 < 2) dbg('XFER', `Zip progress: ${meta.percent.toFixed(0)}%`); }
-                );
-                name = `ghost-share-${Date.now()}.zip`;
-                dbg('XFER', `Zip done: "${name}" ${fmtBytes(blob.size)}`);
-            }
-
-            totalBytes = blob.size;
-            sentBytes = 0;
-            xferStart = performance.now();
-            lastPerfTime = xferStart;
-            lastPerfBytes = 0;
-            speedWindow = [];
-            speedHistory = [];
-
-            const totalChunks = Math.ceil(totalBytes / CHUNK_SIZE);
-            dbg('XFER', `totalBytes=${fmtBytes(totalBytes)} CHUNK_SIZE=${fmtBytes(CHUNK_SIZE)} totalChunks=${totalChunks}`);
-
-            // ── SEND META HEADER ──────────────────────────────────────
-            /**
-             * We send a JSON string BEFORE any binary chunks.
-             * This tells the receiver: filename, total size, MIME type, chunk count.
-             * The receiver uses this to initialize its progress UI and inChunks buffer.
-             */
-            const meta = { type: 'meta', name, size: totalBytes, mime: blob.type || 'application/octet-stream', chunks: totalChunks };
-            dbg('XFER', 'Sending META:', meta);
-            dc.send(JSON.stringify(meta));
-
-            renderProgressUI('sender-progress-area', name);
-
-            /**
-             * BACKPRESSURE SETUP:
-             * bufferedAmountLowThreshold = the level at which 'bufferedamountlow' fires.
-             * Set it to our LOW_WATER_MARK so we know exactly when to resume sending.
-             */
-            dc.bufferedAmountLowThreshold = LOW_WATER_MARK;
-            dbg('XFER', `bufferedAmountLowThreshold = ${fmtBytes(LOW_WATER_MARK)}`);
-
-            // ── CHUNK SEND LOOP ───────────────────────────────────────
-            /**
-             * CHUNKING — STEP BY STEP:
-             *
-             *  1. offset starts at 0.
-             *  2. Each iteration:
-             *     a. BACKPRESSURE: if dc.bufferedAmount > HIGH_WATER_MARK (1MB),
-             *        PAUSE and await 'bufferedamountlow' event (buffer drained to 256KB).
-             *     b. blob.slice(offset, offset+64KB): creates a lazy Blob view — no data copied yet.
-             *     c. await slice.arrayBuffer(): reads exactly those bytes from disk/memory.
-             *     d. dc.send(buffer): sends raw ArrayBuffer (WebRTC DTLS encrypts it transparently).
-             *     e. Increment offset and sentBytes.
-             *  3. After the loop: send a JSON {"type":"done"} message to tell the receiver it's over.
-             *
-             *  MEMORY USAGE: at any moment, only ~1 chunk (64KB) + send buffer (≤1MB) in RAM.
-             *  A 10GB file would use the same RAM as a 1MB file. Zero browser crash risk.
-             */
-            let offset = 0;
-            let chunkIdx = 0;
-            dbg('XFER', '--- Chunk loop starting ---');
-
-            while (offset < totalBytes) {
-
-                // ── BACKPRESSURE GATE ──────────────────────────────────
-                /**
-                 * dc.bufferedAmount = bytes queued in send buffer not yet sent.
-                 * If this grows too large we'll exhaust memory and the browser tab will crash.
-                 *
-                 * HIGH_WATER_MARK (1MB): "buffer is getting full → STOP"
-                 * We await the 'bufferedamountlow' event which fires when it drains to
-                 * LOW_WATER_MARK (256KB). Then we RESUME.
-                 *
-                 * This gives us maximum throughput because:
-                 *  - We never send faster than the network can consume
-                 *  - We never leave the network idle (buffer never fully drains before we resume)
-                 */
-                if (dc.bufferedAmount > HIGH_WATER_MARK) {
-                    dbgWarn('XFER', `BACKPRESSURE: buffered=${fmtBytes(dc.bufferedAmount)} > HWM=${fmtBytes(HIGH_WATER_MARK)} → PAUSING`);
-                    await new Promise(resolve => {
-                        dc.onbufferedamountlow = () => {
-                            dbg('XFER', `BACKPRESSURE: bufferedamountlow fired — buffered=${fmtBytes(dc.bufferedAmount)} → RESUMING`);
-                            dc.onbufferedamountlow = null;
-                            resolve();
-                        };
-                    });
-                }
-
-                // Slice the next window (lazy — no full-file read)
-                const end = Math.min(offset + CHUNK_SIZE, totalBytes);
-                const slice = blob.slice(offset, end);
-                const buffer = await slice.arrayBuffer();  // reads exactly those bytes
-
-                dc.send(buffer);  // raw binary → DTLS encrypts it transparently
-
-                offset += buffer.byteLength;
-                sentBytes = offset;
-                chunkIdx++;
-
-                // Log progress every 64 chunks to avoid console spam
-                if (chunkIdx % 64 === 0 || offset >= totalBytes) {
-                    dbg('XFER', `Chunk ${chunkIdx}/${totalChunks} — sent ${fmtBytes(sentBytes)}/${fmtBytes(totalBytes)} — buffered: ${fmtBytes(dc.bufferedAmount)}`);
-                }
-
-                tickSpeed(sentBytes);
-                updateRing(sentBytes / totalBytes);
-            }
-
-            dbg('XFER', '--- Chunk loop done ---');
-            dbg('XFER', `Total chunks sent: ${chunkIdx} | Total bytes: ${fmtBytes(sentBytes)}`);
-            dbg('XFER', 'Sending DONE signal to receiver');
-            dc.send(JSON.stringify({ type: 'done' }));
-
-            showToast('Transfer complete ✓', '✅', 'green');
-            finishUI();
-            dbg('XFER', '════ beginTransfer() DONE ════');
-        }
-
-
-        // ══════════════════════════════════════════════════════════════
-        //  TRANSFER ENGINE — RECEIVING
-        // ══════════════════════════════════════════════════════════════
-        function handleIncoming(data) {
-            if (typeof data === 'string') {
-                dbg('RECV', `String message: "${data.substring(0, 60)}${data.length > 60 ? '...' : ''}"`);
-                let msg;
-                try { msg = JSON.parse(data); }
-                catch (e) { dbgError('RECV', 'JSON.parse failed:', e); return; }
-
-                if (msg.type === 'meta') {
-                    dbg('RECV', '════ META received ════', msg);
-                    inMeta = msg;
-                    inChunks = [];
-                    recvBytes = 0;
-                    totalBytes = msg.size;
-                    xferStart = performance.now();
-                    lastPerfTime = xferStart;
-                    lastPerfBytes = 0;
-                    speedWindow = [];
-                    speedHistory = [];
-                    dbg('RECV', `Expecting "${msg.name}" | ${fmtBytes(msg.size)} | ${msg.chunks} chunks | MIME:${msg.mime}`);
-                    renderProgressUI('recv-progress-area', msg.name);
-                }
-
-                if (msg.type === 'done') {
-                    dbg('RECV', '════ DONE signal received ════');
-                    dbg('RECV', `chunks received: ${inChunks.length} | bytes: ${fmtBytes(recvBytes)} | expected: ${fmtBytes(totalBytes)}`);
-                    assembleAndDownload();
-                }
-
-            } else if (data instanceof ArrayBuffer) {
-                inChunks.push(data);
-                recvBytes += data.byteLength;
-                if (inChunks.length % 64 === 0) {
-                    dbg('RECV', `Chunk #${inChunks.length} — ${fmtBytes(data.byteLength)} | cumulative: ${fmtBytes(recvBytes)}`);
-                }
-                tickSpeed(recvBytes);
-                updateRing(recvBytes / totalBytes);
-            } else {
-                dbgWarn('RECV', `Unknown message data type: ${typeof data}`);
-            }
-        }
-
-        function assembleAndDownload() {
-            dbg('RECV', 'assembleAndDownload()');
-            dbg('RECV', `${inChunks.length} chunks → Blob assembly`);
-
-            if (recvBytes !== inMeta.size) {
-                dbgWarn('RECV', `Size mismatch: got ${fmtBytes(recvBytes)} expected ${fmtBytes(inMeta.size)}`);
-            }
-
-            const blob = new Blob(inChunks, { type: inMeta.mime });
-            dbg('RECV', `Blob: ${fmtBytes(blob.size)} type="${blob.type}"`);
-
-            const url = URL.createObjectURL(blob);
-            dbg('RECV', `Object URL: ${url}`);
-
-            const a = document.createElement('a');
-            a.href = url; a.download = inMeta.name;
-            dbg('RECV', `Triggering download: "${inMeta.name}"`);
-            a.click();
-
-            setTimeout(() => { URL.revokeObjectURL(url); dbg('RECV', 'Object URL revoked'); }, 5000);
-
-            inChunks = [];
-            showToast(`Downloaded: ${inMeta.name}`, '✅', 'green');
-            finishUI();
-            dbg('RECV', 'assembleAndDownload() DONE');
-        }
-
-
-        // ══════════════════════════════════════════════════════════════
-        //  PROGRESS UI — RING + SPEEDOMETER
-        // ══════════════════════════════════════════════════════════════
-        function renderProgressUI(containerId, filename) {
-            dbg('UI', `renderProgressUI("${containerId}", "${filename}")`);
-            const el = $(containerId);
-            if (!el) { dbgError('UI', `Container "${containerId}" not in DOM`); return; }
-
-            const circ = (2 * Math.PI * 44).toFixed(2);
-            el.innerHTML = `
+  if(pl) pl.style.display='block';
+  if(btn) btn.disabled=false;
+}
+
+// ══════════════════════════════════════════════════════════════
+//  CODE DISPLAY
+// ══════════════════════════════════════════════════════════════
+function displayCode(code){
+  dbg('UI',`displayCode("${code}")`);
+  myCode=code;
+  const el=$('code-display');
+  if(!el) return;
+  el.innerHTML=code.split('').map(ch=>
+    `<div class="code-box">${ch}</div>`
+  ).join('');
+
+  // Generate QR with the receiver URL (if we can) or just the code
+  const qrText=code; // just the code; receiver types it in
+  genQR('qr-sender',qrText,'#7B5CF6');
+}
+function copyCode(){
+  if(!myCode) return;
+  navigator.clipboard?.writeText(myCode).then(()=>showToast('Code copied!','✅','green'))
+    .catch(()=>{showToast('Code: '+myCode,'📋','violet');});
+}
+
+// ══════════════════════════════════════════════════════════════
+//  CODE INPUT CHECK
+// ══════════════════════════════════════════════════════════════
+function checkCodeReady(){
+  const v=($('code-input')?.value||'').trim();
+  const btn=$('btn-connect');
+  if(btn) btn.disabled=v.length!==6;
+}
+
+// ══════════════════════════════════════════════════════════════
+//  PEERJS — SENDER
+//
+//  HOW THE SHORT-CODE SYSTEM WORKS:
+//
+//  1. Sender generates a random 6-char code (e.g. "A1B2C3").
+//  2. Sender creates a PeerJS Peer with THIS CODE as its peer ID.
+//     PeerJS connects to a free public signaling server (peerjs.com)
+//     which registers the peer ID and relays SDP/ICE automatically.
+//  3. The entire SDP/ICE exchange happens silently through PeerJS.
+//     NO manual copy-paste needed!
+//  4. Receiver creates a PeerJS Peer and calls peer.connect("A1B2C3").
+//  5. PeerJS broker routes the offer/answer, connection opens.
+//  6. After connection: we grab the raw DataChannel for transfers.
+// ══════════════════════════════════════════════════════════════
+async function startSenderSession(){
+  dbg('PEER','startSenderSession()');
+  if(!selectedFiles.length){showToast('Select files first','⚠️','red');return;}
+
+  const btn=$('btn-start');
+  if(btn){btn.disabled=true;btn.textContent='Connecting...';}
+
+  // Build blob (zip if multiple files)
+  showToast('Preparing files...','📦','violet');
+  try{
+    transferBlob=await buildBlob(selectedFiles);
+  }catch(e){
+    dbgErr('BLOB','buildBlob failed:',e);
+    showToast('Failed to prepare files','❌','red');
+    if(btn){btn.disabled=false;btn.innerHTML='🚀 Generate Code &amp; Start Session';}
+    return;
+  }
+
+  totalBytes=transferBlob.size;
+  dbg('PEER',`blob ready: ${fmtBytes(totalBytes)}`);
+
+  const code=genCode();
+  const iceCfg=buildIceConfig('s');
+  dbg('PEER',`Creating peer with code="${code}"`);
+
+  peer=new Peer(code,{
+    config:iceCfg,
+    debug:0,
+  });
+
+  peer.on('open',id=>{
+    dbg('PEER',`Sender peer open, ID="${id}"`);
+    displayCode(id);
+    showSendStep(2);
+    showToast(`Code: ${id} — share it!`,'📡','violet');
+  });
+
+  peer.on('connection',c=>{
+    dbg('PEER','Receiver connected!');
+    conn=c;
+    /**
+     * Serialization is negotiated by the INITIATOR (receiver).
+     * When receiver calls peer.connect(code, {serialization:'raw'}),
+     * PeerJS sends metadata telling the host to also use raw mode.
+     * We set it here as a safety measure in case the metadata arrives
+     * before or after the 'connection' event.
+     */
+    conn.serialization='raw';
+
+    conn.on('open',()=>{
+      dbg('PEER','DataConnection open — starting transfer');
+      showFlex('conn-badge');
+      $('conn-badge').style.background='rgba(34,197,94,0.1)';
+      $('conn-badge').style.border='1px solid rgba(34,197,94,0.25)';
+
+      showSendStep(3);
+      setupSenderDC();
+      beginTransfer();
+    });
+
+    conn.on('error',e=>dbgErr('CONN','conn error:',e));
+
+    conn.on('close',()=>{
+      dbgWarn('CONN','Connection closed');
+      onDisconnect();
+    });
+  });
+
+  peer.on('error',e=>{
+    dbgErr('PEER','Peer error:',e);
+    if(e.type==='unavailable-id'){
+      dbg('PEER','ID taken, generating new code');
+      peer.destroy();
+      peer=null;
+      startSenderSession(); // retry with new code
+    }else if(e.type==='server-error'||e.type==='network'){
+      showToast('PeerJS server unreachable — check internet','❌','red');
+      if(btn){btn.disabled=false;btn.innerHTML='🚀 Generate Code &amp; Start Session';}
+    }else{
+      showToast(`Peer error: ${e.type}`,'❌','red');
+    }
+  });
+}
+
+function setupSenderDC(){
+  /**
+   * We listen for control messages coming BACK from the receiver
+   * (VERIFY confirmation, pause/resume requests) via conn.on('data').
+   * The conn.on('data') handler fires for strings received on the DC.
+   */
+  conn.on('data',data=>{
+    if(typeof data==='string'){
+      try{
+        const msg=JSON.parse(data);
+        handleSenderMessage(msg);
+      }catch(e){dbgWarn('RECV','Bad JSON from receiver',e);}
+    }
+  });
+}
+
+function handleSenderMessage(msg){
+  dbg('CTRL',`Sender got msg type="${msg.type}"`);
+  if(msg.type==='verify'){
+    const ok=msg.ok;
+    const hashEl=$('hash-status');
+    const verifyEl=$('verify-status');
+    if(hashEl){
+      hashEl.className=ok?'hash-ok':'hash-fail';
+      hashEl.innerHTML=ok
+        ?'<span style="color:#22c55e;font-weight:600;">✓ Receiver verified file integrity (SHA-256 match)</span>'
+        :'<span style="color:#ef4444;font-weight:600;">✗ Hash mismatch — receiver may have corrupt file!</span>';
+    }
+    if(verifyEl){
+      verifyEl.innerHTML=ok
+        ?'<div style="font-size:13px;color:#22c55e;font-weight:600;text-align:center;padding:12px;">✅ Transfer confirmed — receiver got every byte</div>'
+        :'<div style="font-size:13px;color:#ef4444;font-weight:600;text-align:center;padding:12px;">⚠ Integrity check failed — ask receiver to retry</div>';
+    }
+    showToast(ok?'Transfer verified ✓':'Hash mismatch!',ok?'✅':'❌',ok?'green':'red');
+  }else if(msg.type==='pause'){
+    dbg('CTRL','Remote pause request');
+    isPaused=true;
+    updatePauseUI(true,'remote');
+  }else if(msg.type==='resume'){
+    dbg('CTRL','Remote resume request');
+    doResume();
+  }
+}
+
+// ══════════════════════════════════════════════════════════════
+//  PEERJS — RECEIVER
+// ══════════════════════════════════════════════════════════════
+function connectToSender(){
+  const code=($('code-input')?.value||'').trim().toUpperCase();
+  dbg('PEER',`connectToSender() code="${code}"`);
+  if(code.length!==6){showToast('Enter a 6-character code','⚠️','red');return;}
+
+  const btn=$('btn-connect');
+  if(btn){btn.disabled=true;btn.textContent='Connecting...';}
+
+  const iceCfg=buildIceConfig('r');
+
+  peer=new Peer({
+    config:iceCfg,
+    debug:0,
+  });
+
+  peer.on('open',myId=>{
+    dbg('PEER',`Receiver peer open, myId="${myId}" — connecting to "${code}"`);
+    conn=peer.connect(code,{
+      reliable:true,
+      serialization:'raw', // pass data through without PeerJS wrapping
+    });
+
+    conn.on('open',()=>{
+      dbg('PEER','Connected to sender!');
+      showFlex('conn-badge');
+      $('conn-badge').style.background='rgba(6,182,212,0.1)';
+      $('conn-badge').style.border='1px solid rgba(6,182,212,0.3)';
+      const labelEl=$('conn-label');
+      if(labelEl){labelEl.textContent='Connected';labelEl.style.color='#06B6D4';}
+
+      showReceiveStep(2);
+      renderReceiveWaiting();
+      setupReceiverDC();
+    });
+
+    conn.on('error',e=>{
+      dbgErr('CONN','Receive conn error:',e);
+      showToast('Connection failed — check code and try again','❌','red');
+      if(btn){btn.disabled=false;btn.textContent='🔗 Connect & Receive';}
+    });
+
+    conn.on('close',()=>{
+      dbgWarn('CONN','Receiver connection closed');
+      onDisconnect();
+    });
+  });
+
+  peer.on('error',e=>{
+    dbgErr('PEER','Receiver peer error:',e);
+    if(e.type==='peer-unavailable'){
+      showToast(`Code "${code}" not found — check code and try again`,'❌','red');
+    }else if(e.type==='server-error'||e.type==='network'){
+      showToast('PeerJS server unreachable — check internet','❌','red');
+    }else{
+      showToast(`Error: ${e.type}`,'❌','red');
+    }
+    if(btn){btn.disabled=false;btn.textContent='🔗 Connect & Receive';}
+  });
+}
+
+function setupReceiverDC(){
+  conn.on('data',data=>handleIncoming(data));
+  dbg('RECV','Receiver DC handler attached');
+}
+
+function renderReceiveWaiting(){
+  const el=$('recv-progress-area');
+  if(el) el.innerHTML=`
+    <div class="glass-card" style="padding:32px;text-align:center;">
+      <div class="pulse-wrap" style="width:64px;height:64px;margin:0 auto 20px;position:relative;">
+        <div class="pulse-ring-el" style="background:rgba(6,182,212,0.15);inset:0;position:absolute;border-radius:50%;"></div>
+        <div class="pulse-core" style="width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+          background:rgba(6,182,212,0.2);border:1px solid rgba(6,182,212,0.3);position:relative;z-index:1;font-size:18px;">📡</div>
+      </div>
+      <div style="font-size:15px;font-weight:600;margin-bottom:6px;">Connected — waiting for file...</div>
+      <div style="font-size:13px;color:var(--text-muted);">Sender will start the transfer momentarily</div>
+    </div>`;
+}
+
+// ══════════════════════════════════════════════════════════════
+//  BUILD BLOB (zip multiple files)
+// ══════════════════════════════════════════════════════════════
+async function buildBlob(files){
+  if(files.length===1){
+    dbg('BLOB','Single file — no zip needed');
+    return {blob:files[0],name:files[0].name};
+  }
+  dbg('BLOB',`${files.length} files → JSZip`);
+  if(typeof JSZip==='undefined') throw new Error('JSZip not loaded');
+  const zip=new JSZip();
+  for(const f of files) zip.file(f.name,f,{binary:true});
+  const blob=await zip.generateAsync(
+    {type:'blob',compression:'DEFLATE',compressionOptions:{level:3}},
+    meta=>{if(meta.percent%25<2) dbg('ZIP',`${meta.percent.toFixed(0)}%`);}
+  );
+  return {blob,name:`ghost-share-${Date.now()}.zip`};
+}
+
+// ══════════════════════════════════════════════════════════════
+//  TRANSFER ENGINE — SENDING
+//
+//  CHUNKING EXPLAINED:
+//
+//  A file (or zip blob) is split into 64KB slices.
+//  For each slice:
+//    1. HASH PHASE: blob.slice(offset, end) creates a lazy view.
+//       slice.arrayBuffer() reads exactly those bytes into RAM.
+//       We feed the buffer to SHA-256 to build the Merkle hash.
+//    2. SEND PHASE: dc.send(buffer) queues raw binary into the
+//       DTLS-encrypted DataChannel. WebRTC SCTP guarantees delivery
+//       and ordering — no manual retransmit needed.
+//    3. BACKPRESSURE: if dc.bufferedAmount > 8MB, we stop sending
+//       and wait for the 'bufferedamountlow' event (fires at 1MB).
+//       This prevents browser OOM on large files and maximizes
+//       throughput by keeping the send buffer perfectly saturated.
+//    4. PAUSE: if user pressed Pause, we await a Promise that
+//       resolves when Resume is clicked.
+//
+//  After all chunks: send {type:'done', hash:merkleRoot} to receiver.
+// ══════════════════════════════════════════════════════════════
+async function beginTransfer(){
+  dbg('XFER','════ beginTransfer() START ════');
+  let blobResult;
+  if(transferBlob){
+    // Already built in startSenderSession
+    blobResult=transferBlob;
+  }else{
+    blobResult=await buildBlob(selectedFiles);
+  }
+  const {blob,name}=typeof blobResult==='object'&&blobResult.blob
+    ? blobResult
+    : {blob:blobResult,name:selectedFiles[0]?.name||'file'};
+
+  totalBytes=blob.size;
+  sentBytes=0;
+  xferStart=performance.now();
+  lastPerfTime=xferStart;
+  lastPerfBytes=0;
+  speedWindow=[];
+  speedHistory=[];
+  senderChunkHashes=[];
+  isPaused=false;
+
+  const totalChunks=Math.ceil(totalBytes/CHUNK_SIZE);
+  dbg('XFER',`"${name}" ${fmtBytes(totalBytes)} ${totalChunks} chunks`);
+
+  // ── SEND META ──────────────────────────────────────────────
+  // The META message tells the receiver: filename, total size, MIME,
+  // chunk count. Receiver uses this to init its progress UI.
+  // We do NOT include the hash here — it's computed during sending
+  // and sent in the DONE message. This way hashing is free (piggybacks
+  // on the chunk reads already needed for sending).
+  const meta={type:'meta',name,size:totalBytes,mime:blob.type||'application/octet-stream',chunks:totalChunks};
+  dbg('XFER','Sending META:',meta);
+  conn.send(JSON.stringify(meta));
+
+  renderProgressUI('sender-progress-area',name,true);
+
+  // Set backpressure threshold on the underlying RTCDataChannel.
+  // PeerJS stores it as conn._dc (private but stable across 1.x versions).
+  // bufferedAmountLowThreshold: fires 'bufferedamountlow' event when
+  // the send buffer drains from HIGH_WATER down to this level.
+  const rawDC=conn._dc||conn.dataChannel;
+  if(rawDC){
+    rawDC.bufferedAmountLowThreshold=LOW_WATER;
+    dbg('XFER',`bufferedAmountLowThreshold=${fmtBytes(LOW_WATER)}`);
+  }
+
+  // ── CHUNK LOOP ─────────────────────────────────────────────
+  let offset=0;
+  let chunkIdx=0;
+
+  while(offset<totalBytes){
+
+    // ── PAUSE GATE ──────────────────────────────────────────
+    if(isPaused){
+      dbg('XFER',`PAUSED at chunk ${chunkIdx}, offset ${fmtBytes(offset)}`);
+      await new Promise(resolve=>{pauseResolve=resolve;});
+      dbg('XFER','RESUMED');
+    }
+
+    // ── BACKPRESSURE GATE ───────────────────────────────────
+    // dc.bufferedAmount = bytes sitting in the OS TCP send buffer.
+    // If this grows past HIGH_WATER (8MB), we'd risk OOM on the
+    // browser tab. We pause and wait for 'bufferedamountlow' (1MB).
+    const dc=conn._dc||conn.dataChannel;
+    if(dc&&dc.bufferedAmount>HIGH_WATER){
+      dbgWarn('XFER',`BACKPRESSURE: ${fmtBytes(dc.bufferedAmount)} → waiting`);
+      await new Promise(resolve=>{
+        if(!dc) return resolve();
+        const handler=()=>{dc.removeEventListener('bufferedamountlow',handler);resolve();};
+        dc.addEventListener('bufferedamountlow',handler);
+        // Safety timeout 10s — in case event never fires
+        setTimeout(()=>{dc.removeEventListener('bufferedamountlow',handler);resolve();},10000);
+      });
+      dbg('XFER',`BACKPRESSURE: resumed, buffered=${fmtBytes(dc?.bufferedAmount||0)}`);
+    }
+
+    // ── READ CHUNK ──────────────────────────────────────────
+    const end=Math.min(offset+CHUNK_SIZE,totalBytes);
+    const slice=blob.slice(offset,end);
+    const buffer=await slice.arrayBuffer(); // reads exactly those bytes
+
+    // ── HASH CHUNK (concurrent with network I/O) ─────────────
+    // conn.send() is synchronous — it queues data immediately.
+    // crypto.subtle.digest() is async but runs in the SAME microtask
+    // queue, so hash computation overlaps with the kernel sending data.
+    conn.send(buffer); // send raw ArrayBuffer → DTLS encrypts it
+    const chunkHash=await crypto.subtle.digest('SHA-256',buffer);
+    senderChunkHashes.push(new Uint8Array(chunkHash));
+
+    offset+=buffer.byteLength;
+    sentBytes=offset;
+    chunkIdx++;
+
+    if(chunkIdx%64===0||offset>=totalBytes){
+      dbg('XFER',`Chunk ${chunkIdx}/${totalChunks} | ${fmtBytes(sentBytes)}/${fmtBytes(totalBytes)}`);
+    }
+
+    tickSpeed(sentBytes);
+    updateRing(sentBytes/totalBytes);
+  }
+
+  // ── COMPUTE FINAL MERKLE HASH ──────────────────────────────
+  dbg('XFER','Computing Merkle root...');
+  const fileHash=await computeMerkleHash(senderChunkHashes);
+  dbg('XFER',`Merkle root: ${fileHash.substring(0,16)}...`);
+
+  // ── DONE MESSAGE ───────────────────────────────────────────
+  // Includes the Merkle hash so receiver can verify integrity.
+  conn.send(JSON.stringify({type:'done',hash:fileHash}));
+  dbg('XFER','DONE signal sent');
+
+  showToast('Transfer complete — awaiting verification','⌛','violet');
+  finishUI(false);
+  dbg('XFER','════ beginTransfer() DONE ════');
+}
+
+// ══════════════════════════════════════════════════════════════
+//  TRANSFER ENGINE — RECEIVING
+// ══════════════════════════════════════════════════════════════
+function handleIncoming(data){
+  if(typeof data==='string'){
+    let msg;
+    try{msg=JSON.parse(data);}
+    catch(e){dbgWarn('RECV','Bad JSON:',e);return;}
+
+    if(msg.type==='meta'){
+      dbg('RECV','════ META ════',msg);
+      inMeta=msg;
+      inChunks=[];
+      recvChunkHashes=[];
+      recvBytes=0;
+      totalBytes=msg.size;
+      xferStart=performance.now();
+      lastPerfTime=xferStart;
+      lastPerfBytes=0;
+      speedWindow=[];
+      speedHistory=[];
+      isPaused=false;
+      renderProgressUI('recv-progress-area',msg.name,false);
+    }
+
+    if(msg.type==='done'){
+      dbg('RECV','════ DONE ════ hash=',msg.hash?.substring(0,16));
+      assembleAndDownload(msg.hash);
+    }
+
+    if(msg.type==='pause'){
+      dbg('RECV','Sender paused');
+      const statusEl=$('xfer-status');
+      if(statusEl){statusEl.textContent='⏸ Sender paused';statusEl.style.color='#eab308';}
+    }
+
+    if(msg.type==='resume'){
+      dbg('RECV','Sender resumed');
+      const statusEl=$('xfer-status');
+      if(statusEl){statusEl.textContent='Receiving...';statusEl.style.color='var(--text-muted)';}
+    }
+
+  }else if(data instanceof ArrayBuffer||data instanceof Uint8Array){
+    const buf=data instanceof Uint8Array?data.buffer:data;
+    inChunks.push(buf);
+    recvBytes+=buf.byteLength;
+    // Hash chunk for Merkle verification — stored by chunk index
+    // to guarantee ordering even if Promise callbacks interleave
+    const chunkIdx=inChunks.length-1;
+    crypto.subtle.digest('SHA-256',buf).then(h=>{
+      recvChunkHashes[chunkIdx]=new Uint8Array(h);
+    });
+
+    if(inChunks.length%64===0){
+      dbg('RECV',`Chunk #${inChunks.length} | ${fmtBytes(recvBytes)}/${fmtBytes(totalBytes)}`);
+    }
+    tickSpeed(recvBytes);
+    updateRing(recvBytes/totalBytes);
+  }else{
+    dbgWarn('RECV',`Unknown data type: ${typeof data}`);
+  }
+}
+
+async function assembleAndDownload(expectedHash){
+  dbg('RECV',`assembleAndDownload() expectedHash=${expectedHash?.substring(0,16)}`);
+
+  // ── WAIT FOR ALL CHUNK HASHES ──────────────────────────────
+  // Chunk hash computations are async; wait until all inChunks.length
+  // hashes are in the array. Poll briefly up to 5s.
+  const totalChunks=inChunks.length;
+  const waitMs=Math.min(5000, totalChunks*2); // ~2ms per chunk
+  const deadline=Date.now()+waitMs;
+  while(recvChunkHashes.filter(Boolean).length<totalChunks && Date.now()<deadline){
+    await new Promise(r=>setTimeout(r,50));
+  }
+  const ready=recvChunkHashes.filter(Boolean).length;
+  dbg('RECV',`Chunk hashes ready: ${ready}/${totalChunks}`);
+
+  const hashEl=$('hash-status');
+  if(hashEl){
+    hashEl.style.display='block';
+    hashEl.className='hash-wait';
+    hashEl.innerHTML='<span style="color:#eab308;font-weight:600;">🔐 Verifying SHA-256 integrity...</span>';
+  }
+
+  let hashOk=false;
+  let actualHash='';
+  try{
+    // Use only the hashes we have (ordered by chunk index)
+    const validHashes=recvChunkHashes.slice(0,totalChunks).filter(Boolean);
+    actualHash=await computeMerkleHash(validHashes);
+    hashOk=(actualHash===expectedHash&&validHashes.length===totalChunks);
+    dbg('RECV',`Hash: expected=${expectedHash?.substring(0,16)} actual=${actualHash.substring(0,16)} ok=${hashOk}`);
+  }catch(e){
+    dbgErr('RECV','Hash verification error:',e);
+  }
+
+  // ── DOWNLOAD ───────────────────────────────────────────────
+  const blob=new Blob(inChunks,{type:inMeta?.mime||'application/octet-stream'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download=inMeta?.name||'download';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(()=>URL.revokeObjectURL(url),5000);
+  dbg('RECV',`Download triggered: "${inMeta?.name}" ${fmtBytes(blob.size)}`);
+
+  // ── UPDATE UI ──────────────────────────────────────────────
+  if(hashEl){
+    hashEl.className=hashOk?'hash-ok':'hash-fail';
+    hashEl.innerHTML=hashOk
+      ?`<span style="color:#22c55e;font-weight:600;">✓ SHA-256 verified — file is intact</span><br/>
+        <span class="mono" style="font-size:10px;color:rgba(255,255,255,0.3);">${actualHash.substring(0,32)}...</span>`
+      :`<span style="color:#ef4444;font-weight:600;">✗ Hash mismatch — data may be corrupt</span><br/>
+        <span style="font-size:11px;color:var(--text-muted);">Expected: ${expectedHash?.substring(0,16)}... Got: ${actualHash.substring(0,16)}...</span>`;
+  }
+
+  // ── SEND VERIFY ACK TO SENDER ──────────────────────────────
+  if(conn){
+    conn.send(JSON.stringify({type:'verify',ok:hashOk,hash:actualHash}));
+    dbg('RECV',`Sent VERIFY ack ok=${hashOk}`);
+  }
+
+  showToast(hashOk?`✓ ${inMeta?.name} downloaded & verified`:'⚠ Download done — hash mismatch!',
+    hashOk?'✅':'⚠️', hashOk?'green':'red');
+
+  finishUI(hashOk);
+  inChunks=[];
+  recvChunkHashes=[];
+}
+
+// ══════════════════════════════════════════════════════════════
+//  PAUSE / RESUME
+// ══════════════════════════════════════════════════════════════
+function pauseTransfer(){
+  if(isPaused) return;
+  dbg('PAUSE','Pausing transfer');
+  isPaused=true;
+  updatePauseUI(true,'local');
+  if(conn) conn.send(JSON.stringify({type:'pause'}));
+}
+function resumeTransfer(){
+  dbg('PAUSE','Resuming transfer');
+  doResume();
+  if(conn) conn.send(JSON.stringify({type:'resume'}));
+}
+function doResume(){
+  isPaused=false;
+  if(pauseResolve){pauseResolve();pauseResolve=null;}
+  updatePauseUI(false,'local');
+}
+function updatePauseUI(paused,source){
+  const btn=$('pause-btn');
+  const statusEl=$('xfer-status');
+  if(btn){
+    btn.className=paused?'btn-resume':'btn-pause';
+    btn.textContent=paused?'▶ Resume':'⏸ Pause';
+    btn.onclick=paused?resumeTransfer:pauseTransfer;
+  }
+  if(statusEl){
+    statusEl.textContent=paused?(source==='remote'?'⏸ Paused by receiver':'⏸ Paused'):'Transferring...';
+    statusEl.style.color=paused?'#eab308':'var(--text-muted)';
+  }
+}
+
+// ══════════════════════════════════════════════════════════════
+//  PROGRESS UI
+// ══════════════════════════════════════════════════════════════
+function renderProgressUI(containerId,filename,showPauseBtn){
+  dbg('UI',`renderProgressUI("${containerId}", "${filename}")`);
+  const el=$(containerId);
+  if(!el){dbgErr('UI',`Container "${containerId}" missing`);return;}
+  const circ=(2*Math.PI*44).toFixed(2);
+
+  el.innerHTML=`
     <div class="glass-card" style="padding:20px;margin-bottom:16px;">
       <div style="display:flex;align-items:center;gap:20px;margin-bottom:20px;">
-        <!-- Progress Ring SVG -->
+        <!-- Progress Ring -->
         <div id="ring-wrap" style="position:relative;flex-shrink:0;width:104px;height:104px;">
           <svg width="104" height="104" viewBox="0 0 104 104">
             <defs>
@@ -1693,273 +1408,239 @@
             </defs>
             <circle class="progress-ring-track" cx="52" cy="52" r="44"/>
             <circle id="ring-fill" class="progress-ring-fill" cx="52" cy="52" r="44"
-                    stroke-dasharray="${circ}" stroke-dashoffset="${circ}"/>
+              stroke-dasharray="${circ}" stroke-dashoffset="${circ}"/>
           </svg>
           <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;">
             <span id="ring-pct" style="font-size:20px;font-weight:800;letter-spacing:-0.03em;">0%</span>
           </div>
         </div>
-        <!-- Stats column -->
+        <!-- Stats -->
         <div style="flex:1;min-width:0;">
           <div id="xfer-filename" style="font-size:13px;font-weight:600;overflow:hidden;text-overflow:ellipsis;
-                                          white-space:nowrap;color:rgba(255,255,255,0.75);margin-bottom:6px;">${escHtml(filename)}</div>
+            white-space:nowrap;color:rgba(255,255,255,0.75);margin-bottom:6px;">${escHtml(filename)}</div>
           <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
             <div class="conn-dot" style="width:8px;height:8px;border-radius:50%;background:#22c55e;flex-shrink:0;"></div>
-            <span id="xfer-status" style="font-size:12px;color:var(--text-muted);">Transferring...</span>
+            <span id="xfer-status" style="font-size:12px;color:var(--text-muted);">
+              ${showPauseBtn?'Transferring...':'Receiving...'}
+            </span>
           </div>
           <div style="display:flex;align-items:baseline;gap:6px;">
             <span id="speed-val" style="font-family:'JetBrains Mono';font-size:28px;font-weight:700;color:var(--violet);line-height:1;">0.00</span>
             <span style="font-size:13px;color:var(--text-muted);">MB/s</span>
           </div>
-          <div id="bytes-lbl" class="mono" style="font-size:11px;color:var(--text-muted);margin-top:4px;">0 B / ${fmtBytes(totalBytes)}</div>
+          <div id="bytes-lbl" class="mono" style="font-size:11px;color:var(--text-muted);margin-top:4px;">
+            0 B / ${fmtBytes(totalBytes)}
+          </div>
         </div>
       </div>
-      <!-- Speed bar chart -->
+
+      <!-- Speed bars -->
       <div class="label" style="margin-bottom:8px;">Live Throughput</div>
       <div id="speed-bars" style="display:flex;align-items:flex-end;gap:2px;height:40px;"></div>
-      <!-- ETA row -->
+
+      <!-- ETA + elapsed -->
       <div style="display:flex;justify-content:space-between;margin-top:12px;font-size:11px;color:var(--text-muted);">
         <span id="eta-lbl">Calculating...</span>
         <span id="elapsed-lbl">0.0s elapsed</span>
       </div>
+
+      ${showPauseBtn?`
+      <!-- Pause/Resume button -->
+      <div style="margin-top:16px;text-align:center;">
+        <button id="pause-btn" class="btn-pause" style="padding:10px 28px;font-size:13px;"
+          onclick="pauseTransfer()">⏸ Pause</button>
+      </div>`:''}
     </div>
+
+    <!-- Hash status -->
+    <div id="hash-status" class="hash-wait" style="margin-bottom:12px;display:none;">
+      <span style="color:#eab308;font-weight:600;">🔐 Awaiting hash verification...</span>
+    </div>
+
+    <!-- Verify status (sender only) -->
+    <div id="verify-status" style="margin-bottom:12px;"></div>
   `;
 
-            dbg('UI', 'Progress UI rendered, starting elapsed timer');
-            startElapsedTimer();
-        }
+  startElapsedTimer();
+  dbg('UI','Progress UI rendered');
+}
 
-        function startElapsedTimer() {
-            clearInterval(elapsedTimer);
-            dbg('UI', 'Elapsed timer started');
-            elapsedTimer = setInterval(() => {
-                const el = $('elapsed-lbl');
-                if (el) el.textContent = `${((performance.now() - xferStart) / 1000).toFixed(1)}s elapsed`;
-            }, 500);
-        }
+function startElapsedTimer(){
+  clearInterval(elapsedTimer);
+  elapsedTimer=setInterval(()=>{
+    const el=$('elapsed-lbl');
+    if(el) el.textContent=`${((performance.now()-xferStart)/1000).toFixed(1)}s elapsed`;
+  },500);
+}
 
-        function tickSpeed(bytes) {
-            const now = performance.now();
-            const dt = (now - lastPerfTime) / 1000;
-            if (dt < 0.15) return; // throttle: max 1 sample per 150ms
+function tickSpeed(bytes){
+  const now=performance.now();
+  const dt=(now-lastPerfTime)/1000;
+  if(dt<0.15) return; // throttle
+  const rate=(bytes-lastPerfBytes)/dt;
+  if(rate<0) return;
+  speedWindow.push(rate);
+  if(speedWindow.length>10) speedWindow.shift();
+  speedHistory.push(rate);
+  if(speedHistory.length>28) speedHistory.shift();
+  lastPerfTime=now;
+  lastPerfBytes=bytes;
+  paintSpeed();
+}
 
-            const rate = (bytes - lastPerfBytes) / dt;
-            if (rate < 0) { dbgWarn('PERF', `Negative rate dt=${dt.toFixed(3)}s`); return; }
+function paintSpeed(){
+  const avg=speedWindow.reduce((a,b)=>a+b,0)/speedWindow.length;
+  const mbps=avg/(1024*1024);
+  const sv=$('speed-val');if(sv) sv.textContent=mbps.toFixed(2);
+  const bytesNow=isSender?sentBytes:recvBytes;
+  const bl=$('bytes-lbl');
+  if(bl) bl.textContent=`${fmtBytes(bytesNow)} / ${fmtBytes(totalBytes)}`;
+  const eta=$('eta-lbl');
+  if(eta&&avg>0){
+    const rem=totalBytes-bytesNow;
+    const secs=rem/avg;
+    eta.textContent=secs<60?`~${secs.toFixed(0)}s remaining`:`~${(secs/60).toFixed(1)}m remaining`;
+  }
+  // Bar chart
+  const barsEl=$('speed-bars');
+  if(!barsEl) return;
+  const arr=speedHistory;
+  const maxSpd=Math.max(...arr,1);
+  const pad=28-arr.length;
+  barsEl.innerHTML=[...Array(pad).fill(0),...arr].map(s=>{
+    const f=s/maxSpd;
+    const h=Math.max(3,f*38);
+    const r=Math.round(73+f*95);
+    const g=Math.round(40+f*20);
+    const op=(0.3+f*0.7).toFixed(2);
+    return `<div class="speed-bar" style="flex:1;height:${h.toFixed(1)}px;background:rgb(${r},${g},246);opacity:${op};"></div>`;
+  }).join('');
+}
 
-            speedWindow.push(rate);
-            if (speedWindow.length > 10) speedWindow.shift();
-            speedHistory.push(rate);
-            if (speedHistory.length > 28) speedHistory.shift();
+function updateRing(pct){
+  const ring=$('ring-fill');
+  const pctEl=$('ring-pct');
+  if(!ring) return;
+  const circ=2*Math.PI*44;
+  ring.style.strokeDashoffset=(circ*(1-pct)).toFixed(2);
+  const avg=speedWindow.length?speedWindow.reduce((a,b)=>a+b,0)/speedWindow.length:0;
+  const mbps=avg/(1024*1024);
+  const glowPx=Math.min(3+mbps*1.2,30);
+  const glowOp=Math.min(0.4+mbps*0.04,0.95).toFixed(2);
+  const wrap=$('ring-wrap');
+  if(wrap) wrap.style.filter=`drop-shadow(0 0 ${glowPx.toFixed(1)}px rgba(123,92,246,${glowOp}))`;
+  if(pctEl) pctEl.textContent=`${Math.round(pct*100)}%`;
+}
 
-            lastPerfTime = now;
-            lastPerfBytes = bytes;
+function finishUI(hashOk){
+  dbg('UI','finishUI()');
+  clearInterval(elapsedTimer);
+  updateRing(1);
+  const s=$('xfer-status');
+  if(s){
+    s.textContent=isSender?'✓ Sent':'✓ Downloaded';
+    s.style.color='#22c55e';
+  }
+  // Show hash status panel
+  const hashEl=$('hash-status');
+  if(hashEl&&!isSender) hashEl.style.display='block';
 
-            paintSpeed();
-        }
+  // Disable pause button
+  const pbtn=$('pause-btn');
+  if(pbtn){pbtn.disabled=true;pbtn.style.opacity='0.4';}
+}
 
-        function paintSpeed() {
-            const avg = speedWindow.reduce((a, b) => a + b, 0) / speedWindow.length;
-            const mbps = avg / (1024 * 1024);
+// ══════════════════════════════════════════════════════════════
+//  QR CODE
+// ══════════════════════════════════════════════════════════════
+function genQR(containerId,text,color){
+  const el=$(containerId);
+  if(!el) return;
+  el.innerHTML='';
+  if(typeof QRCode==='undefined'){
+    el.innerHTML='<p style="font-size:11px;color:var(--text-muted);padding:20px;">QR lib failed — use copy above</p>';
+    return;
+  }
+  try{
+    new QRCode(el,{text,width:180,height:180,colorDark:color||'#7B5CF6',colorLight:'#030610',correctLevel:QRCode.CorrectLevel.M});
+  }catch(e){
+    el.innerHTML='<p style="font-size:11px;color:var(--text-muted);padding:20px;">QR failed — use copy above</p>';
+  }
+}
 
-            const sv = $('speed-val');
-            if (sv) sv.textContent = mbps.toFixed(2);
+// ══════════════════════════════════════════════════════════════
+//  CLEANUP
+// ══════════════════════════════════════════════════════════════
+function cleanup(){
+  dbg('CLEANUP','cleanup()');
+  clearInterval(elapsedTimer);
+  isPaused=false;
+  if(pauseResolve){pauseResolve();pauseResolve=null;}
+  if(conn){try{conn.close();}catch(e){} conn=null;}
+  if(peer){try{peer.destroy();}catch(e){} peer=null;}
+  selectedFiles=[];inChunks=[];recvChunkHashes=[];senderChunkHashes=[];
+  speedWindow=[];speedHistory=[];
+  totalBytes=sentBytes=recvBytes=0;
+  inMeta=null;transferBlob=null;myCode=null;
+  dbg('CLEANUP','State reset');
+}
 
-            const bytesNow = isSender ? sentBytes : recvBytes;
-            const bl = $('bytes-lbl');
-            if (bl) bl.textContent = `${fmtBytes(bytesNow)} / ${fmtBytes(totalBytes)}`;
+function onDisconnect(){
+  dbgWarn('PEER','onDisconnect()');
+  clearInterval(elapsedTimer);
+  hide('conn-badge');
+  showToast('Connection dropped — refresh to retry','📡','red');
+  const s=$('xfer-status');
+  if(s){s.textContent='⚠ Disconnected';s.style.color='#ef4444';}
+}
 
-            const eta = $('eta-lbl');
-            if (eta && avg > 0) {
-                const rem = totalBytes - bytesNow;
-                const secs = rem / avg;
-                eta.textContent = secs < 60 ? `~${secs.toFixed(0)}s remaining` : `~${(secs / 60).toFixed(1)}m remaining`;
-            }
+// ══════════════════════════════════════════════════════════════
+//  TOAST
+// ══════════════════════════════════════════════════════════════
+let _toastTimer=null;
+function showToast(msg,icon,color){
+  const toast=$('toast');
+  const iconEl=$('toast-icon-el');
+  const msgEl=$('toast-msg');
+  if(!toast) return;
+  if(iconEl) iconEl.textContent=icon||'ℹ';
+  if(msgEl) msgEl.textContent=msg;
+  toast.style.display='flex';
+  clearTimeout(_toastTimer);
+  _toastTimer=setTimeout(()=>{toast.style.display='none';},4000);
+}
 
-            // Speed bar chart
-            const barsEl = $('speed-bars');
-            if (!barsEl) return;
-            const arr = speedHistory;
-            const maxSpd = Math.max(...arr, 1);
-            const pad = 28 - arr.length;
-            barsEl.innerHTML = [
-                ...Array(pad).fill(0), ...arr
-            ].map(s => {
-                const f = s / maxSpd;
-                const h = Math.max(3, f * 38);
-                const r = Math.round(73 + f * 95);
-                const g = Math.round(40 + f * 20);
-                const op = (0.3 + f * 0.7).toFixed(2);
-                return `<div class="speed-bar" style="flex:1;height:${h.toFixed(1)}px;background:rgb(${r},${g},246);opacity:${op};"></div>`;
-            }).join('');
-        }
+// ══════════════════════════════════════════════════════════════
+//  DEPENDENCY CHECK + BOOT
+// ══════════════════════════════════════════════════════════════
+function checkDependencies(){
+  const deps={
+    'WebRTC':typeof RTCPeerConnection!=='undefined',
+    'PeerJS':typeof Peer!=='undefined',
+    'QRCode.js':typeof QRCode!=='undefined',
+    'JSZip':typeof JSZip!=='undefined',
+    'Web Crypto':typeof crypto?.subtle!=='undefined',
+  };
+  for(const [n,ok] of Object.entries(deps)){
+    dbg('DEPS',`${ok?'✔':'✘'} ${n}`);
+  }
+  if(!deps['WebRTC']){showToast('WebRTC not supported in this browser','❌','red');}
+  if(!deps['PeerJS']){showToast('PeerJS failed to load — check internet','❌','red');}
+  if(!deps['Web Crypto']){showToast('Web Crypto API unavailable — hash verification disabled','⚠️','red');}
+}
 
-        function updateRing(pct) {
-            const ring = $('ring-fill');
-            const pctEl = $('ring-pct');
-            if (!ring) return;
+function boot(){
+  dbg('BOOT','boot() called');
+  checkDependencies();
+  showToast('GhostShare v3 ready 👻','👻','violet');
+  dbg('BOOT','✅ Initialized');
+}
 
-            const circ = 2 * Math.PI * 44;
-            ring.style.strokeDashoffset = (circ * (1 - pct)).toFixed(2);
-
-            // Dynamic glow intensity proportional to speed
-            const avg = speedWindow.length ? speedWindow.reduce((a, b) => a + b, 0) / speedWindow.length : 0;
-            const mbps = avg / (1024 * 1024);
-            const glowPx = Math.min(3 + mbps * 1.2, 30);
-            const glowOp = Math.min(0.4 + mbps * 0.04, 0.95).toFixed(2);
-            const wrap = $('ring-wrap');
-            if (wrap) wrap.style.filter = `drop-shadow(0 0 ${glowPx.toFixed(1)}px rgba(123,92,246,${glowOp}))`;
-
-            if (pctEl) pctEl.textContent = `${Math.round(pct * 100)}%`;
-        }
-
-        function finishUI() {
-            dbg('UI', 'finishUI()');
-            clearInterval(elapsedTimer);
-            updateRing(1);
-            const s = $('xfer-status');
-            if (s) { s.textContent = isSender ? '✓ Transfer complete' : '✓ Download complete'; s.style.color = '#22c55e'; }
-        }
-
-
-        // ══════════════════════════════════════════════════════════════
-        //  QR CODE
-        // ══════════════════════════════════════════════════════════════
-        function genQR(containerId, text, color) {
-            dbg('QR', `genQR("${containerId}") color=${color} textLen=${text.length}`);
-            const el = $(containerId);
-            if (!el) { dbgError('QR', `Container "${containerId}" not found`); return; }
-            el.innerHTML = '';
-
-            if (typeof QRCode === 'undefined') {
-                dbgError('QR', 'QRCode library not loaded');
-                el.innerHTML = '<p style="font-size:11px;color:var(--text-muted);padding:20px;">QR lib failed — use copy-paste</p>';
-                return;
-            }
-            if (text.length > 2953) {
-                dbgWarn('QR', `Text too long for QR (${text.length} > 2953) — skipping`);
-                el.innerHTML = '<p style="font-size:11px;color:var(--text-muted);padding:20px;">Signal too large for QR — use copy-paste</p>';
-                return;
-            }
-            try {
-                new QRCode(el, { text, width: 180, height: 180, colorDark: color || '#7B5CF6', colorLight: '#030610', correctLevel: QRCode.CorrectLevel.M });
-                dbg('QR', 'QR code generated successfully');
-            } catch (e) {
-                dbgError('QR', 'QRCode constructor threw:', e);
-                el.innerHTML = '<p style="font-size:11px;color:var(--text-muted);padding:20px;">QR generation failed — use copy-paste</p>';
-            }
-        }
-
-
-        // ══════════════════════════════════════════════════════════════
-        //  CLEANUP
-        // ══════════════════════════════════════════════════════════════
-        function cleanup() {
-            dbg('CLEANUP', 'cleanup() called');
-            clearInterval(elapsedTimer);
-            if (dc) { try { dc.close(); dbg('CLEANUP', 'dc.close() OK'); } catch (e) { dbgWarn('CLEANUP', 'dc.close() threw:', e.message); } dc = null; }
-            if (pc) { try { pc.close(); dbg('CLEANUP', 'pc.close() OK'); } catch (e) { dbgWarn('CLEANUP', 'pc.close() threw:', e.message); } pc = null; }
-            selectedFiles = []; inChunks = []; speedWindow = []; speedHistory = [];
-            totalBytes = sentBytes = recvBytes = 0; inMeta = null;
-            dbg('CLEANUP', 'All state reset to defaults');
-        }
-
-
-        // ══════════════════════════════════════════════════════════════
-        //  CLIPBOARD
-        // ══════════════════════════════════════════════════════════════
-        function copyText(id, label) {
-            dbg('COPY', `copyText("${id}", "${label}")`);
-            const el = $(id);
-            const val = el?.value;
-            if (!val) { dbgWarn('COPY', `"${id}" is empty`); return; }
-            dbg('COPY', `Copying ${val.length} chars`);
-
-            if (navigator.clipboard) {
-                navigator.clipboard.writeText(val)
-                    .then(() => { dbg('COPY', 'Clipboard API: OK'); showToast(`${label} copied!`, '✅', 'green'); })
-                    .catch(err => {
-                        dbgWarn('COPY', 'Clipboard API failed, using execCommand:', err.message);
-                        el.select(); document.execCommand('copy');
-                        showToast(`${label} copied! (fallback)`, '✅', 'green');
-                    });
-            } else {
-                dbgWarn('COPY', 'navigator.clipboard unavailable — execCommand fallback');
-                el.select(); document.execCommand('copy');
-                showToast(`${label} copied!`, '✅', 'green');
-            }
-        }
-
-
-        // ══════════════════════════════════════════════════════════════
-        //  TOAST
-        // ══════════════════════════════════════════════════════════════
-        let _toastTimer = null;
-        function showToast(msg, icon, color) {
-            dbg('TOAST', `showToast("${msg}", "${icon}", "${color}")`);
-            const toast = $('toast');
-            const iconEl = $('toast-icon-el');
-            const msgEl = $('toast-msg');
-            if (!toast) { dbgWarn('TOAST', 'toast element missing'); return; }
-            if (iconEl) iconEl.textContent = icon || 'ℹ';
-            if (msgEl) msgEl.textContent = msg;
-            toast.style.display = 'flex';
-            clearTimeout(_toastTimer);
-            _toastTimer = setTimeout(() => { toast.style.display = 'none'; dbg('TOAST', 'auto-hidden'); }, 3500);
-        }
-
-
-        // ══════════════════════════════════════════════════════════════
-        //  UTILITIES
-        // ══════════════════════════════════════════════════════════════
-        function fmtBytes(b) {
-            if (!b || b === 0) return '0 B';
-            const u = ['B', 'KB', 'MB', 'GB', 'TB'];
-            const i = Math.floor(Math.log(b) / Math.log(1024));
-            return `${(b / Math.pow(1024, i)).toFixed(i > 0 ? 1 : 0)} ${u[i]}`;
-        }
-
-        function escHtml(s) {
-            return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-                .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
-        }
-
-        function fileEmoji(name) {
-            const ext = (name.split('.').pop() || '').toLowerCase();
-            return ({
-                pdf: '📄', doc: '📝', docx: '📝', txt: '📝', md: '📝',
-                jpg: '🖼', jpeg: '🖼', png: '🖼', gif: '🖼', webp: '🖼', svg: '🖼', avif: '🖼',
-                mp4: '🎬', mov: '🎬', mkv: '🎬', avi: '🎬', webm: '🎬',
-                mp3: '🎵', wav: '🎵', flac: '🎵', aac: '🎵', ogg: '🎵',
-                zip: '📦', tar: '📦', gz: '📦', rar: '📦', '7z': '📦',
-                js: '💻', ts: '💻', py: '💻', html: '💻', css: '💻', json: '💻',
-                xlsx: '📊', csv: '📊', exe: '⚙', dmg: '⚙'
-            }[ext] || '📄');
-        }
-
-
-        // ══════════════════════════════════════════════════════════════
-        //  BOOT
-        // ══════════════════════════════════════════════════════════════
-        function boot() {
-            dbg('BOOT', 'boot() called — running startup checks');
-            checkDependencies();
-            showToast('Ghost Share ready 👻', '👻', 'violet');
-            dbg('BOOT', '✅ Ghost Share fully initialized');
-        }
-
-        // DOMContentLoaded fires once the HTML is parsed.
-        // Since our script is at the bottom of <body>, the DOM is already ready,
-        // but we attach the listener anyway as a safety net.
-        if (document.readyState === 'loading') {
-            dbg('BOOT', 'DOM still loading — attaching DOMContentLoaded listener');
-            document.addEventListener('DOMContentLoaded', boot);
-        } else {
-            dbg('BOOT', `DOM already "${document.readyState}" — calling boot() directly`);
-            boot();
-        }
-
-        dbg('BOOT', 'Script tag evaluation complete — app ready');
-    </script>
+if(document.readyState==='loading'){
+  document.addEventListener('DOMContentLoaded',boot);
+}else{
+  boot();
+}
+</script>
 </body>
-
 </html>
