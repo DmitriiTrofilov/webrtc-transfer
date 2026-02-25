@@ -70,13 +70,15 @@
     .btn-resume:hover{background:rgba(34,197,94,0.2);}
     .btn-danger{background:rgba(239,68,68,0.12);border:1px solid rgba(239,68,68,0.3);border-radius:10px;cursor:pointer;color:#ef4444;font-weight:600;transition:background 0.2s;}
     .btn-danger:hover{background:rgba(239,68,68,0.2);}
+    .btn-amber{background:rgba(245,158,11,0.12);border:1px solid rgba(245,158,11,0.3);border-radius:10px;cursor:pointer;color:#f59e0b;font-weight:600;transition:background 0.2s;}
+    .btn-amber:hover{background:rgba(245,158,11,0.2);}
 
     /* ── TYPOGRAPHY ── */
     .mono{font-family:'JetBrains Mono',monospace;}
     .label{font-size:11px;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);}
 
     /* ── FORMS ── */
-    textarea,input[type="text"],input[type="url"]{
+    textarea,input[type="text"],input[type="url"],input[type="password"]{
       font-family:'JetBrains Mono',monospace;font-size:11px;
       background:rgba(0,0,0,0.4);border:1px solid var(--border);
       color:rgba(255,255,255,0.8);outline:none;border-radius:10px;
@@ -84,6 +86,17 @@
     }
     textarea:focus,input:focus{border-color:rgba(123,92,246,0.5);box-shadow:0 0 0 3px rgba(123,92,246,0.1);}
     textarea::placeholder,input::placeholder{color:rgba(255,255,255,0.2);}
+
+    /* ── TOGGLE SWITCH ── */
+    .toggle-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;}
+    .toggle-switch{position:relative;width:40px;height:22px;flex-shrink:0;}
+    .toggle-switch input{opacity:0;width:0;height:0;}
+    .toggle-slider{position:absolute;cursor:pointer;inset:0;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.15);border-radius:22px;transition:all 0.25s;}
+    .toggle-slider:before{content:'';position:absolute;width:16px;height:16px;left:2px;bottom:2px;background:rgba(255,255,255,0.4);border-radius:50%;transition:all 0.25s;}
+    input:checked+.toggle-slider{background:rgba(123,92,246,0.35);border-color:rgba(123,92,246,0.5);box-shadow:0 0 10px rgba(123,92,246,0.3);}
+    input:checked+.toggle-slider:before{transform:translateX(18px);background:#fff;}
+    .toggle-label-text{font-size:13px;font-weight:500;color:rgba(255,255,255,0.8);}
+    .toggle-sub{font-size:11px;color:var(--text-muted);margin-top:2px;}
 
     /* ── CODE DISPLAY BOXES ── */
     .code-boxes{display:flex;gap:8px;justify-content:center;margin:8px 0;}
@@ -127,6 +140,10 @@
     .speed-bar{animation:barPulse 1.1s ease-in-out infinite;border-radius:3px 3px 0 0;}
     @keyframes shimmer{0%{background-position:-200% 0;}100%{background-position:200% 0;}}
     .shimmer-text{background:linear-gradient(90deg,#a78bfa,#38bdf8,#a78bfa);background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;animation:shimmer 3s linear infinite;}
+    @keyframes destructFlash{0%,100%{opacity:1;}50%{opacity:0.3;}}
+    .destruct-anim{animation:destructFlash 0.3s ease-in-out 4;}
+    @keyframes pairPulse{0%,100%{box-shadow:0 0 0 0 rgba(6,182,212,0.5);}50%{box-shadow:0 0 0 6px rgba(6,182,212,0);}}
+    .pair-dot-pulse{animation:pairPulse 2s ease-in-out infinite;}
 
     /* ── PROGRESS RING ── */
     .progress-ring-track{fill:none;stroke:rgba(255,255,255,0.04);stroke-width:7;}
@@ -135,6 +152,8 @@
     /* ── DROP ZONE ── */
     .drop-zone{border:2px dashed rgba(123,92,246,0.3);transition:all 0.3s;cursor:pointer;}
     .drop-zone:hover,.drop-zone.drag-active{border-color:rgba(123,92,246,0.7);background:rgba(123,92,246,0.04);}
+    .drop-zone-link{border:2px dashed rgba(6,182,212,0.3);transition:all 0.3s;cursor:pointer;border-radius:16px;}
+    .drop-zone-link:hover,.drop-zone-link.drag-active{border-color:rgba(6,182,212,0.7);background:rgba(6,182,212,0.04);}
 
     /* ── STEP DOTS ── */
     .step-dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,0.12);transition:all 0.3s;}
@@ -142,7 +161,7 @@
 
     /* ── CONFIG PANEL ── */
     .config-content{overflow:hidden;max-height:0;transition:max-height 0.4s cubic-bezier(0.16,1,0.3,1);}
-    .config-content.open{max-height:600px;}
+    .config-content.open{max-height:700px;}
 
     /* ── HASH STATUS ── */
     .hash-ok{background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.25);border-radius:10px;padding:10px 14px;}
@@ -150,8 +169,8 @@
     .hash-wait{background:rgba(234,179,8,0.08);border:1px solid rgba(234,179,8,0.2);border-radius:10px;padding:10px 14px;}
 
     /* ── MODE TOGGLE ── */
-    .mode-toggle{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:999px;padding:4px;cursor:pointer;user-select:none;}
-    .mode-toggle-opt{font-size:11px;font-weight:600;padding:4px 10px;border-radius:999px;transition:all 0.2s;color:var(--text-muted);}
+    .mode-toggle{display:flex;align-items:center;gap:4px;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:999px;padding:3px;cursor:pointer;user-select:none;}
+    .mode-toggle-opt{font-size:11px;font-weight:600;padding:4px 9px;border-radius:999px;transition:all 0.2s;color:var(--text-muted);}
     .mode-toggle-opt.active{background:rgba(123,92,246,0.25);color:#fff;box-shadow:0 0 12px rgba(123,92,246,0.3);}
     .mode-toggle-opt.global.active{background:rgba(6,182,212,0.25);color:#fff;box-shadow:0 0 12px rgba(6,182,212,0.3);}
 
@@ -164,6 +183,15 @@
     .receiver-card.done-xfer{border-color:rgba(34,197,94,0.3);}
     .mini-bar-track{height:4px;background:rgba(255,255,255,0.06);border-radius:4px;overflow:hidden;margin-top:8px;}
     .mini-bar-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,#7B5CF6,#2563eb);transition:width 0.35s ease;}
+
+    /* ── LINK PAIR CARD ── */
+    .link-token-display{font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:700;letter-spacing:0.25em;color:#fff;}
+
+    /* ── ENC BADGE ── */
+    .enc-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:999px;
+      background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.3);font-size:10px;font-weight:600;color:#22c55e;}
+    .destruct-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:999px;
+      background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);font-size:10px;font-weight:600;color:#ef4444;}
 
     /* ── SCROLLBAR ── */
     ::-webkit-scrollbar{width:3px;}
@@ -178,6 +206,7 @@
     .badge-violet{background:var(--violet-dim);border:1px solid rgba(123,92,246,0.25);}
     .badge-cyan{background:var(--cyan-dim);border:1px solid rgba(6,182,212,0.25);}
     .badge-green{background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.25);}
+    .badge-red{background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.25);}
   </style>
 </head>
 <body>
@@ -189,19 +218,29 @@
     <div class="logo-icon w-8 h-8 rounded-xl flex items-center justify-center"
       style="background:linear-gradient(135deg,#7B5CF6,#2563eb);font-size:16px;">👻</div>
     <span style="font-weight:800;font-size:15px;letter-spacing:-0.02em;">Ghost<span style="color:var(--violet);">Share</span></span>
-    <span class="mono" style="font-size:10px;color:rgba(255,255,255,0.2);">v4.0</span>
+    <span class="mono" style="font-size:10px;color:rgba(255,255,255,0.2);">v5.0</span>
   </div>
 
-  <!-- CENTER: Local / Global toggle -->
-  <div class="mode-toggle" onclick="toggleMode()" title="Local = LAN/STUN only • Global = adds free TURN relay for firewall bypass">
-    <div class="mode-toggle-opt active" id="mode-local">📶 Local</div>
-    <div class="mode-toggle-opt global" id="mode-global">🌐 Global</div>
-  </div>
+  <div style="display:flex;align-items:center;gap:8px;">
+    <!-- Local / Global mode toggle -->
+    <div class="mode-toggle" onclick="toggleMode()" title="Local = STUN only · Global = adds free TURN relay">
+      <div class="mode-toggle-opt active" id="mode-local">📶 Local</div>
+      <div class="mode-toggle-opt global" id="mode-global">🌐 Global</div>
+    </div>
 
-  <div id="conn-badge" style="display:none;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;
-    background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.25);">
-    <div class="conn-dot w-2 h-2 rounded-full" style="background:#22c55e;"></div>
-    <span style="font-size:12px;font-weight:600;color:#22c55e;" id="conn-label">Connected</span>
+    <!-- Link pair badge — shown when partner is online -->
+    <div id="link-badge" style="display:none;align-items:center;gap:6px;padding:5px 11px;border-radius:999px;
+      background:rgba(6,182,212,0.1);border:1px solid rgba(6,182,212,0.3);cursor:pointer;" onclick="goHome()">
+      <div class="pair-dot-pulse" style="width:7px;height:7px;border-radius:50%;background:#06B6D4;flex-shrink:0;"></div>
+      <span style="font-size:11px;font-weight:700;color:#06B6D4;">Paired</span>
+    </div>
+
+    <!-- Transfer connected badge -->
+    <div id="conn-badge" style="display:none;align-items:center;gap:6px;padding:5px 11px;border-radius:999px;
+      background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.25);">
+      <div class="conn-dot w-2 h-2 rounded-full" style="background:#22c55e;"></div>
+      <span style="font-size:11px;font-weight:600;color:#22c55e;" id="conn-label">Connected</span>
+    </div>
   </div>
 </header>
 
@@ -210,47 +249,67 @@
 
   <!-- ════ LANDING ════ -->
   <div id="screen-landing" class="screen active">
-    <div class="text-center" style="padding:48px 0 32px;">
-      <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full mb-8"
+    <div class="text-center" style="padding:36px 0 24px;">
+      <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full mb-6"
         style="background:rgba(255,255,255,0.04);border:1px solid var(--border);">
         <span style="width:6px;height:6px;border-radius:50%;background:var(--violet);display:inline-block;box-shadow:0 0 8px var(--violet);"></span>
         <span style="font-size:12px;color:var(--text-muted);">6-char code · Zero server · Pure P2P</span>
       </div>
-      <h1 style="font-size:52px;font-weight:900;letter-spacing:-0.04em;line-height:1.05;margin-bottom:16px;">
+      <h1 style="font-size:52px;font-weight:900;letter-spacing:-0.04em;line-height:1.05;margin-bottom:14px;">
         Ghost<span class="shimmer-text">Share</span>
       </h1>
-      <p style="color:var(--text-muted);font-size:16px;line-height:1.6;max-width:360px;margin:0 auto 12px;">
+      <p style="color:var(--text-muted);font-size:16px;line-height:1.6;max-width:360px;margin:0 auto 10px;">
         Share a 6-character code. No accounts, no uploads, no limits.
       </p>
-      <p style="font-family:'JetBrains Mono';font-size:13px;color:var(--violet);margin-bottom:40px;opacity:0.8;">
+      <p style="font-family:'JetBrains Mono';font-size:13px;color:var(--violet);margin-bottom:32px;opacity:0.8;">
         A1B2C3 → instant encrypted transfer
       </p>
 
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:40px;">
-        <button onclick="initSend()" class="glass-card text-left" style="padding:28px;cursor:pointer;">
-          <div style="width:48px;height:48px;border-radius:16px;display:flex;align-items:center;justify-content:center;
-            margin-bottom:20px;background:rgba(123,92,246,0.15);border:1px solid rgba(123,92,246,0.2);font-size:22px;">📤</div>
-          <div style="font-size:17px;font-weight:700;margin-bottom:4px;">Send Files</div>
-          <div style="font-size:13px;color:var(--text-muted);line-height:1.5;">Get a code, share it, done</div>
+      <!-- Send / Receive buttons -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px;">
+        <button onclick="initSend()" class="glass-card text-left" style="padding:24px;cursor:pointer;">
+          <div style="width:44px;height:44px;border-radius:14px;display:flex;align-items:center;justify-content:center;
+            margin-bottom:16px;background:rgba(123,92,246,0.15);border:1px solid rgba(123,92,246,0.2);font-size:20px;">📤</div>
+          <div style="font-size:16px;font-weight:700;margin-bottom:4px;">Send Files</div>
+          <div style="font-size:12px;color:var(--text-muted);line-height:1.5;">Get a code, share it, done</div>
         </button>
-        <button onclick="initReceive()" class="glass-card text-left" style="padding:28px;cursor:pointer;">
-          <div style="width:48px;height:48px;border-radius:16px;display:flex;align-items:center;justify-content:center;
-            margin-bottom:20px;background:rgba(6,182,212,0.12);border:1px solid rgba(6,182,212,0.2);font-size:22px;">📥</div>
-          <div style="font-size:17px;font-weight:700;margin-bottom:4px;">Receive Files</div>
-          <div style="font-size:13px;color:var(--text-muted);line-height:1.5;">Enter a 6-char code, download</div>
+        <button onclick="initReceive()" class="glass-card text-left" style="padding:24px;cursor:pointer;">
+          <div style="width:44px;height:44px;border-radius:14px;display:flex;align-items:center;justify-content:center;
+            margin-bottom:16px;background:rgba(6,182,212,0.12);border:1px solid rgba(6,182,212,0.2);font-size:20px;">📥</div>
+          <div style="font-size:16px;font-weight:700;margin-bottom:4px;">Receive Files</div>
+          <div style="font-size:12px;color:var(--text-muted);line-height:1.5;">Enter a 6-char code</div>
         </button>
       </div>
 
-      <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;">
-        <span class="badge-violet" style="padding:6px 12px;border-radius:999px;font-size:11px;font-weight:500;">🔒 DTLS Encrypted</span>
-        <span class="badge-violet" style="padding:6px 12px;border-radius:999px;font-size:11px;font-weight:500;">∞ Unlimited Size</span>
-        <span class="badge-cyan"   style="padding:6px 12px;border-radius:999px;font-size:11px;font-weight:500;">📡 Firewall Bypass</span>
-        <span class="badge-cyan"   style="padding:6px 12px;border-radius:999px;font-size:11px;font-weight:500;">👥 Multi-Receiver</span>
-        <span class="badge-green"  style="padding:6px 12px;border-radius:999px;font-size:11px;font-weight:500;">🔐 SHA-256 Verified</span>
-        <span class="badge-green"  style="padding:6px 12px;border-radius:999px;font-size:11px;font-weight:500;">⏸ Resume on Drop</span>
+      <!-- ══ LINK PAIR SECTION ══ -->
+      <div class="glass-card" style="padding:0;overflow:hidden;margin-bottom:20px;text-align:left;">
+        <button onclick="toggleConf('link')" style="width:100%;display:flex;align-items:center;justify-content:space-between;
+          padding:14px 16px;cursor:pointer;background:transparent;border:none;color:#fff;">
+          <span style="display:flex;align-items:center;gap:10px;font-size:13px;font-weight:600;">
+            🔗 Permanent Link
+            <span id="link-header-badge" style="display:none;" class="badge-cyan" style="padding:2px 8px;border-radius:999px;font-size:10px;font-weight:600;color:#06B6D4;">Active</span>
+          </span>
+          <span id="chev-link" style="transition:transform 0.3s;font-size:12px;color:var(--text-muted);">▼</span>
+        </button>
+        <div class="config-content" id="conf-link">
+          <div style="padding:0 16px 16px;">
+            <!-- Rendered dynamically by LINK_PAIR._renderUI() -->
+            <div id="link-pair-section"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Feature badges -->
+      <div style="display:flex;flex-wrap:wrap;gap:7px;justify-content:center;">
+        <span class="badge-violet" style="padding:5px 11px;border-radius:999px;font-size:11px;font-weight:500;">🔒 AES-256-GCM</span>
+        <span class="badge-violet" style="padding:5px 11px;border-radius:999px;font-size:11px;font-weight:500;">∞ Unlimited Size</span>
+        <span class="badge-cyan"   style="padding:5px 11px;border-radius:999px;font-size:11px;font-weight:500;">📡 Firewall Bypass</span>
+        <span class="badge-cyan"   style="padding:5px 11px;border-radius:999px;font-size:11px;font-weight:500;">👥 Multi-Receiver</span>
+        <span class="badge-green"  style="padding:5px 11px;border-radius:999px;font-size:11px;font-weight:500;">💥 Auto-Destruct</span>
+        <span class="badge-green"  style="padding:5px 11px;border-radius:999px;font-size:11px;font-weight:500;">⏸ Resume on Drop</span>
       </div>
     </div>
-  </div>
+  </div><!-- /screen-landing -->
 
   <!-- ════ SEND ════ -->
   <div id="screen-send" class="screen">
@@ -258,7 +317,7 @@
       <button onclick="goHome()" class="btn-ghost" style="padding:8px 14px;">← Back</button>
       <div>
         <div style="font-size:17px;font-weight:700;">Send Files</div>
-        <div style="font-size:11px;color:var(--text-muted);">Share a 6-char code · Multi-receiver broadcast</div>
+        <div style="font-size:11px;color:var(--text-muted);">Share a 6-char code · Multi-receiver</div>
       </div>
       <div style="flex:1;"></div>
       <div style="display:flex;gap:6px;">
@@ -268,12 +327,13 @@
       </div>
     </div>
 
-    <!-- SEND STEP 1: file select -->
+    <!-- SEND STEP 1: file select + config -->
     <div id="s-step-1">
+
       <!-- Network Config -->
-      <div class="glass-card" style="padding:0;overflow:hidden;margin-bottom:16px;">
+      <div class="glass-card" style="padding:0;overflow:hidden;margin-bottom:12px;">
         <button onclick="toggleConf('s')" style="width:100%;display:flex;align-items:center;justify-content:space-between;
-          padding:14px 16px;cursor:pointer;background:transparent;border:none;color:#fff;">
+          padding:13px 16px;cursor:pointer;background:transparent;border:none;color:#fff;">
           <span style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:500;color:rgba(255,255,255,0.65);">
             📡 Network Config <span style="font-size:11px;color:var(--text-muted);">STUN / TURN</span>
           </span>
@@ -282,21 +342,73 @@
         <div class="config-content" id="conf-s">
           <div style="padding:0 16px 16px;">
             <div class="label" style="margin-bottom:8px;">Built-in STUN Servers</div>
-            <div class="mono glass" style="font-size:10px;line-height:1.8;color:rgba(123,92,246,0.8);padding:12px;border-radius:10px;margin-bottom:16px;">
-              stun.l.google.com:19302<br/>stun1.l.google.com:19302<br/>stun.cloudflare.com:3478<br/>stun.mozilla.com<br/>stun.stunprotocol.org:3478
+            <div class="mono glass" style="font-size:10px;line-height:1.8;color:rgba(123,92,246,0.8);padding:10px 12px;border-radius:10px;margin-bottom:14px;">
+              stun.l.google.com:19302 · stun1.l.google.com:19302<br/>
+              stun.cloudflare.com:3478 · stun.mozilla.com
             </div>
-            <div style="background:rgba(6,182,212,0.06);border:1px solid rgba(6,182,212,0.2);border-radius:10px;padding:12px;margin-bottom:12px;">
-              <div class="label" style="color:rgba(6,182,212,0.7);margin-bottom:6px;">🌐 Global Mode — Free TURN Relays</div>
-              <div class="mono" style="font-size:10px;color:rgba(255,255,255,0.45);line-height:1.8;">
-                openrelay.metered.ca:80 · :443 · TCP<br/>
-                <span style="color:rgba(255,255,255,0.25);">Enabled automatically in Global mode</span>
+            <div style="background:rgba(6,182,212,0.06);border:1px solid rgba(6,182,212,0.18);border-radius:10px;padding:11px;margin-bottom:12px;">
+              <div class="label" style="color:rgba(6,182,212,0.7);margin-bottom:5px;">🌐 Global Mode — Free TURN Relays</div>
+              <div class="mono" style="font-size:10px;color:rgba(255,255,255,0.4);">openrelay.metered.ca :80 :443 — auto-enabled in Global mode</div>
+            </div>
+            <div class="label" style="margin-bottom:8px;">Custom TURN Relay (optional)</div>
+            <input type="url" id="turn-url-s" placeholder="turn:your-server.com:3478" style="width:100%;padding:9px 12px;margin-bottom:8px;"/>
+            <div style="display:flex;gap:8px;">
+              <input type="text" id="turn-user-s" placeholder="username" style="flex:1;padding:9px 12px;"/>
+              <input type="text" id="turn-pass-s" placeholder="password" style="flex:1;padding:9px 12px;"/>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ SECURITY PANEL ══ -->
+      <div class="glass-card" style="padding:0;overflow:hidden;margin-bottom:12px;">
+        <button onclick="toggleConf('sec-s')" style="width:100%;display:flex;align-items:center;justify-content:space-between;
+          padding:13px 16px;cursor:pointer;background:transparent;border:none;color:#fff;">
+          <span style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:500;color:rgba(255,255,255,0.65);">
+            🔐 Security
+            <span id="sec-s-badges" style="display:flex;gap:4px;"></span>
+          </span>
+          <span id="chev-sec-s" style="transition:transform 0.3s;font-size:12px;color:var(--text-muted);">▼</span>
+        </button>
+        <div class="config-content" id="conf-sec-s">
+          <div style="padding:0 16px 16px;">
+
+            <!-- AES-GCM Password -->
+            <div style="background:rgba(34,197,94,0.05);border:1px solid rgba(34,197,94,0.15);border-radius:12px;padding:14px;margin-bottom:12px;">
+              <div class="toggle-row">
+                <div>
+                  <div class="toggle-label-text">🔑 Password Protect</div>
+                  <div class="toggle-sub">AES-256-GCM · encrypted per-chunk</div>
+                </div>
+                <label class="toggle-switch">
+                  <input type="checkbox" id="enc-toggle" onchange="onEncToggle()"/>
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+              <div id="enc-password-wrap" style="display:none;margin-top:10px;">
+                <input type="password" id="enc-password" placeholder="Enter passphrase"
+                  style="width:100%;padding:10px 12px;"
+                  oninput="validateEncPassword()"
+                  autocomplete="new-password"/>
+                <div id="enc-strength" style="margin-top:6px;font-size:11px;color:var(--text-muted);"></div>
               </div>
             </div>
-            <div class="label" style="margin-bottom:8px;">Custom TURN Relay (optional override)</div>
-            <input type="url" id="turn-url-s" placeholder="turn:your-server.com:3478" style="width:100%;padding:10px 12px;margin-bottom:8px;"/>
-            <div style="display:flex;gap:8px;">
-              <input type="text" id="turn-user-s" placeholder="username" style="flex:1;padding:10px 12px;"/>
-              <input type="text" id="turn-pass-s" placeholder="password" style="flex:1;padding:10px 12px;"/>
+
+            <!-- Auto-Destruct -->
+            <div style="background:rgba(239,68,68,0.05);border:1px solid rgba(239,68,68,0.12);border-radius:12px;padding:14px;">
+              <div class="toggle-row">
+                <div>
+                  <div class="toggle-label-text">💥 Auto-Destruct</div>
+                  <div class="toggle-sub">Destroy session after verified transfer</div>
+                </div>
+                <label class="toggle-switch">
+                  <input type="checkbox" id="autodestruct-toggle" onchange="onAutoDestructToggle()"/>
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+              <p id="autodestruct-hint" style="display:none;font-size:11px;color:rgba(239,68,68,0.7);margin-top:6px;line-height:1.5;">
+                Peer ID and connection are permanently revoked the moment the receiver confirms integrity via SHA-256.
+              </p>
             </div>
           </div>
         </div>
@@ -304,69 +416,71 @@
 
       <!-- Drop Zone -->
       <div id="drop-zone" class="drop-zone glass-card"
-        style="padding:40px;text-align:center;border-radius:20px;margin-bottom:16px;"
+        style="padding:36px;text-align:center;border-radius:20px;margin-bottom:12px;"
         onclick="pickFiles()" ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event)">
-        <div class="float-icon" style="display:inline-block;margin-bottom:16px;font-size:40px;">📄</div>
-        <div style="font-size:16px;font-weight:600;margin-bottom:6px;">Drop files or click to browse</div>
-        <div style="font-size:13px;color:var(--text-muted);">Any type · Any size · Multi-file auto-zipped</div>
+        <div class="float-icon" style="display:inline-block;margin-bottom:14px;font-size:38px;">📄</div>
+        <div style="font-size:15px;font-weight:600;margin-bottom:5px;">Drop files or click to browse</div>
+        <div style="font-size:12px;color:var(--text-muted);">Any type · Any size · Multi-file auto-zipped</div>
         <input type="file" id="file-fallback" multiple style="display:none;" onchange="onFileInput(this.files)"/>
       </div>
 
       <!-- File list -->
       <div id="files-panel" style="display:none;" class="glass-card">
-        <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 16px 0;">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px 0;">
           <div style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;">
             📦 <span id="files-count-lbl">0 files</span>
           </div>
           <span class="mono" id="files-size-lbl" style="font-size:11px;color:var(--text-muted);"></span>
         </div>
-        <div id="files-list" style="padding:12px 16px 16px;max-height:140px;overflow-y:auto;"></div>
+        <div id="files-list" style="padding:10px 16px 14px;max-height:130px;overflow-y:auto;"></div>
       </div>
 
-      <div style="margin-top:16px;">
+      <div style="margin-top:14px;">
         <button id="btn-start" onclick="startSenderSession()" disabled class="btn-primary"
-          style="width:100%;padding:16px 24px;font-size:15px;display:flex;align-items:center;justify-content:center;gap:10px;">
+          style="width:100%;padding:15px 24px;font-size:15px;display:flex;align-items:center;justify-content:center;gap:10px;">
           🚀 Generate Code &amp; Start Session
         </button>
       </div>
-    </div>
+    </div><!-- /s-step-1 -->
 
     <!-- SEND STEP 2: show code, wait for receivers -->
     <div id="s-step-2" style="display:none;">
-      <div class="glass-card" style="padding:28px;text-align:center;margin-bottom:16px;">
-        <div class="label" style="margin-bottom:16px;">📶 Share this code with receivers</div>
+      <div class="glass-card" style="padding:26px;text-align:center;margin-bottom:14px;">
+        <div class="label" style="margin-bottom:14px;">📶 Share this code with receivers</div>
         <div class="code-boxes" id="code-display"></div>
-        <div style="display:flex;align-items:center;justify-content:center;gap:10px;margin-top:16px;">
-          <button onclick="copyCode()" class="btn-ghost" style="padding:8px 16px;font-size:12px;">📋 Copy Code</button>
+        <!-- Active security badges shown below the code -->
+        <div id="active-sec-badges" style="display:flex;justify-content:center;gap:6px;margin-top:12px;"></div>
+        <div style="display:flex;align-items:center;justify-content:center;gap:10px;margin-top:14px;">
+          <button onclick="copyCode()" class="btn-ghost" style="padding:7px 14px;font-size:12px;">📋 Copy</button>
           <span class="mono" style="font-size:11px;color:var(--text-muted);">Multiple peers can connect</span>
         </div>
       </div>
 
-      <div class="glass-card" style="padding:20px;margin-bottom:16px;text-align:center;">
-        <div class="label" style="margin-bottom:12px;">🔲 QR Code</div>
+      <div class="glass-card" style="padding:18px;margin-bottom:14px;text-align:center;">
+        <div class="label" style="margin-bottom:10px;">🔲 QR Code</div>
         <div id="qr-sender" style="display:flex;justify-content:center;"></div>
       </div>
 
-      <!-- Waiting / receiver list -->
-      <div class="glass-card" style="padding:24px;">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+      <!-- Receiver list / waiting -->
+      <div class="glass-card" style="padding:22px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
           <div style="font-size:14px;font-weight:600;">Receivers</div>
           <div id="receiver-count-badge" style="font-size:11px;font-weight:600;color:var(--text-muted);
             background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:999px;padding:3px 10px;">
             0 connected
           </div>
         </div>
-        <div id="waiting-indicator" style="text-align:center;padding:20px 0;">
-          <div class="pulse-wrap" style="width:48px;height:48px;margin:0 auto 12px;position:relative;">
+        <div id="waiting-indicator" style="text-align:center;padding:16px 0;">
+          <div class="pulse-wrap" style="width:44px;height:44px;margin:0 auto 10px;position:relative;">
             <div class="pulse-ring-el" style="background:rgba(123,92,246,0.15);inset:0;position:absolute;border-radius:50%;"></div>
-            <div class="pulse-core" style="width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;
-              background:rgba(123,92,246,0.2);border:1px solid rgba(123,92,246,0.3);position:relative;z-index:1;font-size:14px;">📶</div>
+            <div class="pulse-core" style="width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+              background:rgba(123,92,246,0.2);border:1px solid rgba(123,92,246,0.3);position:relative;z-index:1;font-size:13px;">📶</div>
           </div>
           <div style="font-size:13px;color:var(--text-muted);">Waiting for receivers...</div>
         </div>
         <div id="receivers-list" style="display:none;"></div>
       </div>
-    </div>
+    </div><!-- /s-step-2 -->
 
     <!-- SEND STEP 3: active transfer -->
     <div id="s-step-3" style="display:none;">
@@ -389,9 +503,9 @@
       </div>
     </div>
 
-    <!-- RECEIVE STEP 1: code input -->
+    <!-- RECEIVE STEP 1 -->
     <div id="r-step-1">
-      <!-- Resume banner (shown if IDB has partial data) -->
+      <!-- Resume banner -->
       <div id="resume-banner" class="resume-banner" style="display:none;">
         <div style="display:flex;align-items:center;gap:12px;">
           <span style="font-size:20px;">⏸</span>
@@ -404,42 +518,64 @@
       </div>
 
       <!-- Network Config -->
-      <div class="glass-card" style="padding:0;overflow:hidden;margin-bottom:16px;">
+      <div class="glass-card" style="padding:0;overflow:hidden;margin-bottom:12px;">
         <button onclick="toggleConf('r')" style="width:100%;display:flex;align-items:center;justify-content:space-between;
-          padding:14px 16px;cursor:pointer;background:transparent;border:none;color:#fff;">
+          padding:13px 16px;cursor:pointer;background:transparent;border:none;color:#fff;">
           <span style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:500;color:rgba(255,255,255,0.65);">
-            📡 Network Config <span style="font-size:11px;color:var(--text-muted);">optional TURN relay</span>
+            📡 Network Config
           </span>
           <span id="chev-r" style="transition:transform 0.3s;font-size:12px;color:var(--text-muted);">▼</span>
         </button>
         <div class="config-content" id="conf-r">
           <div style="padding:0 16px 16px;">
-            <div class="label" style="margin-bottom:8px;">Custom TURN Relay</div>
-            <input type="url" id="turn-url-r" placeholder="turn:openrelay.metered.ca:80" style="width:100%;padding:10px 12px;margin-bottom:8px;"/>
+            <div class="label" style="margin-bottom:8px;">Custom TURN Relay (optional)</div>
+            <input type="url" id="turn-url-r" placeholder="turn:openrelay.metered.ca:80" style="width:100%;padding:9px 12px;margin-bottom:8px;"/>
             <div style="display:flex;gap:8px;">
-              <input type="text" id="turn-user-r" placeholder="username" style="flex:1;padding:10px 12px;"/>
-              <input type="text" id="turn-pass-r" placeholder="password" style="flex:1;padding:10px 12px;"/>
+              <input type="text" id="turn-user-r" placeholder="username" style="flex:1;padding:9px 12px;"/>
+              <input type="text" id="turn-pass-r" placeholder="password" style="flex:1;padding:9px 12px;"/>
             </div>
           </div>
         </div>
       </div>
 
-      <div class="glass-card" style="padding:24px;margin-bottom:16px;">
-        <div class="label" style="margin-bottom:16px;text-align:center;">Enter the sender's code</div>
+      <!-- Security: decryption password -->
+      <div class="glass-card" style="padding:0;overflow:hidden;margin-bottom:12px;">
+        <button onclick="toggleConf('sec-r')" style="width:100%;display:flex;align-items:center;justify-content:space-between;
+          padding:13px 16px;cursor:pointer;background:transparent;border:none;color:#fff;">
+          <span style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:500;color:rgba(255,255,255,0.65);">
+            🔐 Decryption Password
+            <span style="font-size:11px;color:var(--text-muted);">if sender encrypted</span>
+          </span>
+          <span id="chev-sec-r" style="transition:transform 0.3s;font-size:12px;color:var(--text-muted);">▼</span>
+        </button>
+        <div class="config-content" id="conf-sec-r">
+          <div style="padding:0 16px 16px;">
+            <p style="font-size:12px;color:var(--text-muted);margin-bottom:10px;line-height:1.5;">
+              If the sender enabled password protection, enter the same passphrase here before connecting.
+            </p>
+            <input type="password" id="recv-password" placeholder="Enter passphrase"
+              style="width:100%;padding:10px 12px;" autocomplete="current-password"/>
+          </div>
+        </div>
+      </div>
+
+      <!-- Code input -->
+      <div class="glass-card" style="padding:22px;margin-bottom:14px;">
+        <div class="label" style="margin-bottom:14px;text-align:center;">Enter the sender's code</div>
         <input type="text" id="code-input" class="code-input-field" maxlength="6"
           placeholder="● ● ● ● ● ●"
           oninput="this.value=this.value.toUpperCase().replace(/[^A-Z0-9]/g,'');checkCodeReady()"
           onkeydown="if(event.key==='Enter')connectToSender()"/>
-        <p style="font-size:12px;color:var(--text-muted);text-align:center;margin-top:12px;">6 letters and numbers, no spaces</p>
+        <p style="font-size:12px;color:var(--text-muted);text-align:center;margin-top:10px;">6 letters and numbers</p>
       </div>
 
       <button id="btn-connect" onclick="connectToSender()" disabled class="btn-primary"
-        style="width:100%;padding:16px 24px;font-size:15px;display:flex;align-items:center;justify-content:center;gap:10px;">
+        style="width:100%;padding:15px 24px;font-size:15px;display:flex;align-items:center;justify-content:center;gap:10px;">
         🔗 Connect &amp; Receive
       </button>
-    </div>
+    </div><!-- /r-step-1 -->
 
-    <!-- RECEIVE STEP 2: transfer progress -->
+    <!-- RECEIVE STEP 2 -->
     <div id="r-step-2" style="display:none;">
       <div id="recv-progress-area"></div>
     </div>
@@ -450,8 +586,8 @@
 <!-- TOAST -->
 <div id="toast" style="display:none;position:fixed;z-index:9999;bottom:24px;left:50%;transform:translateX(-50%);
   background:rgba(10,12,28,0.9);border:1px solid rgba(255,255,255,0.1);
-  backdrop-filter:blur(20px);padding:12px 18px;border-radius:14px;
-  align-items:center;gap:10px;min-width:220px;max-width:400px;white-space:nowrap;">
+  backdrop-filter:blur(20px);padding:11px 16px;border-radius:14px;
+  align-items:center;gap:10px;min-width:200px;max-width:400px;white-space:nowrap;">
   <span id="toast-icon-el" style="font-size:16px;"></span>
   <span id="toast-msg" style="font-size:13px;font-weight:500;"></span>
 </div>
@@ -469,234 +605,574 @@
 //  DEBUG LOGGER
 // ══════════════════════════════════════════════════════════════
 const _t0 = performance.now();
-function dbg(sec,msg,data){const ts=((performance.now()-_t0)/1000).toFixed(3);data!==undefined?console.log(`[GS:${sec}] +${ts}s`,msg,data):console.log(`[GS:${sec}] +${ts}s`,msg);}
-function dbgWarn(sec,msg,d){const ts=((performance.now()-_t0)/1000).toFixed(3);console.warn(`[GS:${sec}] ⚠ +${ts}s`,msg,d||'');}
-function dbgErr(sec,msg,e){const ts=((performance.now()-_t0)/1000).toFixed(3);console.error(`[GS:${sec}] ✖ +${ts}s`,msg,e||'');}
-
-dbg('BOOT','══════════ GhostShare v4 initializing ══════════');
+function dbg(sec,msg,d){const ts=((performance.now()-_t0)/1e3).toFixed(3);d!==undefined?console.log(`[GS:${sec}] +${ts}s`,msg,d):console.log(`[GS:${sec}] +${ts}s`,msg);}
+function dbgWarn(sec,msg,d){const ts=((performance.now()-_t0)/1e3).toFixed(3);console.warn(`[GS:${sec}] ⚠ +${ts}s`,msg,d||'');}
+function dbgErr(sec,msg,e){const ts=((performance.now()-_t0)/1e3).toFixed(3);console.error(`[GS:${sec}] ✖ +${ts}s`,msg,e||'');}
+dbg('BOOT','══════════ GhostShare v5 init ══════════');
 
 // ══════════════════════════════════════════════════════════════
 //  CONSTANTS
 // ══════════════════════════════════════════════════════════════
-/** 64 KB chunks: below WebRTC DC limits, enables O(1) memory usage */
-const CHUNK_SIZE   = 64 * 1024;
+const CHUNK_SIZE  = 64 * 1024;          // 64 KB per chunk
+const HIGH_WATER  = 8  * 1024 * 1024;   // 8 MB backpressure ceiling
+const LOW_WATER   = 1  * 1024 * 1024;   // 1 MB backpressure floor
 
-/** Backpressure: pause sending when DC buffer > 8 MB, resume at 1 MB */
-const HIGH_WATER   = 8  * 1024 * 1024;
-const LOW_WATER    = 1  * 1024 * 1024;
-
-/**
- * FREE_TURN_SERVERS: openrelay.metered.ca is a permanently-free,
- * no-API-key TURN relay maintained by metered.ca for community use.
- * Global mode appends these to the STUN list for firewall bypass.
- */
 const FREE_TURN_SERVERS = [
-  { urls: 'turn:openrelay.metered.ca:80'              },
-  { urls: 'turn:openrelay.metered.ca:443'             },
-  { urls: 'turns:openrelay.metered.ca:443'            },
-  { urls: 'turn:openrelay.metered.ca:80?transport=tcp'},
+  { urls:'turn:openrelay.metered.ca:80' },
+  { urls:'turn:openrelay.metered.ca:443' },
+  { urls:'turns:openrelay.metered.ca:443' },
+  { urls:'turn:openrelay.metered.ca:80?transport=tcp' },
 ];
 
 const STUN_SERVERS = [
-  { urls: 'stun:stun.l.google.com:19302'     },
-  { urls: 'stun:stun1.l.google.com:19302'    },
-  { urls: 'stun:stun.cloudflare.com:3478'    },
-  { urls: 'stun:stun.mozilla.com'            },
-  { urls: 'stun:stun.stunprotocol.org:3478'  },
+  { urls:'stun:stun.l.google.com:19302'   },
+  { urls:'stun:stun1.l.google.com:19302'  },
+  { urls:'stun:stun.cloudflare.com:3478'  },
+  { urls:'stun:stun.mozilla.com'          },
+  { urls:'stun:stun.stunprotocol.org:3478'},
 ];
 
 // ══════════════════════════════════════════════════════════════
-//  GLOBAL STATE
-// ══════════════════════════════════════════════════════════════
-let isGlobal      = false;          // Local vs Global mode
-let peer          = null;           // PeerJS Peer instance
-let isSender      = false;
-
-// ── Sender-specific ──────────────────────────────────────────
-/**
- * connections[]: Array of active receiver connection objects.
- * Each entry: { id, conn, fromChunk, sentBytes, status, cardEl }
- *   id        – short display ID (last 4 chars of PeerJS remote ID)
- *   conn      – PeerJS DataConnection
- *   fromChunk – chunk offset for resume (set when receiver sends 'hello')
- *   sentBytes – bytes delivered to this receiver
- *   status    – 'waiting'|'active'|'paused'|'done'|'error'
- *   cardEl    – DOM element for this receiver's card
- */
-let connections   = [];
-
-// File state
-let selectedFiles = [];
-let transferBlob  = null;           // { blob, name } after buildBlob()
-let totalBytes    = 0;
-let xferStart     = 0;
-let globalIsPaused = false;         // sender-side global pause
-
-// Speed tracking (sender aggregate)
-let speedWindow   = [];
-let speedHistory  = [];
-let lastPerfTime  = 0;
-let lastPerfBytes = 0;
-
-// Sender Merkle
-let senderChunkHashes = [];
-
-// ── Receiver-specific ────────────────────────────────────────
-let recvConn      = null;           // single DataConnection (receiver)
-let inMeta        = null;           // { name, size, mime, chunks, transferId }
-let inChunks      = [];             // ArrayBuffer[] indexed by chunk number
-let recvChunkHashes = [];           // Uint8Array[] per chunk SHA-256
-let recvBytes     = 0;
-let recvFromChunk = 0;              // resume offset
-let recvIsPaused  = false;          // receiver-side pause
-let pauseResolve  = null;           // resolves the sender pause Promise
-
-// Timers
-let elapsedTimer  = null;
-let myCode        = null;
-
-// ══════════════════════════════════════════════════════════════
-//  INDEXEDDB RESUME MODULE
+//  ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀
+//  MODULE: AES_CRYPTO
+//  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄
 //
-//  Persists received chunks to IndexedDB so transfers can survive
-//  browser crashes, tab closures, and network drops.
+//  AES-256-GCM encryption for individual 64 KB chunks.
 //
-//  Schema:
-//   DB  : "ghostshare-v4"
-//   Store "transfers" : { transferId, name, size, mime, totalChunks,
-//                         receivedCount, timestamp }
-//   Store "chunks"    : key="${transferId}:${idx}" → ArrayBuffer
+//  KEY DERIVATION:
+//    PBKDF2(password, salt, 210_000 iterations, SHA-256) → 256-bit key
+//    - 210,000 iterations matches OWASP 2024 recommendation for PBKDF2-SHA256
+//    - Salt: 16 random bytes generated fresh each sender session
+//    - Salt travels in the META control message (public, not secret)
+//
+//  PER-CHUNK ENCRYPTION:
+//    For each chunk: generate 12-byte random IV, run AES-GCM encrypt
+//    Wire format:  [12 bytes IV][N bytes ciphertext+tag]
+//    The 16-byte GCM authentication tag is appended by SubtleCrypto
+//    automatically, so ciphertext is (chunk + 16) bytes longer than
+//    the plaintext. This is transparent to the rest of the code.
+//
+//  WHY PER-CHUNK IVs?
+//    Reusing an IV with AES-GCM on the same key is catastrophic.
+//    Because each chunk uses a fresh random IV the keys can be
+//    derived once and safely reused across all chunks.
+//
+//  HASH INTEGRITY:
+//    Merkle hashes are computed over the PLAINTEXT (post-decrypt) so
+//    integrity is verified on the actual file content, not the cipher.
+// ══════════════════════════════════════════════════════════════
+const AES_CRYPTO = (() => {
+  const ALG = 'AES-GCM';
+  const IV_LEN = 12;   // 96-bit IV: GCM standard, maximally efficient
+  const KDF_ITER = 210_000;
+
+  /** Derive a 256-bit AES-GCM key from a password + salt via PBKDF2 */
+  async function deriveKey(password, saltBytes) {
+    const enc = new TextEncoder();
+    const raw = await crypto.subtle.importKey(
+      'raw', enc.encode(password), 'PBKDF2', false, ['deriveKey']
+    );
+    return crypto.subtle.deriveKey(
+      { name:'PBKDF2', salt:saltBytes, iterations:KDF_ITER, hash:'SHA-256' },
+      raw,
+      { name:ALG, length:256 },
+      false,
+      ['encrypt','decrypt']
+    );
+  }
+
+  /**
+   * Encrypt one ArrayBuffer chunk.
+   * Returns ArrayBuffer: [12-byte IV][encrypted+tag]
+   */
+  async function encryptChunk(key, buffer) {
+    const iv         = crypto.getRandomValues(new Uint8Array(IV_LEN));
+    const ciphertext = await crypto.subtle.encrypt({ name:ALG, iv }, key, buffer);
+    const out = new Uint8Array(IV_LEN + ciphertext.byteLength);
+    out.set(iv, 0);
+    out.set(new Uint8Array(ciphertext), IV_LEN);
+    return out.buffer;
+  }
+
+  /**
+   * Decrypt one ArrayBuffer chunk.
+   * Input: [12-byte IV][ciphertext+tag]
+   * Returns plaintext ArrayBuffer.
+   */
+  async function decryptChunk(key, buffer) {
+    const iv         = new Uint8Array(buffer, 0, IV_LEN);
+    const ciphertext = buffer.slice(IV_LEN);
+    return crypto.subtle.decrypt({ name:ALG, iv }, key, ciphertext);
+  }
+
+  /** Generate a random 16-byte salt and return as hex string */
+  function genSalt() {
+    const b = new Uint8Array(16);
+    crypto.getRandomValues(b);
+    return bufToHex(b);
+  }
+
+  return { deriveKey, encryptChunk, decryptChunk, genSalt };
+})();
+
+// ══════════════════════════════════════════════════════════════
+//  ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀
+//  MODULE: LINK_PAIR
+//  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄
+//
+//  Persistent device pairing for zero-click transfers.
+//
+//  HOW IT WORKS:
+//    1. User generates an 8-char token and stores it in localStorage.
+//    2. Both devices store the same token.
+//    3. On page load, the app tries to register PeerJS ID `GSLNK${token}`
+//       as the "host". If that ID is already taken, it becomes the "guest"
+//       and connects to the host. There is no server — PeerJS broker only
+//       relays the SDP handshake.
+//    4. Once paired, any sender session that starts broadcasts its code
+//       over the link channel via { type:'auto-connect', code:'...' }.
+//    5. The partner's page auto-navigates to Receive and connects using
+//       that code without the user touching anything.
+//
+//  TOKENS:
+//    - 8-character alphanumeric, stored in localStorage under 'gs_link_v5'
+//    - The PeerJS peer ID is `GSLNK` + token (13 chars total, no special chars)
+//    - Tokens are permanent — the link survives page refreshes and restarts
+//
+//  RECONNECTION:
+//    If the partner drops, we retry becoming host (or guest) every ~8 seconds.
+//    This handles network blips and tab restarts gracefully.
+// ══════════════════════════════════════════════════════════════
+const LINK_PAIR = (() => {
+  const LS_KEY      = 'gs_link_v5';
+  const PEER_PREFIX = 'GSLNK';        // 5 chars + 8-char token = 13 char peer ID
+  let _token  = null;
+  let _peer   = null;
+  let _conn   = null;
+  let _retryT = null;
+
+  // ── Public API ────────────────────────────────────────────
+
+  function init() {
+    _token = localStorage.getItem(LS_KEY);
+    _renderUI();
+    if (_token) _start();
+  }
+
+  function generate() {
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    const b = new Uint8Array(8);
+    crypto.getRandomValues(b);
+    _token = Array.from(b).map(x => chars[x % chars.length]).join('');
+    localStorage.setItem(LS_KEY, _token);
+    _renderUI();
+    _start();
+    showToast('Link token created — share it with your partner!','🔗','cyan');
+  }
+
+  function saveToken(raw) {
+    const t = (raw || '').trim().toUpperCase().replace(/[^A-Z0-9]/g,'');
+    if (t.length !== 8) { showToast('Token must be 8 characters','⚠️','red'); return; }
+    _token = t;
+    localStorage.setItem(LS_KEY, _token);
+    if (_peer) { try { _peer.destroy(); } catch(e){} _peer = null; }
+    _renderUI();
+    _start();
+    showToast('Token saved — searching for partner...','🔗','cyan');
+  }
+
+  function clear() {
+    _cleanup();
+    _token = null;
+    localStorage.removeItem(LS_KEY);
+    _renderUI();
+    _updateBadge(false);
+    showToast('Link token removed','🗑️','violet');
+  }
+
+  function isOnline() {
+    return !!(_conn && _conn.open);
+  }
+
+  /**
+   * Called by the sender after peer.on('open') fires.
+   * Broadcasts the 6-char code to the linked partner so they
+   * can auto-connect without the user doing anything.
+   */
+  function broadcast(code) {
+    if (!isOnline()) return;
+    try {
+      _conn.send(JSON.stringify({ type:'auto-connect', code }));
+      dbg('LINK',`Broadcast auto-connect code="${code}"`);
+      showToast('Sending to paired device automatically ⚡','🔗','cyan');
+    } catch(e) { dbgErr('LINK','broadcast failed:',e); }
+  }
+
+  // ── Private helpers ───────────────────────────────────────
+
+  function _peerId() { return `${PEER_PREFIX}${_token}`; }
+
+  function _start() {
+    if (!_token) return;
+    clearTimeout(_retryT);
+    // Try to register as host; if taken, become guest
+    _peer = new Peer(_peerId(), { debug:0 });
+    _peer.on('open', () => {
+      dbg('LINK',`Host registered: ${_peerId()}`);
+      _peer.on('connection', c => {
+        c.on('open', () => _onPartnerConn(c));
+      });
+    });
+    _peer.on('error', e => {
+      if (e.type === 'unavailable-id') {
+        // Another device is already host → become guest
+        dbg('LINK','ID taken → becoming guest');
+        try { _peer.destroy(); } catch(er){}
+        _peer = null;
+        _becomeGuest();
+      } else if (e.type === 'server-error' || e.type === 'network') {
+        // PeerJS server unreachable — retry silently
+        _retryT = setTimeout(() => _start(), 12000);
+      }
+    });
+  }
+
+  function _becomeGuest() {
+    if (!_token) return;
+    _peer = new Peer({ debug:0 });
+    _peer.on('open', () => {
+      const c = _peer.connect(_peerId(), { reliable:true });
+      c.on('open',  () => _onPartnerConn(c));
+      c.on('error', () => {
+        // Host offline — retry becoming host in 8s
+        _retryT = setTimeout(() => {
+          _cleanup();
+          _start();
+        }, 8000);
+      });
+    });
+    _peer.on('error', () => {
+      _retryT = setTimeout(() => { _cleanup(); _start(); }, 12000);
+    });
+  }
+
+  function _onPartnerConn(c) {
+    _conn = c;
+    dbg('LINK','Partner connected!');
+    _updateBadge(true);
+    showToast('Paired device is online!','🔗','cyan');
+    _renderUI(); // update status dot
+
+    c.on('data', raw => {
+      if (typeof raw !== 'string') return;
+      let msg;
+      try { msg = JSON.parse(raw); } catch(e) { return; }
+
+      if (msg.type === 'auto-connect') {
+        /**
+         * Partner is sending files. Navigate to Receive and
+         * auto-connect using the broadcasted code.
+         * setTimeout(0) to let the DOM settle before manipulating it.
+         */
+        dbg('LINK',`Auto-connect received, code="${msg.code}"`);
+        showToast('Partner is sending — auto-connecting... ⚡','⚡','cyan');
+        setTimeout(() => {
+          initReceive();
+          const inp = $('code-input');
+          if (inp) { inp.value = msg.code; checkCodeReady(); }
+          setTimeout(() => connectToSender(), 400);
+        }, 100);
+      }
+    });
+
+    c.on('close', () => {
+      dbg('LINK','Partner disconnected');
+      _conn = null;
+      _updateBadge(false);
+      _renderUI();
+      // Attempt to reclaim host role or reconnect as guest
+      _retryT = setTimeout(() => { _cleanup(); _start(); }, 6000);
+    });
+  }
+
+  function _cleanup() {
+    clearTimeout(_retryT);
+    if (_conn) { try { _conn.close(); } catch(e){} _conn = null; }
+    if (_peer) { try { _peer.destroy(); } catch(e){} _peer = null; }
+  }
+
+  function _updateBadge(online) {
+    const badge = $('link-badge');
+    if (badge) badge.style.display = online ? 'flex' : 'none';
+    // Also update the header indicator for the link panel
+    const hb = $('link-header-badge');
+    if (hb) hb.style.display = (_token) ? 'inline-flex' : 'none';
+    // Update status dot inside rendered UI
+    const dot = $('link-status-dot');
+    const lbl = $('link-status-lbl');
+    if (dot) dot.style.background = online ? '#22c55e' : '#f59e0b';
+    if (lbl) {
+      lbl.textContent = online ? 'Partner online' : 'Searching...';
+      lbl.style.color = online ? '#22c55e' : 'var(--text-muted)';
+    }
+    // Enable/disable the quick-send drop zone
+    const qdz = $('link-quick-send');
+    if (qdz) qdz.style.opacity = online ? '1' : '0.4';
+    if (qdz) qdz.style.pointerEvents = online ? 'auto' : 'none';
+  }
+
+  function _renderUI() {
+    const el = $('link-pair-section');
+    if (!el) return;
+
+    if (!_token) {
+      el.innerHTML = `
+        <p style="font-size:12px;color:var(--text-muted);margin-bottom:14px;line-height:1.6;">
+          Pair two devices once with a shared 8-char token.
+          Transfers auto-initiate — no code sharing ever again.
+        </p>
+        <button onclick="LINK_PAIR.generate()" class="btn-primary" style="width:100%;padding:10px;font-size:13px;margin-bottom:12px;">
+          ✨ Create Link Token
+        </button>
+        <div class="label" style="margin-bottom:6px;">Or enter a partner's token:</div>
+        <div style="display:flex;gap:8px;">
+          <input type="text" id="link-token-input" placeholder="ABCD1234"
+            style="flex:1;padding:8px 12px;text-transform:uppercase;letter-spacing:0.12em;font-size:14px;"
+            maxlength="8" oninput="this.value=this.value.toUpperCase().replace(/[^A-Z0-9]/g,'')"/>
+          <button onclick="LINK_PAIR.saveToken($('link-token-input').value)" class="btn-ghost" style="padding:8px 14px;font-size:12px;">
+            Save
+          </button>
+        </div>`;
+    } else {
+      const online = isOnline();
+      el.innerHTML = `
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div id="link-status-dot" style="width:9px;height:9px;border-radius:50%;background:${online?'#22c55e':'#f59e0b'};flex-shrink:0;transition:background 0.3s;"></div>
+            <span id="link-status-lbl" style="font-size:12px;font-weight:600;color:${online?'#22c55e':'var(--text-muted)'};">
+              ${online ? 'Partner online' : 'Searching...'}
+            </span>
+          </div>
+          <button onclick="LINK_PAIR.clear()" class="btn-danger" style="padding:5px 10px;font-size:11px;">Unlink</button>
+        </div>
+
+        <!-- Token display + copy -->
+        <div style="display:flex;align-items:center;gap:12px;background:rgba(6,182,212,0.06);border:1px solid rgba(6,182,212,0.18);border-radius:12px;padding:13px;margin-bottom:12px;">
+          <div class="link-token-display">${_token}</div>
+          <button onclick="navigator.clipboard?.writeText('${_token}').then(()=>showToast('Token copied!','✅','green'))"
+            class="btn-ghost" style="padding:5px 9px;font-size:11px;">📋</button>
+          <div style="flex:1;"></div>
+          <div id="link-qr" style="width:60px;height:60px;overflow:hidden;border-radius:8px;"></div>
+        </div>
+
+        <!-- Quick-send drop zone (enabled only when partner online) -->
+        <div id="link-quick-send"
+          style="opacity:${online?1:0.4};pointer-events:${online?'auto':'none'};"
+          class="drop-zone-link" style="padding:18px;text-align:center;"
+          onclick="linkQuickSend()" ondragover="onDragOver(event,true)"
+          ondragleave="onDragLeave(event,true)" ondrop="onDrop(event,true)">
+          <div style="font-size:24px;margin-bottom:6px;">⚡</div>
+          <div style="font-size:13px;font-weight:600;margin-bottom:4px;">Quick Send to Partner</div>
+          <div style="font-size:11px;color:var(--text-muted);">Drop file or click — zero-click on their end</div>
+        </div>`;
+
+      // Small QR code for the token
+      setTimeout(() => {
+        const qrEl = $('link-qr');
+        if (qrEl && typeof QRCode !== 'undefined') {
+          try {
+            new QRCode(qrEl, { text:_token, width:60, height:60,
+              colorDark:'#06B6D4', colorLight:'#030610',
+              correctLevel:QRCode.CorrectLevel.L });
+          } catch(e) {}
+        }
+      }, 80);
+    }
+  }
+
+  // Expose the update badge function so external code can call it on reconnect
+  return { init, generate, saveToken, clear, isOnline, broadcast, _renderUI, _updateBadge };
+})();
+
+// ══════════════════════════════════════════════════════════════
+//  INDEXEDDB RESUME MODULE (unchanged from v4, same schema)
 // ══════════════════════════════════════════════════════════════
 const IDB = (() => {
   let db = null;
-  const DB_NAME    = 'ghostshare-v4';
-  const DB_VERSION = 1;
+  const DB_NAME = 'ghostshare-v5';  // bumped version to avoid schema conflicts
 
   async function init() {
     return new Promise((resolve, reject) => {
-      const req = indexedDB.open(DB_NAME, DB_VERSION);
+      const req = indexedDB.open(DB_NAME, 1);
       req.onupgradeneeded = e => {
         const d = e.target.result;
         if (!d.objectStoreNames.contains('transfers'))
-          d.createObjectStore('transfers', { keyPath: 'transferId' });
+          d.createObjectStore('transfers', { keyPath:'transferId' });
         if (!d.objectStoreNames.contains('chunks'))
-          d.createObjectStore('chunks'); // key managed externally
+          d.createObjectStore('chunks');
       };
       req.onsuccess  = e => { db = e.target.result; resolve(db); };
-      req.onerror    = () => reject(req.error);
+      req.onerror    = ()  => reject(req.error);
     });
   }
 
-  /** Persist one chunk (non-blocking fire-and-forget) */
   function saveChunk(transferId, idx, buffer) {
     if (!db) return Promise.resolve();
     return new Promise((resolve, reject) => {
-      const tx  = db.transaction('chunks', 'readwrite');
-      const req = tx.objectStore('chunks').put(buffer, `${transferId}:${idx}`);
+      const tx = db.transaction('chunks','readwrite');
+      tx.objectStore('chunks').put(buffer, `${transferId}:${idx}`);
       tx.oncomplete = resolve;
       tx.onerror    = () => reject(tx.error);
     });
   }
 
-  /** Save or update the transfer meta record */
   function saveMeta(meta) {
     if (!db) return Promise.resolve();
     return new Promise((resolve, reject) => {
-      const tx  = db.transaction('transfers', 'readwrite');
-      const req = tx.objectStore('transfers').put({ ...meta, timestamp: Date.now() });
+      const tx = db.transaction('transfers','readwrite');
+      tx.objectStore('transfers').put({ ...meta, timestamp:Date.now() });
       tx.oncomplete = resolve;
       tx.onerror    = () => reject(tx.error);
     });
   }
 
-  /** Load the most recent incomplete transfer meta, or null */
   async function getLatestMeta() {
     if (!db) return null;
-    return new Promise((resolve) => {
-      const tx  = db.transaction('transfers', 'readonly');
-      const req = tx.objectStore('transfers').openCursor(null, 'prev');
+    return new Promise(resolve => {
+      const tx  = db.transaction('transfers','readonly');
+      const req = tx.objectStore('transfers').openCursor(null,'prev');
       req.onsuccess = e => resolve(e.target.result?.value || null);
       req.onerror   = () => resolve(null);
     });
   }
 
-  /** Load all stored chunks for a transfer → sparse array indexed by chunkIdx */
   async function loadChunks(transferId, totalChunks) {
     if (!db) return [];
     const chunks = new Array(totalChunks).fill(null);
-    return new Promise((resolve) => {
-      const tx    = db.transaction('chunks', 'readonly');
-      const store = tx.objectStore('chunks');
-      // Iterate over all keys for this transferId
-      const lower = `${transferId}:0`;
-      const upper = `${transferId}:\uffff`;
-      const range = IDBKeyRange.bound(lower, upper);
-      const req   = store.openCursor(range);
+    return new Promise(resolve => {
+      const tx    = db.transaction('chunks','readonly');
+      const range = IDBKeyRange.bound(`${transferId}:0`,`${transferId}:\uffff`);
+      const req   = tx.objectStore('chunks').openCursor(range);
       req.onsuccess = e => {
         const cursor = e.target.result;
         if (cursor) {
           const idx = parseInt(cursor.key.split(':')[1], 10);
           if (!isNaN(idx) && idx < totalChunks) chunks[idx] = cursor.value;
           cursor.continue();
-        } else {
-          resolve(chunks);
-        }
+        } else { resolve(chunks); }
       };
       req.onerror = () => resolve([]);
     });
   }
 
-  /** Delete all IDB data for a transfer (called on success) */
   function clearTransfer(transferId) {
     if (!db) return;
-    // Delete meta
-    const tx1 = db.transaction('transfers', 'readwrite');
+    const tx1 = db.transaction('transfers','readwrite');
     tx1.objectStore('transfers').delete(transferId);
-
-    // Delete all chunks for this transfer
-    const tx2  = db.transaction('chunks', 'readwrite');
+    const tx2  = db.transaction('chunks','readwrite');
     const store = tx2.objectStore('chunks');
-    const range = IDBKeyRange.bound(`${transferId}:0`, `${transferId}:\uffff`);
+    const range = IDBKeyRange.bound(`${transferId}:0`,`${transferId}:\uffff`);
     const req   = store.openCursor(range);
-    req.onsuccess = e => {
-      const cursor = e.target.result;
-      if (cursor) { cursor.delete(); cursor.continue(); }
-    };
-    dbg('IDB', `Cleared transfer ${transferId}`);
+    req.onsuccess = e => { const c = e.target.result; if(c){c.delete();c.continue();} };
   }
 
   return { init, saveChunk, saveMeta, getLatestMeta, loadChunks, clearTransfer };
 })();
 
 // ══════════════════════════════════════════════════════════════
+//  GLOBAL STATE
+// ══════════════════════════════════════════════════════════════
+let isGlobal        = false;
+let peer            = null;
+let isSender        = false;
+
+// Sender state
+let connections     = [];          // [{ id, conn, fromChunk, sentBytes, status, cardEl }]
+let selectedFiles   = [];
+let transferBlob    = null;        // { blob, name }
+let totalBytes      = 0;
+let xferStart       = 0;
+let globalIsPaused  = false;
+let pauseResolve    = null;
+let senderChunkHashes = [];
+let transferComplete  = false;     // suppresses disconnect toast after success
+
+// Receiver state
+let recvConn        = null;
+let inMeta          = null;
+let inChunks        = [];
+let recvChunkHashes = [];
+let recvBytes       = 0;
+let recvFromChunk   = 0;
+let recvIsPaused    = false;
+
+/**
+ * RECEIVE QUEUE:
+ * Data arrives on the WebRTC DataChannel synchronously and
+ * conn.on('data') is called immediately. Because chunk decryption
+ * is async (AES-GCM), we cannot await it inline. Instead, every
+ * incoming item is pushed to recvQueue and a sequential async
+ * processor drains it one item at a time. This guarantees:
+ *  - In-order processing even though decrypt is async
+ *  - No dropped chunks due to unhandled promise rejection
+ *  - Backpressure stays correct (inChunks indexed sequentially)
+ */
+const recvQueue       = [];
+let   recvProcessing  = false;
+
+// Speed tracking
+let speedWindow     = [];
+let speedHistory    = [];
+let lastPerfTime    = 0;
+let lastPerfBytes   = 0;
+let elapsedTimer    = null;
+let myCode          = null;
+
+// ── Security state ───────────────────────────────────────────
+
+/**
+ * encEnabled:    user toggled the password-protect switch
+ * encPassword:   the passphrase entered by the sender
+ * senderAesKey:  CryptoKey derived before the first chunk is sent
+ * senderSaltHex: 32-char hex of the 16-byte PBKDF2 salt; travels in META
+ * recvAesKey:    CryptoKey derived by receiver when META arrives
+ * autoDestruct:  destroy peer+conn the moment verify ACK is received
+ */
+let encEnabled      = false;
+let encPassword     = '';
+let senderAesKey    = null;
+let senderSaltHex   = '';
+let recvAesKey      = null;
+let autoDestruct    = false;
+
+// ══════════════════════════════════════════════════════════════
 //  UTILITIES
 // ══════════════════════════════════════════════════════════════
-
-/** 6-char code from unambiguous alphabet (no 0/O/1/I) */
 function genCode() {
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-  const bytes  = new Uint8Array(6);
-  crypto.getRandomValues(bytes);
-  return Array.from(bytes).map(b => chars[b % chars.length]).join('');
+  const b = new Uint8Array(6);
+  crypto.getRandomValues(b);
+  return Array.from(b).map(x => chars[x % chars.length]).join('');
 }
 
 function bufToHex(buf) {
   return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
 }
 
-/**
- * MERKLE HASH: hash each chunk individually then SHA-256 the concatenation.
- * Avoids loading the whole file into RAM for the digest.
- */
-async function computeMerkleHash(chunkHashList) {
-  if (!chunkHashList.length) return 'empty';
-  const combined = new Uint8Array(chunkHashList.length * 32);
-  chunkHashList.forEach((h, i) => combined.set(h, i * 32));
-  const final = await crypto.subtle.digest('SHA-256', combined);
-  return bufToHex(final);
+function hexToBytes(hex) {
+  const arr = new Uint8Array(hex.length / 2);
+  for (let i = 0; i < hex.length; i += 2) arr[i/2] = parseInt(hex.slice(i,i+2),16);
+  return arr;
 }
 
-/** Stable transfer ID from filename + size (no async needed) */
+/** Merkle root: SHA-256 of concatenated per-chunk SHA-256 hashes */
+async function computeMerkleHash(hashes) {
+  if (!hashes.length) return 'empty';
+  const combined = new Uint8Array(hashes.length * 32);
+  hashes.forEach((h,i) => combined.set(h, i*32));
+  return bufToHex(await crypto.subtle.digest('SHA-256', combined));
+}
+
 function makeTransferId(name, size) {
   return `${name.replace(/[^a-zA-Z0-9]/g,'_')}-${size}`;
 }
@@ -704,24 +1180,25 @@ function makeTransferId(name, size) {
 function fmtBytes(b) {
   if (!b) return '0 B';
   const u = ['B','KB','MB','GB','TB'];
-  const i = Math.floor(Math.log(b) / Math.log(1024));
-  return `${(b / Math.pow(1024, i)).toFixed(i > 0 ? 1 : 0)} ${u[i]}`;
+  const i = Math.floor(Math.log(b)/Math.log(1024));
+  return `${(b/Math.pow(1024,i)).toFixed(i>0?1:0)} ${u[i]}`;
 }
 
 function escHtml(s) {
-  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+  return String(s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
     .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 }
 
 function fileEmoji(name) {
-  const ext = (name.split('.').pop() || '').toLowerCase();
+  const ext = (name.split('.').pop()||'').toLowerCase();
   return ({pdf:'📄',doc:'📝',docx:'📝',txt:'📝',md:'📝',
-           jpg:'🖼',jpeg:'🖼',png:'🖼',gif:'🖼',webp:'🖼',svg:'🖼',
+           jpg:'🖼',jpeg:'🖼',png:'🖼',gif:'🖼',webp:'🖼',
            mp4:'🎬',mov:'🎬',mkv:'🎬',avi:'🎬',webm:'🎬',
            mp3:'🎵',wav:'🎵',flac:'🎵',aac:'🎵',
            zip:'📦',tar:'📦',gz:'📦',rar:'📦','7z':'📦',
-           js:'💻',ts:'💻',py:'💻',html:'💻',css:'💻',json:'💻',
-           xlsx:'📊',csv:'📊',exe:'⚙',dmg:'⚙'}[ext] || '📄');
+           js:'💻',ts:'💻',py:'💻',html:'💻',json:'💻',
+           xlsx:'📊',csv:'📊',exe:'⚙',dmg:'⚙'}[ext]||'📄');
 }
 
 // ══════════════════════════════════════════════════════════════
@@ -737,23 +1214,22 @@ function showFlex(id) { const e=$(id); if(e) e.style.display='flex'; }
 // ══════════════════════════════════════════════════════════════
 function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  const t = $(id);
-  if (t) t.classList.add('active');
+  const t = $(id); if(t) t.classList.add('active');
 }
 function goHome() {
-  dbg('NAV','goHome()');
   cleanup();
   showScreen('screen-landing');
   hide('conn-badge');
+  // Re-render link UI to restore quick-send zone etc.
+  LINK_PAIR._renderUI();
+  LINK_PAIR._updateBadge(LINK_PAIR.isOnline());
 }
 function initSend() {
-  dbg('NAV','initSend()');
   isSender = true;
   showScreen('screen-send');
   resetSendUI();
 }
 function initReceive() {
-  dbg('NAV','initReceive()');
   isSender = false;
   showScreen('screen-receive');
   resetReceiveUI();
@@ -761,45 +1237,98 @@ function initReceive() {
 }
 function resetSendUI() {
   show('s-step-1'); hide('s-step-2'); hide('s-step-3');
-  setStepDots(['sdot-1','sdot-2','sdot-3'], 0);
-  const btn = $('btn-start'); if (btn) btn.disabled = true;
+  setStepDots(['sdot-1','sdot-2','sdot-3'],0);
+  const btn = $('btn-start'); if(btn) btn.disabled = true;
   hide('files-panel');
-  const fl = $('files-list'); if (fl) fl.innerHTML = '';
+  const fl = $('files-list'); if(fl) fl.innerHTML = '';
   selectedFiles = [];
   connections   = [];
+  transferComplete = false;
 }
 function resetReceiveUI() {
   show('r-step-1'); hide('r-step-2');
-  setStepDots(['rdot-1','rdot-2'], 0);
-  const inp = $('code-input'); if (inp) { inp.value = ''; checkCodeReady(); }
+  setStepDots(['rdot-1','rdot-2'],0);
+  const inp = $('code-input'); if(inp) { inp.value=''; checkCodeReady(); }
+  recvQueue.length = 0;
+  recvProcessing   = false;
+  transferComplete = false;
 }
-function setStepDots(ids, activeIdx) {
-  ids.forEach((id, i) => {
-    const el = $(id); if (!el) return;
-    el.classList.toggle('active', i === activeIdx);
-  });
+function setStepDots(ids,activeIdx) {
+  ids.forEach((id,i)=>{ const e=$(id); if(e) e.classList.toggle('active',i===activeIdx); });
 }
 function showSendStep(n) {
   hide('s-step-1'); hide('s-step-2'); hide('s-step-3');
   show(`s-step-${n}`);
-  setStepDots(['sdot-1','sdot-2','sdot-3'], n - 1);
+  setStepDots(['sdot-1','sdot-2','sdot-3'],n-1);
 }
 function showReceiveStep(n) {
   hide('r-step-1'); hide('r-step-2');
   show(`r-step-${n}`);
-  setStepDots(['rdot-1','rdot-2'], n - 1);
+  setStepDots(['rdot-1','rdot-2'],n-1);
 }
 
 // ══════════════════════════════════════════════════════════════
-//  MODE TOGGLE: Local ↔ Global
+//  MODE TOGGLE
 // ══════════════════════════════════════════════════════════════
 function toggleMode() {
   isGlobal = !isGlobal;
   $('mode-local').classList.toggle('active', !isGlobal);
   $('mode-global').classList.toggle('active',  isGlobal);
   showToast(isGlobal ? '🌐 Global mode — TURN relay enabled' : '📶 Local mode — STUN only',
-            isGlobal ? '🌐' : '📶', isGlobal ? 'cyan' : 'violet');
-  dbg('MODE', isGlobal ? 'Global (STUN+TURN)' : 'Local (STUN only)');
+            isGlobal ? '🌐' : '📶', 'violet');
+}
+
+// ══════════════════════════════════════════════════════════════
+//  SECURITY UI HANDLERS
+// ══════════════════════════════════════════════════════════════
+function onEncToggle() {
+  encEnabled = !!$('enc-toggle')?.checked;
+  const wrap = $('enc-password-wrap');
+  if (wrap) wrap.style.display = encEnabled ? 'block' : 'none';
+  if (!encEnabled) { encPassword = ''; senderAesKey = null; }
+  _updateSecBadges();
+  dbg('SEC',`Encryption ${encEnabled?'enabled':'disabled'}`);
+}
+
+function onAutoDestructToggle() {
+  autoDestruct = !!$('autodestruct-toggle')?.checked;
+  const hint = $('autodestruct-hint');
+  if (hint) hint.style.display = autoDestruct ? 'block' : 'none';
+  _updateSecBadges();
+  dbg('SEC',`Auto-destruct ${autoDestruct?'armed':'disarmed'}`);
+}
+
+function validateEncPassword() {
+  const pwd = $('enc-password')?.value || '';
+  encPassword = pwd;
+  const el = $('enc-strength');
+  if (!el) return;
+  const len = pwd.length;
+  let txt = '', color = '';
+  if (len === 0)      { txt='';                      color=''; }
+  else if (len < 8)   { txt='⚠ Weak — too short';   color='#ef4444'; }
+  else if (len < 12)  { txt='◑ Fair';                color='#f59e0b'; }
+  else if (len < 20)  { txt='◕ Good';                color='#22c55e'; }
+  else                { txt='● Strong';              color='#a78bfa'; }
+  el.textContent = txt; el.style.color = color;
+}
+
+function _updateSecBadges() {
+  // Update the mini-badges visible in the closed security panel header
+  const el = $('sec-s-badges');
+  if (!el) return;
+  let html = '';
+  if (encEnabled)    html += `<span class="enc-badge">🔑 AES-256</span>`;
+  if (autoDestruct)  html += `<span class="destruct-badge">💥 Destruct</span>`;
+  el.innerHTML = html;
+
+  // Update the badges shown under the code in step 2
+  const ab = $('active-sec-badges');
+  if (!ab) return;
+  let abHtml = '';
+  if (encEnabled)    abHtml += `<span class="enc-badge">🔑 AES-256-GCM Encrypted</span>`;
+  if (autoDestruct)  abHtml += `<span class="destruct-badge">💥 Auto-Destruct Armed</span>`;
+  ab.innerHTML = abHtml;
 }
 
 // ══════════════════════════════════════════════════════════════
@@ -813,29 +1342,14 @@ function toggleConf(side) {
   if (chev) chev.style.transform = open ? 'rotate(180deg)' : '';
 }
 
-/**
- * Build ICE config:
- *  Local  → STUN only (fastest, works on same network)
- *  Global → STUN + free openrelay TURN (works across firewalls/NATs)
- *  + any user-provided custom TURN server
- */
 function buildIceConfig(side) {
   const iceServers = [...STUN_SERVERS];
-
-  if (isGlobal) {
-    iceServers.push(...FREE_TURN_SERVERS);
-    dbg('ICE', 'Global mode: added free TURN relays');
-  }
-
+  if (isGlobal) iceServers.push(...FREE_TURN_SERVERS);
   const url  = ($(`turn-url-${side}`)?.value  || '').trim();
   const user = ($(`turn-user-${side}`)?.value || '').trim();
   const pass = ($(`turn-pass-${side}`)?.value || '').trim();
-  if (url) {
-    dbg('ICE', `Custom TURN: ${url}`);
-    iceServers.push({ urls: url, username: user || undefined, credential: pass || undefined });
-  }
-
-  return { iceServers, iceCandidatePoolSize: 10 };
+  if (url) iceServers.push({ urls:url, username:user||undefined, credential:pass||undefined });
+  return { iceServers, iceCandidatePoolSize:10 };
 }
 
 // ══════════════════════════════════════════════════════════════
@@ -844,63 +1358,67 @@ function buildIceConfig(side) {
 async function pickFiles() {
   if ('showOpenFilePicker' in window) {
     try {
-      const handles = await window.showOpenFilePicker({ multiple: true });
-      selectedFiles = await Promise.all(handles.map(h => h.getFile()));
+      const h = await window.showOpenFilePicker({ multiple:true });
+      selectedFiles = await Promise.all(h.map(x => x.getFile()));
       renderFileList(selectedFiles);
-    } catch(e) {
-      if (e.name !== 'AbortError') $('file-fallback').click();
-    }
+    } catch(e) { if (e.name !== 'AbortError') $('file-fallback').click(); }
   } else {
     $('file-fallback').click();
   }
 }
-function onFileInput(fileList) {
-  selectedFiles = Array.from(fileList);
-  renderFileList(selectedFiles);
-}
-function onDragOver(e)  { e.preventDefault(); $('drop-zone')?.classList.add('drag-active'); }
-function onDragLeave(e) { $('drop-zone')?.classList.remove('drag-active'); }
-function onDrop(e) {
+function onFileInput(fl) { selectedFiles = Array.from(fl); renderFileList(selectedFiles); }
+function onDragOver(e, isLink=false)  { e.preventDefault(); $(isLink?'link-quick-send':'drop-zone')?.classList.add('drag-active'); }
+function onDragLeave(e, isLink=false) { $(isLink?'link-quick-send':'drop-zone')?.classList.remove('drag-active'); }
+function onDrop(e, isLink=false) {
   e.preventDefault();
-  $('drop-zone')?.classList.remove('drag-active');
+  $(isLink?'link-quick-send':'drop-zone')?.classList.remove('drag-active');
   selectedFiles = Array.from(e.dataTransfer.files);
+  if (isLink) { linkQuickSend(); return; }
   if (selectedFiles.length) renderFileList(selectedFiles);
 }
+
 function renderFileList(files) {
   if (!files.length) return;
-  const total = files.reduce((s,f) => s + f.size, 0);
+  const total = files.reduce((s,f) => s+f.size, 0);
   const cl = $('files-count-lbl'), sl = $('files-size-lbl'),
-        ll = $('files-list'),     pl = $('files-panel'),
-        btn = $('btn-start');
-  if (cl)  cl.textContent = `${files.length} file${files.length > 1 ? 's' : ''}`;
+        ll = $('files-list'),     pl = $('files-panel'), btn = $('btn-start');
+  if (cl)  cl.textContent = `${files.length} file${files.length>1?'s':''}`;
   if (sl)  sl.textContent = fmtBytes(total);
-  if (ll)  ll.innerHTML   = files.map(f => `
+  if (ll)  ll.innerHTML   = files.map(f=>`
     <div style="display:flex;align-items:center;gap:8px;font-size:12px;padding:3px 0;">
       <span>${fileEmoji(f.name)}</span>
       <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:rgba(255,255,255,0.65);">${escHtml(f.name)}</span>
       <span class="mono" style="color:var(--text-muted);">${fmtBytes(f.size)}</span>
     </div>`).join('');
   if (pl)  pl.style.display = 'block';
-  if (btn) btn.disabled     = false;
+  if (btn) btn.disabled = false;
+}
+
+// Link Pair quick-send: drop a file from the landing page
+async function linkQuickSend() {
+  if (!LINK_PAIR.isOnline()) { showToast('Partner offline','⚠️','red'); return; }
+  if (!selectedFiles.length) { pickFiles(); return; }
+  // Navigate to send flow with files pre-selected, then start session
+  initSend();
+  await new Promise(r => setTimeout(r, 50));
+  renderFileList(selectedFiles);
+  // Auto-start session
+  startSenderSession();
 }
 
 // ══════════════════════════════════════════════════════════════
 //  BUILD BLOB
 // ══════════════════════════════════════════════════════════════
 async function buildBlob(files) {
-  if (files.length === 1) {
-    dbg('BLOB', 'Single file — no zip');
-    return { blob: files[0], name: files[0].name };
-  }
-  dbg('BLOB', `${files.length} files → JSZip`);
+  if (files.length === 1) return { blob:files[0], name:files[0].name };
   if (typeof JSZip === 'undefined') throw new Error('JSZip not loaded');
   const zip = new JSZip();
-  for (const f of files) zip.file(f.name, f, { binary: true });
+  for (const f of files) zip.file(f.name, f, { binary:true });
   const blob = await zip.generateAsync(
-    { type: 'blob', compression: 'DEFLATE', compressionOptions: { level: 3 } },
-    meta => { if (meta.percent % 25 < 2) dbg('ZIP', `${meta.percent.toFixed(0)}%`); }
+    { type:'blob', compression:'DEFLATE', compressionOptions:{ level:3 } },
+    m => { if(m.percent%25<2) dbg('ZIP',`${m.percent.toFixed(0)}%`); }
   );
-  return { blob, name: `ghost-share-${Date.now()}.zip` };
+  return { blob, name:`ghost-share-${Date.now()}.zip` };
 }
 
 // ══════════════════════════════════════════════════════════════
@@ -914,661 +1432,554 @@ function displayCode(code) {
     `<div class="code-box">${ch}</div>`
   ).join('');
   genQR('qr-sender', code, '#7B5CF6');
+  _updateSecBadges();
 }
 function copyCode() {
   if (!myCode) return;
-  navigator.clipboard?.writeText(myCode)
-    .then(()  => showToast('Code copied!','✅','green'))
-    .catch(()  => showToast('Code: ' + myCode, '📋','violet'));
+  navigator.clipboard?.writeText(myCode).then(()=>showToast('Code copied!','✅','green'))
+    .catch(()=>showToast('Code: '+myCode,'📋','violet'));
 }
-function genQR(containerId, text, color) {
-  const el = $(containerId);
-  if (!el || typeof QRCode === 'undefined') return;
+function genQR(cid, text, color) {
+  const el = $(cid); if(!el||typeof QRCode==='undefined') return;
   el.innerHTML = '';
-  try {
-    new QRCode(el, { text, width: 180, height: 180,
-      colorDark: color || '#7B5CF6', colorLight: '#030610',
-      correctLevel: QRCode.CorrectLevel.M });
-  } catch(e) {
-    el.innerHTML = '<p style="font-size:11px;color:var(--text-muted);">QR failed</p>';
-  }
+  try { new QRCode(el,{text,width:160,height:160,colorDark:color||'#7B5CF6',colorLight:'#030610',correctLevel:QRCode.CorrectLevel.M}); }
+  catch(e) {}
 }
 
 // ══════════════════════════════════════════════════════════════
-//  RESUME DETECTION (Receiver)
-//
-//  On initReceive(), check IDB for any partial transfer.
-//  If found, show the resume banner with the transfer name and
-//  how many chunks were already received.
+//  RESUME DETECTION
 // ══════════════════════════════════════════════════════════════
 async function checkForResume() {
   try {
     const meta = await IDB.getLatestMeta();
     if (!meta) return;
-    const age   = (Date.now() - meta.timestamp) / 1000 / 60; // minutes
-    if (age > 60) { IDB.clearTransfer(meta.transferId); return; } // expire after 1h
-
-    const pct   = Math.round((meta.receivedCount / meta.totalChunks) * 100);
-    const banner = $('resume-banner');
-    const info   = $('resume-info');
+    if ((Date.now() - meta.timestamp) / 60000 > 60) { IDB.clearTransfer(meta.transferId); return; }
+    const pct = Math.round((meta.receivedCount / meta.totalChunks) * 100);
+    const banner = $('resume-banner'), info = $('resume-info');
     if (!banner || !info) return;
-    info.innerHTML = `<b style="color:rgba(255,255,255,0.7);">${escHtml(meta.name)}</b> — ${fmtBytes(meta.size)} — ${pct}% received (${fmtBytes(meta.receivedCount * CHUNK_SIZE)} of ${fmtBytes(meta.size)})`;
+    info.innerHTML = `<b style="color:rgba(255,255,255,0.7);">${escHtml(meta.name)}</b> — ${fmtBytes(meta.size)} — ${pct}% received`;
     banner.style.display = 'block';
-    banner._resumeMeta   = meta; // stash for use when connecting
-    dbg('RESUME', `Found partial transfer: ${meta.name} ${pct}%`);
-  } catch(e) {
-    dbgWarn('RESUME', 'checkForResume error:', e);
-  }
+    banner._resumeMeta   = meta;
+  } catch(e) { dbgWarn('RESUME','checkForResume:',e); }
 }
-
 function clearResume() {
-  const banner = $('resume-banner');
-  if (banner?._resumeMeta) IDB.clearTransfer(banner._resumeMeta.transferId);
+  const b = $('resume-banner');
+  if (b?._resumeMeta) IDB.clearTransfer(b._resumeMeta.transferId);
   hide('resume-banner');
   showToast('Resume data cleared','🗑️','violet');
 }
-
 function checkCodeReady() {
-  const v   = ($('code-input')?.value || '').trim();
-  const btn = $('btn-connect');
-  if (btn) btn.disabled = v.length !== 6;
+  const v = ($('code-input')?.value||'').trim();
+  const btn = $('btn-connect'); if(btn) btn.disabled = v.length !== 6;
 }
 
 // ══════════════════════════════════════════════════════════════
-//  PEERJS — SENDER (Multi-Receiver Broadcast)
-//
-//  MULTI-RECEIVER DESIGN:
-//  1. Sender creates a single Peer with the 6-char code as its ID.
-//  2. peer.on('connection') fires for EVERY receiver that connects.
-//  3. Each receiver is pushed into connections[].
-//  4. startConnectionLoop(connObj) runs as an INDEPENDENT async loop
-//     per receiver — they can be at different progress points.
-//  5. Pause/Resume affects all active connection loops via globalIsPaused.
-//  6. Resume: if a receiver sends {type:'hello', resumeFrom: N},
-//     the loop for that receiver begins at chunk N.
+//  PEERJS — SENDER
+//  (multi-receiver broadcast, identical to v4 plus enc + destruct)
 // ══════════════════════════════════════════════════════════════
 async function startSenderSession() {
-  dbg('PEER','startSenderSession()');
   if (!selectedFiles.length) { showToast('Select files first','⚠️','red'); return; }
 
+  // Validate encryption password if enabled
+  if (encEnabled) {
+    encPassword = $('enc-password')?.value || '';
+    if (encPassword.length < 1) {
+      showToast('Enter a passphrase to enable encryption','⚠️','red'); return;
+    }
+  }
+
   const btn = $('btn-start');
-  if (btn) { btn.disabled = true; btn.textContent = 'Connecting...'; }
+  if (btn) { btn.disabled=true; btn.textContent='Preparing...'; }
 
   showToast('Preparing files...','📦','violet');
-  try {
-    transferBlob = await buildBlob(selectedFiles);
-  } catch(e) {
+  try { transferBlob = await buildBlob(selectedFiles); }
+  catch(e) {
     dbgErr('BLOB','buildBlob failed:',e);
     showToast('Failed to prepare files','❌','red');
-    if (btn) { btn.disabled = false; btn.innerHTML = '🚀 Generate Code &amp; Start Session'; }
+    if(btn) { btn.disabled=false; btn.innerHTML='🚀 Generate Code &amp; Start Session'; }
     return;
   }
 
   totalBytes = transferBlob.blob.size;
-  dbg('PEER',`blob ready: ${fmtBytes(totalBytes)}`);
 
-  // Pre-compute Merkle hashes for the blob (done once, shared to all receivers)
+  // ── Derive AES key if encryption is on ──────────────────
+  if (encEnabled && encPassword) {
+    senderSaltHex = AES_CRYPTO.genSalt();
+    showToast('Deriving encryption key (PBKDF2)...','🔑','violet');
+    try {
+      senderAesKey = await AES_CRYPTO.deriveKey(encPassword, hexToBytes(senderSaltHex));
+      dbg('SEC',`AES key derived, salt=${senderSaltHex.substring(0,8)}...`);
+    } catch(e) {
+      dbgErr('SEC','Key derivation failed:',e);
+      showToast('Key derivation failed','❌','red');
+      if(btn) { btn.disabled=false; btn.innerHTML='🚀 Generate Code &amp; Start Session'; }
+      return;
+    }
+  } else {
+    senderAesKey = null; senderSaltHex = '';
+  }
+
+  // Pre-compute sender Merkle hashes in the background
   senderChunkHashes = [];
-  computeSenderHashes(transferBlob.blob); // fire-and-forget async
+  computeSenderHashes(transferBlob.blob);
 
   const code   = genCode();
   const iceCfg = buildIceConfig('s');
   dbg('PEER',`Creating sender peer id="${code}"`);
 
-  peer = new Peer(code, { config: iceCfg, debug: 0 });
+  peer = new Peer(code, { config:iceCfg, debug:0 });
 
   peer.on('open', id => {
     dbg('PEER',`Sender open id="${id}"`);
     displayCode(id);
     showSendStep(2);
     showToast(`Code: ${id} — share it!`,'📡','violet');
+
+    // Auto-broadcast to linked partner for zero-click receive
+    LINK_PAIR.broadcast(id);
   });
 
-  // ── Each new receiver connection ──────────────────────────
   peer.on('connection', c => {
-    const shortId = (c.peer || '').slice(-4).toUpperCase() || `R${connections.length + 1}`;
+    const shortId = (c.peer||'').slice(-4).toUpperCase() || `R${connections.length+1}`;
     dbg('PEER',`New receiver: ${shortId}`);
-
-    const connObj = {
-      id: shortId,
-      conn: c,
-      fromChunk: 0,         // may be updated by 'hello' message
-      sentBytes: 0,
-      status: 'waiting',
-      cardEl: null,
-      _resolveHello: null,  // resolved when hello received
-    };
+    const connObj = { id:shortId, conn:c, fromChunk:0, sentBytes:0, status:'waiting', cardEl:null, _resolveHello:null };
     connections.push(connObj);
-
     c.serialization = 'raw';
 
-    c.on('open', () => {
-      dbg('PEER',`Receiver ${shortId} DC open`);
-      showFlex('conn-badge');
-      updateReceiverCount();
-      addReceiverCard(connObj);
-      startConnectionLoop(connObj); // independent async loop for this receiver
-    });
-
-    c.on('data', data => {
-      if (typeof data === 'string') {
-        try {
-          const msg = JSON.parse(data);
-          handleSenderControlMsg(connObj, msg);
-        } catch(e) { dbgWarn('CTRL','Bad JSON from receiver',e); }
-      }
-    });
-
-    c.on('error', e => {
-      dbgErr('CONN',`Receiver ${shortId} error:`,e);
-      connObj.status = 'error';
-      updateReceiverCard(connObj);
-    });
-
-    c.on('close', () => {
-      dbgWarn('CONN',`Receiver ${shortId} disconnected`);
-      connObj.status = 'error';
-      updateReceiverCard(connObj);
-      updateReceiverCount();
-    });
+    c.on('open',  ()  => { showFlex('conn-badge'); updateReceiverCount(); addReceiverCard(connObj); startConnectionLoop(connObj); });
+    c.on('data',  raw => { if(typeof raw==='string'){try{handleSenderCtrlMsg(connObj,JSON.parse(raw));}catch(e){}} });
+    c.on('error', e   => { dbgErr('CONN',`${shortId} error:`,e); connObj.status='error'; updateReceiverCard(connObj); });
+    c.on('close', ()  => { dbgWarn('CONN',`${shortId} closed`); connObj.status='error'; updateReceiverCard(connObj); updateReceiverCount(); });
   });
 
   peer.on('error', e => {
-    dbgErr('PEER','Sender peer error:',e);
-    if (e.type === 'unavailable-id') {
-      peer.destroy(); peer = null;
-      startSenderSession(); // retry with new code
-    } else {
-      showToast(`Peer error: ${e.type}`,'❌','red');
-      if (btn) { btn.disabled = false; btn.innerHTML = '🚀 Generate Code &amp; Start Session'; }
-    }
+    dbgErr('PEER','Sender error:',e);
+    if (e.type==='unavailable-id') { peer.destroy(); peer=null; startSenderSession(); }
+    else { showToast(`Peer error: ${e.type}`,'❌','red'); if(btn){btn.disabled=false;btn.innerHTML='🚀 Generate Code &amp; Start Session';} }
   });
 }
 
-/**
- * Pre-compute chunk hashes in the background.
- * Done concurrently with waiting for receivers — by the time
- * transfer starts, hashes are likely already computed.
- */
+/** Background pre-compute of chunk hashes over plaintext blob */
 async function computeSenderHashes(blob) {
-  const totalChunks = Math.ceil(blob.size / CHUNK_SIZE);
-  senderChunkHashes = new Array(totalChunks);
-  dbg('HASH',`Pre-computing ${totalChunks} chunk hashes...`);
-  for (let i = 0; i < totalChunks; i++) {
-    const start  = i * CHUNK_SIZE;
-    const buf    = await blob.slice(start, Math.min(start + CHUNK_SIZE, blob.size)).arrayBuffer();
+  const n = Math.ceil(blob.size / CHUNK_SIZE);
+  senderChunkHashes = new Array(n);
+  for (let i = 0; i < n; i++) {
+    const start = i * CHUNK_SIZE;
+    const buf   = await blob.slice(start, Math.min(start+CHUNK_SIZE, blob.size)).arrayBuffer();
     senderChunkHashes[i] = new Uint8Array(await crypto.subtle.digest('SHA-256', buf));
   }
-  dbg('HASH','All chunk hashes ready');
+  dbg('HASH',`All ${n} chunk hashes computed`);
 }
 
-function handleSenderControlMsg(connObj, msg) {
+function handleSenderCtrlMsg(connObj, msg) {
   dbg('CTRL',`Sender got msg type="${msg.type}" from ${connObj.id}`);
 
   if (msg.type === 'hello') {
-    /**
-     * Receiver announces itself, optionally with a resume offset.
-     * fromChunk > 0 means the receiver already has those chunks in IDB.
-     */
     connObj.fromChunk = msg.resumeFrom || 0;
-    dbg('CTRL',`${connObj.id} resume from chunk ${connObj.fromChunk}`);
-    if (connObj._resolveHello) { connObj._resolveHello(); connObj._resolveHello = null; }
+    if (connObj._resolveHello) { connObj._resolveHello(); connObj._resolveHello=null; }
   }
 
   if (msg.type === 'verify') {
     const ok = msg.ok;
     connObj.status = ok ? 'done' : 'error';
     updateReceiverCard(connObj);
-    showToast(ok ? `✓ ${connObj.id} verified transfer` : `⚠ ${connObj.id} hash mismatch`,
-              ok ? '✅' : '⚠️', ok ? 'green' : 'red');
-    // Mark done on ring if all receivers done
-    if (connections.every(c => c.status === 'done' || c.status === 'error')) finishUI(false);
+    showToast(ok?`✓ ${connObj.id} verified`:`⚠ ${connObj.id} hash mismatch`,ok?'✅':'⚠️',ok?'green':'red');
+
+    // Update UI
+    const vs = $('verify-status');
+    if (vs) vs.innerHTML = ok
+      ? `<div class="hash-ok" style="text-align:center;font-size:13px;font-weight:600;color:#22c55e;">✅ Receiver confirmed every byte is intact</div>`
+      : `<div class="hash-fail" style="text-align:center;font-size:13px;font-weight:600;color:#ef4444;">⚠ Integrity check failed — ask receiver to retry</div>`;
+
+    // All receivers done?
+    const allDone = connections.every(c => c.status==='done'||c.status==='error');
+    if (allDone) {
+      transferComplete = true;
+      finishUI(false);
+
+      // ── AUTO-DESTRUCT ──────────────────────────────────────
+      //  Revoke peer ID + destroy connection immediately after
+      //  at least one successful verify ACK.
+      if (autoDestruct && ok) {
+        dbg('DESTRUCT','Auto-destruct triggered!');
+        showToast('💥 Auto-destruct — session destroyed','💥','red');
+        // Brief visual flash then destroy
+        const ring = $('ring-wrap');
+        if (ring) ring.classList.add('destruct-anim');
+        setTimeout(() => {
+          connections.forEach(c => { try{c.conn.close();}catch(e){} });
+          if (peer) { try{peer.destroy();}catch(e){} peer=null; }
+          hide('conn-badge');
+          const st = $('xfer-status');
+          if (st) { st.textContent='💥 Session destroyed'; st.style.color='#ef4444'; }
+        }, 600);
+      }
+    }
   }
 
-  if (msg.type === 'pause') {
-    globalIsPaused = true;
-    showToast(`${connObj.id} requested pause`,'⏸','amber');
-    renderGlobalPauseState(true);
-  }
-
-  if (msg.type === 'resume') {
-    doGlobalResume();
-  }
+  if (msg.type==='pause')  { globalIsPaused=true;  renderGlobalPauseState(true); showToast(`${connObj.id} paused`,'⏸','amber'); }
+  if (msg.type==='resume') { doGlobalResume(); }
 }
 
-/**
- * Independent send loop for one receiver.
- * Waits briefly for the 'hello' message (which carries resumeFrom),
- * then streams chunks starting at fromChunk.
- */
+// ── Per-receiver send loop ─────────────────────────────────
 async function startConnectionLoop(connObj) {
-  dbg('XFER',`startConnectionLoop for ${connObj.id}`);
   connObj.status = 'waiting';
   updateReceiverCard(connObj);
 
-  // ── Wait for hello message (up to 3s) ───────────────────
+  // Wait for hello (carries resumeFrom)
   await Promise.race([
     new Promise(r => { connObj._resolveHello = r; }),
-    new Promise(r => setTimeout(r, 3000)), // timeout fallback
+    new Promise(r => setTimeout(r, 3000)),
   ]);
 
   const { blob, name } = transferBlob;
   const totalChunks    = Math.ceil(totalBytes / CHUNK_SIZE);
   const startChunk     = connObj.fromChunk || 0;
 
-  // ── Send META ─────────────────────────────────────────────
-  const meta = {
-    type: 'meta', name,
-    size: totalBytes,
-    mime: blob.type || 'application/octet-stream',
-    chunks: totalChunks,
-    fromChunk: startChunk,            // tell receiver to restore IDB chunks [0..startChunk)
+  // META — tell receiver name, size, chunk count, encryption params
+  connObj.conn.send(JSON.stringify({
+    type:       'meta',
+    name,
+    size:       totalBytes,
+    mime:       blob.type || 'application/octet-stream',
+    chunks:     totalChunks,
+    fromChunk:  startChunk,
     transferId: makeTransferId(name, totalBytes),
-  };
-  connObj.conn.send(JSON.stringify(meta));
-  dbg('XFER',`${connObj.id} META sent (resume from chunk ${startChunk})`);
+    // Encryption fields (empty strings when not encrypting)
+    encrypted:  !!senderAesKey,
+    salt:       senderSaltHex,  // 32-char hex; '' if no encryption
+  }));
+  dbg('XFER',`${connObj.id} META sent (chunk ${startChunk}, enc=${!!senderAesKey})`);
 
-  connObj.status   = 'active';
+  connObj.status    = 'active';
   connObj.sentBytes = startChunk * CHUNK_SIZE;
   updateReceiverCard(connObj);
   showSendStep(3);
   renderSenderProgressUI(name);
   xferStart = performance.now();
 
-  // Set DC backpressure threshold
   const rawDC = connObj.conn._dc || connObj.conn.dataChannel;
   if (rawDC) rawDC.bufferedAmountLowThreshold = LOW_WATER;
 
-  // ── Chunk loop ────────────────────────────────────────────
   for (let i = startChunk; i < totalChunks; i++) {
-
-    // Global pause gate
+    // Pause gate
     if (globalIsPaused) {
-      dbg('XFER',`${connObj.id} PAUSED at chunk ${i}`);
       await new Promise(r => { pauseResolve = r; });
-      dbg('XFER',`${connObj.id} RESUMED`);
     }
 
-    // Per-connection backpressure
+    // Backpressure gate
     const dc = connObj.conn._dc || connObj.conn.dataChannel;
     if (dc && dc.bufferedAmount > HIGH_WATER) {
       await new Promise(r => {
         if (!dc) return r();
-        const h = () => { dc.removeEventListener('bufferedamountlow', h); r(); };
-        dc.addEventListener('bufferedamountlow', h);
-        setTimeout(() => { dc.removeEventListener('bufferedamountlow', h); r(); }, 10000);
+        const h = () => { dc.removeEventListener('bufferedamountlow',h); r(); };
+        dc.addEventListener('bufferedamountlow',h);
+        setTimeout(()=>{dc.removeEventListener('bufferedamountlow',h);r();},10000);
       });
     }
 
-    // Read and send chunk
+    // Read plaintext chunk
     const start  = i * CHUNK_SIZE;
     const end    = Math.min(start + CHUNK_SIZE, totalBytes);
-    const buffer = await blob.slice(start, end).arrayBuffer();
+    let   buffer = await blob.slice(start, end).arrayBuffer();
 
-    try {
-      connObj.conn.send(buffer);
-    } catch(e) {
-      dbgErr('XFER',`${connObj.id} send failed at chunk ${i}:`,e);
-      connObj.status = 'error';
-      updateReceiverCard(connObj);
-      return;
+    // ── ENCRYPT (if enabled) ─────────────────────────────────
+    //  Encryption happens here, after hashing (hashes computed
+    //  separately in computeSenderHashes over plaintext). This
+    //  means Merkle verification always checks the raw file.
+    if (senderAesKey) {
+      buffer = await AES_CRYPTO.encryptChunk(senderAesKey, buffer);
     }
+
+    try { connObj.conn.send(buffer); }
+    catch(e) { dbgErr('XFER',`${connObj.id} send error chunk ${i}:`,e); connObj.status='error'; updateReceiverCard(connObj); return; }
 
     connObj.sentBytes = end;
     updateReceiverCard(connObj);
 
-    // Tick aggregate speed (sum across all active connections)
-    const aggBytes = connections.reduce((s, c) => s + c.sentBytes, 0);
-    tickSpeed(aggBytes / connections.length); // normalize to per-receiver
-
-    if (i % 64 === 0 || i === totalChunks - 1) {
-      dbg('XFER',`${connObj.id} chunk ${i+1}/${totalChunks}`);
-    }
+    const aggBytes = connections.reduce((s,c) => s+c.sentBytes, 0) / connections.length;
+    tickSpeed(aggBytes);
+    if (i % 64 === 0 || i === totalChunks-1) dbg('XFER',`${connObj.id} ${i+1}/${totalChunks}`);
   }
 
-  // ── Send DONE with Merkle hash ─────────────────────────────
-  const allHashes = await waitForHashes(totalChunks);
-  const fileHash  = await computeMerkleHash(allHashes);
-  connObj.conn.send(JSON.stringify({ type: 'done', hash: fileHash }));
-  dbg('XFER',`${connObj.id} DONE sent, hash=${fileHash.substring(0,16)}...`);
+  // DONE
+  const hashes   = await waitForHashes(totalChunks);
+  const fileHash = await computeMerkleHash(hashes);
+  connObj.conn.send(JSON.stringify({ type:'done', hash:fileHash }));
   connObj.status = 'waiting-verify';
   updateReceiverCard(connObj);
+  dbg('XFER',`${connObj.id} DONE, hash=${fileHash.substring(0,16)}...`);
 }
 
-/** Waits until senderChunkHashes[] is fully populated */
-async function waitForHashes(totalChunks) {
-  const deadline = Date.now() + 30000;
-  while (senderChunkHashes.filter(Boolean).length < totalChunks && Date.now() < deadline) {
-    await new Promise(r => setTimeout(r, 100));
-  }
-  return senderChunkHashes.slice(0, totalChunks);
+async function waitForHashes(n) {
+  const dl = Date.now() + 30000;
+  while (senderChunkHashes.filter(Boolean).length < n && Date.now() < dl)
+    await new Promise(r=>setTimeout(r,100));
+  return senderChunkHashes.slice(0,n);
 }
 
-// ── Sender Pause/Resume ────────────────────────────────────
+// ── Sender Pause/Resume ─────────────────────────────────────
 function pauseAll() {
-  globalIsPaused = true;
-  renderGlobalPauseState(true);
-  connections.forEach(c => {
-    try { c.conn.send(JSON.stringify({ type: 'pause' })); } catch(e) {}
-  });
-  showToast('Transfer paused','⏸','amber');
+  globalIsPaused = true; renderGlobalPauseState(true);
+  connections.forEach(c => { try{c.conn.send(JSON.stringify({type:'pause'}));}catch(e){} });
 }
 function resumeAll() {
   doGlobalResume();
-  connections.forEach(c => {
-    try { c.conn.send(JSON.stringify({ type: 'resume' })); } catch(e) {}
-  });
-  showToast('Transfer resumed','▶','green');
+  connections.forEach(c => { try{c.conn.send(JSON.stringify({type:'resume'}));}catch(e){} });
 }
 function doGlobalResume() {
   globalIsPaused = false;
-  if (pauseResolve) { pauseResolve(); pauseResolve = null; }
+  if (pauseResolve) { pauseResolve(); pauseResolve=null; }
   renderGlobalPauseState(false);
 }
 function renderGlobalPauseState(paused) {
-  const btn = $('global-pause-btn');
-  if (!btn) return;
-  btn.className = paused ? 'btn-resume' : 'btn-pause';
+  const btn = $('global-pause-btn'); if(!btn) return;
+  btn.className   = paused ? 'btn-resume' : 'btn-pause';
   btn.textContent = paused ? '▶ Resume All' : '⏸ Pause All';
-  btn.onclick = paused ? resumeAll : pauseAll;
+  btn.onclick     = paused ? resumeAll : pauseAll;
 }
 
-// ── Receiver card management ────────────────────────────────
+// ── Receiver cards ──────────────────────────────────────────
 function updateReceiverCount() {
-  const badge = $('receiver-count-badge');
-  const n     = connections.length;
+  const badge = $('receiver-count-badge'), n = connections.length;
   if (badge) badge.textContent = `${n} connected`;
-
-  // Show/hide waiting indicator
-  const waiting  = $('waiting-indicator');
-  const rList    = $('receivers-list');
-  if (waiting)  waiting.style.display  = n > 0 ? 'none' : 'block';
-  if (rList)    rList.style.display    = n > 0 ? 'block' : 'none';
+  const wi = $('waiting-indicator'), rl = $('receivers-list');
+  if (wi) wi.style.display = n>0?'none':'block';
+  if (rl) rl.style.display = n>0?'block':'none';
 }
-
-function addReceiverCard(connObj) {
-  const rList = $('receivers-list');
-  if (!rList) return;
+function addReceiverCard(co) {
+  const rl = $('receivers-list'); if(!rl) return;
   const div = document.createElement('div');
-  div.id    = `rcard-${connObj.id}`;
-  div.className = 'receiver-card';
-  rList.appendChild(div);
-  connObj.cardEl = div;
-  updateReceiverCard(connObj);
+  div.id = `rcard-${co.id}`; div.className='receiver-card';
+  rl.appendChild(div); co.cardEl=div; updateReceiverCard(co);
 }
-
-function updateReceiverCard(connObj) {
-  const card = connObj.cardEl;
-  if (!card) return;
-  const pct = totalBytes > 0 ? Math.round((connObj.sentBytes / totalBytes) * 100) : 0;
-  const statusColor = {
-    waiting: 'var(--text-muted)', active: '#7B5CF6', paused: '#f59e0b',
-    done: '#22c55e', error: '#ef4444', 'waiting-verify': '#06B6D4',
-  }[connObj.status] || '#fff';
-  const statusLabel = {
-    waiting: 'Waiting', active: `${pct}%`, paused: 'Paused',
-    done: '✓ Done', error: '✗ Error', 'waiting-verify': 'Verifying...',
-  }[connObj.status] || connObj.status;
-
-  card.className = `receiver-card ${connObj.status === 'active' ? 'active-xfer' : connObj.status === 'done' ? 'done-xfer' : ''}`;
+function updateReceiverCard(co) {
+  const card = co.cardEl; if(!card) return;
+  const pct  = totalBytes>0?Math.round((co.sentBytes/totalBytes)*100):0;
+  const statusColor = {waiting:'var(--text-muted)',active:'#7B5CF6',paused:'#f59e0b',done:'#22c55e',error:'#ef4444','waiting-verify':'#06B6D4'}[co.status]||'#fff';
+  const statusLabel = {waiting:'Waiting',active:`${pct}%`,paused:'Paused',done:'✓ Done',error:'✗ Error','waiting-verify':'Verifying...'}[co.status]||co.status;
+  card.className = `receiver-card ${co.status==='active'?'active-xfer':co.status==='done'?'done-xfer':''}`;
   card.innerHTML = `
     <div style="display:flex;align-items:center;gap:10px;">
       <div style="width:8px;height:8px;border-radius:50%;background:${statusColor};flex-shrink:0;"></div>
-      <span class="mono" style="font-size:12px;font-weight:600;">Receiver ${connObj.id}</span>
+      <span class="mono" style="font-size:12px;font-weight:600;">Receiver ${co.id}</span>
       <div style="flex:1;"></div>
       <span style="font-size:12px;font-weight:700;color:${statusColor};">${statusLabel}</span>
-      <span class="mono" style="font-size:10px;color:var(--text-muted);">${fmtBytes(connObj.sentBytes)} / ${fmtBytes(totalBytes)}</span>
+      <span class="mono" style="font-size:10px;color:var(--text-muted);">${fmtBytes(co.sentBytes)} / ${fmtBytes(totalBytes)}</span>
     </div>
-    <div class="mini-bar-track">
-      <div class="mini-bar-fill" style="width:${pct}%;${connObj.status==='done'?'background:linear-gradient(90deg,#22c55e,#16a34a)':''}"></div>
-    </div>`;
+    <div class="mini-bar-track"><div class="mini-bar-fill" style="width:${pct}%;${co.status==='done'?'background:linear-gradient(90deg,#22c55e,#16a34a)':''}"></div></div>`;
 }
 
 // ══════════════════════════════════════════════════════════════
 //  PEERJS — RECEIVER
-//
-//  RESUME FLOW:
-//  1. Check IDB for any partial transfer matching this session.
-//  2. On connection open: send {type:'hello', resumeFrom: N}.
-//     N = 0 for fresh transfer, or chunk count from IDB for resume.
-//  3. Load IDB chunks [0..N) back into inChunks[] so they don't
-//     need to be re-downloaded.
-//  4. Sender starts sending from chunk N.
-//  5. Each chunk received: stored in inChunks[idx] AND written to IDB.
-//  6. On 'done': assemble, verify, download, clear IDB.
 // ══════════════════════════════════════════════════════════════
 function connectToSender() {
-  const code = ($('code-input')?.value || '').trim().toUpperCase();
-  dbg('PEER',`connectToSender() code="${code}"`);
-  if (code.length !== 6) { showToast('Enter a 6-character code','⚠️','red'); return; }
-
-  const btn = $('btn-connect');
-  if (btn) { btn.disabled = true; btn.textContent = 'Connecting...'; }
-
-  const iceCfg = buildIceConfig('r');
-  peer = new Peer({ config: iceCfg, debug: 0 });
-
-  peer.on('open', myId => {
-    dbg('PEER',`Receiver peer open myId="${myId}" → connecting to "${code}"`);
-    recvConn = peer.connect(code, { reliable: true, serialization: 'raw' });
-
+  const code = ($('code-input')?.value||'').trim().toUpperCase();
+  if (code.length!==6) { showToast('Enter a 6-character code','⚠️','red'); return; }
+  const btn = $('btn-connect'); if(btn){btn.disabled=true;btn.textContent='Connecting...';}
+  peer = new Peer({ config:buildIceConfig('r'), debug:0 });
+  peer.on('open', () => {
+    recvConn = peer.connect(code, { reliable:true, serialization:'raw' });
     recvConn.on('open', async () => {
       dbg('PEER','Connected to sender');
       showFlex('conn-badge');
-      const labelEl = $('conn-label');
-      if (labelEl) { labelEl.textContent = 'Connected'; labelEl.style.color = '#06B6D4'; }
-
+      const lbl = $('conn-label'); if(lbl){lbl.textContent='Connected';lbl.style.color='#06B6D4';}
       showReceiveStep(2);
       renderReceiveWaiting();
-      setupReceiverDC();
-
-      // ── Announce ourselves with optional resume offset ──
-      const banner     = $('resume-banner');
-      const resumeMeta = banner?._resumeMeta;
-      recvFromChunk    = resumeMeta ? resumeMeta.receivedCount : 0;
-
-      // If resuming, pre-load IDB chunks into memory
-      if (resumeMeta && recvFromChunk > 0) {
-        dbg('RESUME',`Loading ${recvFromChunk} chunks from IDB...`);
-        showToast(`Resuming from ${Math.round(recvFromChunk / resumeMeta.totalChunks * 100)}%...`, '⏩','cyan');
-        // We'll load them after META arrives (when we know totalChunks)
-        // For now, store resumeMeta for later use
-        recvConn._resumeMeta = resumeMeta;
-      }
-
-      recvConn.send(JSON.stringify({ type: 'hello', resumeFrom: recvFromChunk }));
-      dbg('RECV',`Sent hello, resumeFrom=${recvFromChunk}`);
+      recvConn.on('data', raw => { recvQueue.push(raw); if(!recvProcessing) _drainRecvQueue(); });
+      // Announce ourselves + resume offset
+      const banner = $('resume-banner');
+      const rm = banner?._resumeMeta;
+      recvFromChunk = rm ? rm.receivedCount : 0;
+      recvConn._resumeMeta = rm || null;
+      recvConn.send(JSON.stringify({ type:'hello', resumeFrom:recvFromChunk }));
     });
-
-    recvConn.on('error', e => {
-      dbgErr('CONN','Recv conn error:',e);
-      showToast('Connection failed — check code','❌','red');
-      if (btn) { btn.disabled = false; btn.textContent = '🔗 Connect & Receive'; }
-    });
-
+    recvConn.on('error', e => { dbgErr('CONN','recv error:',e); showToast('Connection failed — check code','❌','red'); if(btn){btn.disabled=false;btn.textContent='🔗 Connect & Receive';} });
     recvConn.on('close', () => {
-      dbgWarn('CONN','Receiver connection closed');
-      if (inMeta && recvBytes < totalBytes) {
-        // Save state to IDB before disconnecting
-        IDB.saveMeta({
-          transferId:    inMeta.transferId,
-          name:          inMeta.name,
-          size:          inMeta.size,
-          mime:          inMeta.mime,
-          totalChunks:   inMeta.chunks,
-          receivedCount: inChunks.filter(Boolean).length,
-        }).then(() => dbg('IDB','Transfer state saved for resume'));
+      if (inMeta && recvBytes < totalBytes && !transferComplete) {
+        IDB.saveMeta({ transferId:inMeta.transferId, name:inMeta.name, size:inMeta.size,
+          mime:inMeta.mime, totalChunks:inMeta.chunks, receivedCount:inChunks.filter(Boolean).length });
         showToast('Connection dropped — re-enter code to resume','📡','amber');
-      } else {
-        onDisconnect();
-      }
+      } else if (!transferComplete) { onDisconnect(); }
     });
   });
-
   peer.on('error', e => {
-    dbgErr('PEER','Receiver peer error:',e);
-    const msg = e.type === 'peer-unavailable'
-      ? `Code "${code}" not found — check code` : `Error: ${e.type}`;
-    showToast(msg,'❌','red');
-    if (btn) { btn.disabled = false; btn.textContent = '🔗 Connect & Receive'; }
+    dbgErr('PEER','recv peer error:',e);
+    showToast(e.type==='peer-unavailable'?`Code not found — check and retry`:`Error: ${e.type}`,'❌','red');
+    if(btn){btn.disabled=false;btn.textContent='🔗 Connect & Receive';}
   });
-}
-
-function setupReceiverDC() {
-  recvConn.on('data', data => handleIncoming(data));
-  dbg('RECV','Receiver DC handler attached');
 }
 
 function renderReceiveWaiting() {
-  const el = $('recv-progress-area');
-  if (el) el.innerHTML = `
-    <div class="glass-card" style="padding:32px;text-align:center;">
-      <div class="pulse-wrap" style="width:64px;height:64px;margin:0 auto 20px;position:relative;">
+  const el = $('recv-progress-area'); if(!el) return;
+  el.innerHTML=`
+    <div class="glass-card" style="padding:28px;text-align:center;">
+      <div class="pulse-wrap" style="width:56px;height:56px;margin:0 auto 16px;position:relative;">
         <div class="pulse-ring-el" style="background:rgba(6,182,212,0.15);inset:0;position:absolute;border-radius:50%;"></div>
-        <div class="pulse-core" style="width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;
-          background:rgba(6,182,212,0.2);border:1px solid rgba(6,182,212,0.3);position:relative;z-index:1;font-size:18px;">📡</div>
+        <div class="pulse-core" style="width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+          background:rgba(6,182,212,0.2);border:1px solid rgba(6,182,212,0.3);position:relative;z-index:1;font-size:16px;">📡</div>
       </div>
-      <div style="font-size:15px;font-weight:600;margin-bottom:6px;">Connected — waiting for file...</div>
-      <div style="font-size:13px;color:var(--text-muted);">Sender will start the transfer momentarily</div>
+      <div style="font-size:14px;font-weight:600;margin-bottom:6px;">Connected — waiting for file...</div>
+      <div style="font-size:12px;color:var(--text-muted);">Sender will start the transfer momentarily</div>
     </div>`;
 }
 
 // ══════════════════════════════════════════════════════════════
-//  RECEIVE ENGINE
+//  RECEIVE DATA QUEUE
+//
+//  Sequential async processing of the incoming data stream.
+//  This is required because AES-GCM decryption is async, and
+//  WebRTC delivers chunks to conn.on('data') synchronously.
+//  Without a queue, awaiting decrypt would cause processing of
+//  chunk N+1 to begin before chunk N is stored, corrupting the
+//  inChunks array index.
 // ══════════════════════════════════════════════════════════════
-async function handleIncoming(data) {
+async function _drainRecvQueue() {
+  recvProcessing = true;
+  while (recvQueue.length > 0) {
+    const item = recvQueue.shift();
+    await _processOneRecvItem(item);
+  }
+  recvProcessing = false;
+}
+
+async function _processOneRecvItem(data) {
+  // ── Control messages (JSON strings) ─────────────────────
   if (typeof data === 'string') {
     let msg;
     try { msg = JSON.parse(data); } catch(e) { return; }
 
     if (msg.type === 'meta') {
       dbg('RECV','═══ META ═══', msg);
-      inMeta    = { ...msg, transferId: msg.transferId || makeTransferId(msg.name, msg.size) };
+      inMeta     = { ...msg, transferId: msg.transferId || makeTransferId(msg.name, msg.size) };
       totalBytes = msg.size;
       recvBytes  = 0;
       recvChunkHashes = [];
-      speedWindow  = [];
-      speedHistory = [];
-      lastPerfTime = xferStart = performance.now();
-      lastPerfBytes = 0;
-      recvIsPaused  = false;
+      speedWindow=[]; speedHistory=[]; lastPerfTime=xferStart=performance.now(); lastPerfBytes=0;
 
-      // If resuming: restore chunks from IDB
-      const resumeMeta = recvConn?._resumeMeta;
-      if (resumeMeta && msg.fromChunk > 0) {
-        inChunks   = new Array(msg.chunks).fill(null);
-        recvBytes  = 0;
-        dbg('RESUME',`Loading ${msg.fromChunk} chunks from IDB for resume...`);
-        const stored = await IDB.loadChunks(inMeta.transferId, msg.chunks);
-        for (let i = 0; i < msg.fromChunk; i++) {
-          if (stored[i]) {
-            inChunks[i] = stored[i];
-            recvBytes  += stored[i].byteLength;
-          }
+      // ── Derive decryption key from META's salt ───────────
+      //  IMPORTANT: this must happen before any binary chunks
+      //  arrive. Since SCTP is ordered and we await this, the
+      //  queue ensures the next item (first chunk) waits.
+      if (msg.encrypted && msg.salt) {
+        const pwd = $('recv-password')?.value || '';
+        if (!pwd) {
+          showToast('⚠ File is encrypted — enter the passphrase!','🔑','red');
+          // Open the security panel automatically
+          const p = $('conf-sec-r'); if(p&&!p.classList.contains('open')) toggleConf('sec-r');
         }
-        dbg('RESUME',`Restored ${inChunks.filter(Boolean).length} chunks (${fmtBytes(recvBytes)})`);
+        try {
+          recvAesKey = await AES_CRYPTO.deriveKey(pwd, hexToBytes(msg.salt));
+          dbg('SEC','Receiver AES key derived');
+        } catch(e) { dbgErr('SEC','Receiver key derivation failed:',e); recvAesKey=null; }
       } else {
-        inChunks = new Array(msg.chunks).fill(null);
+        recvAesKey = null;
       }
 
-      // Save meta to IDB immediately
-      await IDB.saveMeta({
-        transferId:    inMeta.transferId,
-        name:          msg.name,
-        size:          msg.size,
-        mime:          msg.mime,
-        totalChunks:   msg.chunks,
-        receivedCount: msg.fromChunk || 0,
-      });
+      // Pre-allocate inChunks array
+      inChunks = new Array(msg.chunks).fill(null);
+
+      // If resuming: restore persisted chunks from IDB
+      const rm = recvConn?._resumeMeta;
+      if (rm && msg.fromChunk > 0) {
+        dbg('RESUME',`Loading ${msg.fromChunk} chunks from IDB...`);
+        showToast(`Resuming from ${Math.round(msg.fromChunk/msg.chunks*100)}%...`,'⏩','cyan');
+        const stored = await IDB.loadChunks(inMeta.transferId, msg.chunks);
+        for (let i = 0; i < msg.fromChunk; i++) {
+          if (stored[i]) { inChunks[i]=stored[i]; recvBytes+=stored[i].byteLength; }
+        }
+        dbg('RESUME',`Restored ${inChunks.filter(Boolean).length} chunks`);
+      }
+
+      await IDB.saveMeta({ transferId:inMeta.transferId, name:msg.name, size:msg.size,
+        mime:msg.mime, totalChunks:msg.chunks, receivedCount:msg.fromChunk||0 });
 
       renderReceiverProgressUI('recv-progress-area', msg.name);
-      updateRing(recvBytes / totalBytes);
+      updateRing(recvBytes/totalBytes);
     }
 
     if (msg.type === 'done') {
-      dbg('RECV','═══ DONE ═══', msg.hash?.substring(0,16));
+      dbg('RECV','═══ DONE ═══');
       assembleAndDownload(msg.hash);
     }
 
     if (msg.type === 'pause') {
-      dbg('RECV','Sender paused');
-      const st = $('xfer-status');
-      if (st) { st.textContent = '⏸ Sender paused'; st.style.color = '#f59e0b'; }
+      const st=$('xfer-status'); if(st){st.textContent='⏸ Sender paused';st.style.color='#f59e0b';}
     }
-
     if (msg.type === 'resume') {
-      const st = $('xfer-status');
-      if (st) { st.textContent = 'Receiving...'; st.style.color = 'var(--text-muted)'; }
+      const st=$('xfer-status'); if(st){st.textContent='Receiving...';st.style.color='var(--text-muted)';}
+    }
+    return;
+  }
+
+  // ── Binary chunk ─────────────────────────────────────────
+  if (data instanceof ArrayBuffer || data instanceof Uint8Array) {
+    let buf = data instanceof Uint8Array ? data.buffer : data;
+
+    // ── DECRYPT (if key was derived from META) ──────────────
+    //  Decryption happens here on the received bytes, BEFORE hashing.
+    //  The Merkle hash is over the plaintext, so we decrypt first,
+    //  then hash the plaintext to match what the sender computed.
+    if (recvAesKey) {
+      try {
+        buf = await AES_CRYPTO.decryptChunk(recvAesKey, buf);
+      } catch(e) {
+        dbgErr('RECV','Decrypt failed — wrong password?', e);
+        showToast('Decryption failed — wrong passphrase?','❌','red');
+        return;
+      }
     }
 
-  } else if (data instanceof ArrayBuffer || data instanceof Uint8Array) {
-    const buf = data instanceof Uint8Array ? data.buffer : data;
-
-    // Find first null slot (in-order SCTP delivery means sequential fill)
-    const idx = inChunks.findIndex(c => c === null);
-    if (idx === -1) { dbgWarn('RECV','Unexpected extra chunk'); return; }
+    // Find next empty slot (SCTP delivers in order, so sequential)
+    const idx = inChunks.findIndex(c => c===null);
+    if (idx === -1) { dbgWarn('RECV','Extra chunk ignored'); return; }
 
     inChunks[idx] = buf;
     recvBytes += buf.byteLength;
 
-    // Hash chunk (async, keyed by idx for ordering)
-    const chunkIdx = idx;
-    crypto.subtle.digest('SHA-256', buf).then(h => {
-      recvChunkHashes[chunkIdx] = new Uint8Array(h);
-    });
+    // Hash plaintext chunk asynchronously
+    const ci = idx;
+    crypto.subtle.digest('SHA-256', buf).then(h => { recvChunkHashes[ci] = new Uint8Array(h); });
 
-    // Non-blocking IDB persist (fire-and-forget)
+    // Persist to IDB (fire-and-forget)
     if (inMeta) {
-      IDB.saveChunk(inMeta.transferId, idx, buf).catch(() => {});
-      // Update IDB meta receivedCount every 64 chunks
-      if (idx % 64 === 0) {
-        IDB.saveMeta({ ...inMeta, receivedCount: idx + 1,
-          totalChunks: inMeta.chunks, timestamp: Date.now() }).catch(() => {});
-      }
+      IDB.saveChunk(inMeta.transferId, idx, buf).catch(()=>{});
+      if (idx % 64 === 0)
+        IDB.saveMeta({ ...inMeta, receivedCount:idx+1, totalChunks:inMeta.chunks }).catch(()=>{});
     }
 
     if (idx % 64 === 0) dbg('RECV',`Chunk #${idx} | ${fmtBytes(recvBytes)}/${fmtBytes(totalBytes)}`);
     tickSpeed(recvBytes);
-    updateRing(recvBytes / totalBytes);
+    updateRing(recvBytes/totalBytes);
   }
 }
 
 async function assembleAndDownload(expectedHash) {
-  dbg('RECV',`assembleAndDownload() hash=${expectedHash?.substring(0,16)}`);
+  dbg('RECV',`assembleAndDownload expectedHash=${expectedHash?.substring(0,16)}`);
 
-  // Wait for all chunk hashes (up to 5s)
+  // Wait for all async chunk hashes
   const totalChunks = inChunks.length;
   const deadline    = Date.now() + 5000;
-  while (recvChunkHashes.filter(Boolean).length < totalChunks && Date.now() < deadline) {
-    await new Promise(r => setTimeout(r, 50));
-  }
+  while (recvChunkHashes.filter(Boolean).length < totalChunks && Date.now() < deadline)
+    await new Promise(r=>setTimeout(r,50));
 
   const hashEl = $('hash-status');
-  if (hashEl) {
-    hashEl.style.display = 'block';
-    hashEl.className     = 'hash-wait';
-    hashEl.innerHTML     = '<span style="color:#f59e0b;font-weight:600;">🔐 Verifying SHA-256 integrity...</span>';
-  }
+  if (hashEl) { hashEl.style.display='block'; hashEl.className='hash-wait'; hashEl.innerHTML='<span style="color:#f59e0b;font-weight:600;">🔐 Verifying SHA-256 integrity...</span>'; }
 
-  let hashOk = false, actualHash = '';
+  let hashOk=false, actualHash='';
   try {
-    const validHashes = recvChunkHashes.slice(0, totalChunks).filter(Boolean);
-    actualHash = await computeMerkleHash(validHashes);
-    hashOk     = (actualHash === expectedHash && validHashes.length === totalChunks);
-    dbg('RECV',`Hash ok=${hashOk}`);
+    const valid = recvChunkHashes.slice(0,totalChunks).filter(Boolean);
+    actualHash  = await computeMerkleHash(valid);
+    hashOk      = (actualHash===expectedHash && valid.length===totalChunks);
   } catch(e) { dbgErr('RECV','Hash error:',e); }
 
-  // Download
-  const blob = new Blob(inChunks.filter(Boolean), { type: inMeta?.mime || 'application/octet-stream' });
+  // Trigger download
+  const blob = new Blob(inChunks.filter(Boolean), { type:inMeta?.mime||'application/octet-stream' });
   const url  = URL.createObjectURL(blob);
-  const a    = Object.assign(document.createElement('a'), { href: url, download: inMeta?.name || 'download' });
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  setTimeout(() => URL.revokeObjectURL(url), 5000);
-  dbg('RECV',`Downloaded: "${inMeta?.name}" ${fmtBytes(blob.size)}`);
+  const a    = Object.assign(document.createElement('a'),{href:url,download:inMeta?.name||'download'});
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  setTimeout(()=>URL.revokeObjectURL(url),5000);
 
-  // Update hash UI
   if (hashEl) {
     hashEl.className = hashOk ? 'hash-ok' : 'hash-fail';
     hashEl.innerHTML = hashOk
@@ -1577,50 +1988,43 @@ async function assembleAndDownload(expectedHash) {
       : `<span style="color:#ef4444;font-weight:600;">✗ Hash mismatch — data may be corrupt</span>`;
   }
 
-  // Send verify ACK to sender
-  if (recvConn) recvConn.send(JSON.stringify({ type: 'verify', ok: hashOk, hash: actualHash }));
-
-  // Clear IDB on success
+  if (recvConn) recvConn.send(JSON.stringify({ type:'verify', ok:hashOk, hash:actualHash }));
   if (hashOk && inMeta) IDB.clearTransfer(inMeta.transferId);
 
-  showToast(hashOk ? `✓ ${inMeta?.name} downloaded` : '⚠ Download done — hash mismatch',
-            hashOk ? '✅' : '⚠️', hashOk ? 'green' : 'red');
+  showToast(hashOk?`✓ ${inMeta?.name} downloaded`:'⚠ Download done — hash mismatch',
+            hashOk?'✅':'⚠️', hashOk?'green':'red');
+
+  transferComplete = true;
   finishUI(hashOk);
-  inChunks = []; recvChunkHashes = [];
+  inChunks=[]; recvChunkHashes=[];
 }
 
-// ── Receiver Pause/Resume ──────────────────────────────────
-function recvPause() {
-  recvIsPaused = true;
-  if (recvConn) recvConn.send(JSON.stringify({ type: 'pause' }));
-  const btn = $('pause-btn');
-  if (btn) { btn.className = 'btn-resume'; btn.textContent = '▶ Resume'; btn.onclick = recvResume; }
-  const st = $('xfer-status');
-  if (st) { st.textContent = '⏸ Paused'; st.style.color = '#f59e0b'; }
+// Receiver pause/resume
+function recvPause()  {
+  recvIsPaused=true;
+  if(recvConn) recvConn.send(JSON.stringify({type:'pause'}));
+  const btn=$('pause-btn'); if(btn){btn.className='btn-resume';btn.textContent='▶ Resume';btn.onclick=recvResume;}
+  const st=$('xfer-status'); if(st){st.textContent='⏸ Paused';st.style.color='#f59e0b';}
 }
 function recvResume() {
-  recvIsPaused = false;
-  if (recvConn) recvConn.send(JSON.stringify({ type: 'resume' }));
-  const btn = $('pause-btn');
-  if (btn) { btn.className = 'btn-pause'; btn.textContent = '⏸ Pause'; btn.onclick = recvPause; }
-  const st = $('xfer-status');
-  if (st) { st.textContent = 'Receiving...'; st.style.color = 'var(--text-muted)'; }
+  recvIsPaused=false;
+  if(recvConn) recvConn.send(JSON.stringify({type:'resume'}));
+  const btn=$('pause-btn'); if(btn){btn.className='btn-pause';btn.textContent='⏸ Pause';btn.onclick=recvPause;}
+  const st=$('xfer-status'); if(st){st.textContent='Receiving...';st.style.color='var(--text-muted)';}
 }
 
 // ══════════════════════════════════════════════════════════════
 //  PROGRESS UI — SENDER
 // ══════════════════════════════════════════════════════════════
 function renderSenderProgressUI(filename) {
-  const el = $('sender-progress-area');
-  if (!el || el.dataset.rendered) return; // render once
-  el.dataset.rendered = '1';
-  const circ = (2 * Math.PI * 44).toFixed(2);
-
-  el.innerHTML = `
-    <div class="glass-card" style="padding:20px;margin-bottom:16px;">
-      <div style="display:flex;align-items:center;gap:20px;margin-bottom:20px;">
-        <div id="ring-wrap" style="position:relative;flex-shrink:0;width:104px;height:104px;">
-          <svg width="104" height="104" viewBox="0 0 104 104">
+  const el=$('sender-progress-area'); if(!el||el.dataset.rendered) return;
+  el.dataset.rendered='1';
+  const circ=(2*Math.PI*44).toFixed(2);
+  el.innerHTML=`
+    <div class="glass-card" style="padding:18px;margin-bottom:14px;">
+      <div style="display:flex;align-items:center;gap:18px;margin-bottom:18px;">
+        <div id="ring-wrap" style="position:relative;flex-shrink:0;width:100px;height:100px;">
+          <svg width="100" height="100" viewBox="0 0 104 104">
             <defs>
               <linearGradient id="ringGradient" x1="0%" y1="0%" x2="100%" y2="100%">
                 <stop offset="0%" stop-color="#7B5CF6"/>
@@ -1632,59 +2036,46 @@ function renderSenderProgressUI(filename) {
               stroke-dasharray="${circ}" stroke-dashoffset="${circ}"/>
           </svg>
           <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;">
-            <span id="ring-pct" style="font-size:20px;font-weight:800;">0%</span>
+            <span id="ring-pct" style="font-size:19px;font-weight:800;">0%</span>
           </div>
         </div>
         <div style="flex:1;min-width:0;">
-          <div style="font-size:13px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:rgba(255,255,255,0.75);margin-bottom:6px;">${escHtml(filename)}</div>
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
-            <div class="conn-dot" style="width:8px;height:8px;border-radius:50%;background:#22c55e;flex-shrink:0;"></div>
+          <div style="font-size:12px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:rgba(255,255,255,0.7);margin-bottom:5px;">${escHtml(filename)}</div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+            <div class="conn-dot" style="width:7px;height:7px;border-radius:50%;background:#22c55e;flex-shrink:0;"></div>
             <span id="xfer-status" style="font-size:12px;color:var(--text-muted);">Sending...</span>
           </div>
-          <div style="display:flex;align-items:baseline;gap:6px;">
-            <span id="speed-val" style="font-family:'JetBrains Mono';font-size:28px;font-weight:700;color:var(--violet);line-height:1;">0.00</span>
-            <span style="font-size:13px;color:var(--text-muted);">MB/s</span>
+          <div style="display:flex;align-items:baseline;gap:5px;">
+            <span id="speed-val" style="font-family:'JetBrains Mono';font-size:26px;font-weight:700;color:var(--violet);line-height:1;">0.00</span>
+            <span style="font-size:12px;color:var(--text-muted);">MB/s</span>
           </div>
-          <div id="bytes-lbl" class="mono" style="font-size:11px;color:var(--text-muted);margin-top:4px;">0 B / ${fmtBytes(totalBytes)}</div>
+          <div id="bytes-lbl" class="mono" style="font-size:11px;color:var(--text-muted);margin-top:3px;">0 B / ${fmtBytes(totalBytes)}</div>
         </div>
       </div>
-
-      <div class="label" style="margin-bottom:8px;">Live Throughput</div>
-      <div id="speed-bars" style="display:flex;align-items:flex-end;gap:2px;height:40px;"></div>
-      <div style="display:flex;justify-content:space-between;margin-top:12px;font-size:11px;color:var(--text-muted);">
+      <div class="label" style="margin-bottom:7px;">Live Throughput</div>
+      <div id="speed-bars" style="display:flex;align-items:flex-end;gap:2px;height:38px;"></div>
+      <div style="display:flex;justify-content:space-between;margin-top:10px;font-size:11px;color:var(--text-muted);">
         <span id="eta-lbl">Calculating...</span>
         <span id="elapsed-lbl">0.0s elapsed</span>
       </div>
-
-      <!-- Global pause/resume -->
-      <div style="margin-top:16px;text-align:center;">
-        <button id="global-pause-btn" class="btn-pause" style="padding:10px 28px;font-size:13px;"
-          onclick="pauseAll()">⏸ Pause All</button>
+      <div style="margin-top:14px;text-align:center;">
+        <button id="global-pause-btn" class="btn-pause" style="padding:9px 24px;font-size:12px;" onclick="pauseAll()">⏸ Pause All</button>
       </div>
     </div>
-
-    <!-- Per-receiver list -->
-    <div class="glass-card" style="padding:16px;margin-bottom:16px;">
-      <div class="label" style="margin-bottom:12px;">Receivers</div>
+    <!-- Per-receiver cards -->
+    <div class="glass-card" style="padding:14px;margin-bottom:14px;">
+      <div class="label" style="margin-bottom:10px;">Receivers</div>
       <div id="sender-receivers-list"></div>
     </div>
-
     <div id="verify-status" style="margin-bottom:12px;"></div>`;
 
-  // Mirror receiver cards here too
-  setTimeout(() => {
-    const srl = $('sender-receivers-list');
-    if (!srl) return;
-    connections.forEach(c => {
-      const div = document.createElement('div');
-      div.id    = `rcard-${c.id}`;
-      div.className = 'receiver-card';
-      srl.appendChild(div);
-      c.cardEl = div;
-      updateReceiverCard(c);
+  setTimeout(()=>{
+    const srl=$('sender-receivers-list'); if(!srl) return;
+    connections.forEach(c=>{
+      const d=document.createElement('div'); d.id=`rcard-${c.id}`; d.className='receiver-card';
+      srl.appendChild(d); c.cardEl=d; updateReceiverCard(c);
     });
-  }, 50);
-
+  },50);
   startElapsedTimer();
 }
 
@@ -1692,15 +2083,18 @@ function renderSenderProgressUI(filename) {
 //  PROGRESS UI — RECEIVER
 // ══════════════════════════════════════════════════════════════
 function renderReceiverProgressUI(containerId, filename) {
-  const el = $(containerId);
-  if (!el) return;
-  const circ = (2 * Math.PI * 44).toFixed(2);
+  const el=$(containerId); if(!el) return;
+  const circ=(2*Math.PI*44).toFixed(2);
 
-  el.innerHTML = `
-    <div class="glass-card" style="padding:20px;margin-bottom:16px;">
-      <div style="display:flex;align-items:center;gap:20px;margin-bottom:20px;">
-        <div id="ring-wrap" style="position:relative;flex-shrink:0;width:104px;height:104px;">
-          <svg width="104" height="104" viewBox="0 0 104 104">
+  // Encryption indicator shown in progress UI
+  const encHint = inMeta?.encrypted
+    ? `<span class="enc-badge" style="margin-left:8px;">🔑 AES-256-GCM</span>` : '';
+
+  el.innerHTML=`
+    <div class="glass-card" style="padding:18px;margin-bottom:14px;">
+      <div style="display:flex;align-items:center;gap:18px;margin-bottom:18px;">
+        <div id="ring-wrap" style="position:relative;flex-shrink:0;width:100px;height:100px;">
+          <svg width="100" height="100" viewBox="0 0 104 104">
             <defs>
               <linearGradient id="ringGradient" x1="0%" y1="0%" x2="100%" y2="100%">
                 <stop offset="0%" stop-color="#06B6D4"/>
@@ -1712,122 +2106,90 @@ function renderReceiverProgressUI(containerId, filename) {
               stroke-dasharray="${circ}" stroke-dashoffset="${circ}"/>
           </svg>
           <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;">
-            <span id="ring-pct" style="font-size:20px;font-weight:800;">0%</span>
+            <span id="ring-pct" style="font-size:19px;font-weight:800;">0%</span>
           </div>
         </div>
         <div style="flex:1;min-width:0;">
-          <div style="font-size:13px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:rgba(255,255,255,0.75);margin-bottom:6px;">${escHtml(filename)}</div>
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
-            <div class="conn-dot" style="width:8px;height:8px;border-radius:50%;background:#06B6D4;flex-shrink:0;"></div>
+          <div style="font-size:12px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:rgba(255,255,255,0.7);margin-bottom:5px;">
+            ${escHtml(filename)}${encHint}
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+            <div class="conn-dot" style="width:7px;height:7px;border-radius:50%;background:#06B6D4;flex-shrink:0;"></div>
             <span id="xfer-status" style="font-size:12px;color:var(--text-muted);">Receiving...</span>
           </div>
-          <div style="display:flex;align-items:baseline;gap:6px;">
-            <span id="speed-val" style="font-family:'JetBrains Mono';font-size:28px;font-weight:700;color:var(--cyan);line-height:1;">0.00</span>
-            <span style="font-size:13px;color:var(--text-muted);">MB/s</span>
+          <div style="display:flex;align-items:baseline;gap:5px;">
+            <span id="speed-val" style="font-family:'JetBrains Mono';font-size:26px;font-weight:700;color:var(--cyan);line-height:1;">0.00</span>
+            <span style="font-size:12px;color:var(--text-muted);">MB/s</span>
           </div>
-          <div id="bytes-lbl" class="mono" style="font-size:11px;color:var(--text-muted);margin-top:4px;">0 B / ${fmtBytes(totalBytes)}</div>
+          <div id="bytes-lbl" class="mono" style="font-size:11px;color:var(--text-muted);margin-top:3px;">0 B / ${fmtBytes(totalBytes)}</div>
         </div>
       </div>
-
-      <div class="label" style="margin-bottom:8px;">Live Throughput</div>
-      <div id="speed-bars" style="display:flex;align-items:flex-end;gap:2px;height:40px;"></div>
-      <div style="display:flex;justify-content:space-between;margin-top:12px;font-size:11px;color:var(--text-muted);">
+      <div class="label" style="margin-bottom:7px;">Live Throughput</div>
+      <div id="speed-bars" style="display:flex;align-items:flex-end;gap:2px;height:38px;"></div>
+      <div style="display:flex;justify-content:space-between;margin-top:10px;font-size:11px;color:var(--text-muted);">
         <span id="eta-lbl">Calculating...</span>
         <span id="elapsed-lbl">0.0s elapsed</span>
       </div>
-
-      <div style="margin-top:16px;text-align:center;">
-        <button id="pause-btn" class="btn-pause" style="padding:10px 28px;font-size:13px;" onclick="recvPause()">⏸ Pause</button>
+      <div style="margin-top:14px;text-align:center;">
+        <button id="pause-btn" class="btn-pause" style="padding:9px 24px;font-size:12px;" onclick="recvPause()">⏸ Pause</button>
       </div>
     </div>
-
     <div id="hash-status" class="hash-wait" style="display:none;margin-bottom:12px;">
       <span style="color:#f59e0b;font-weight:600;">🔐 Awaiting hash...</span>
     </div>`;
 
   startElapsedTimer();
-  // If resuming, pre-fill ring
-  if (recvBytes > 0 && totalBytes > 0) updateRing(recvBytes / totalBytes);
+  if (recvBytes > 0 && totalBytes > 0) updateRing(recvBytes/totalBytes);
 }
 
 // ══════════════════════════════════════════════════════════════
 //  SPEED & PROGRESS
 // ══════════════════════════════════════════════════════════════
 function tickSpeed(bytes) {
-  const now = performance.now();
-  const dt  = (now - lastPerfTime) / 1000;
-  if (dt < 0.15) return;
-  const rate = (bytes - lastPerfBytes) / dt;
-  if (rate < 0) return;
-  speedWindow.push(rate);
-  if (speedWindow.length > 10) speedWindow.shift();
-  speedHistory.push(rate);
-  if (speedHistory.length > 28) speedHistory.shift();
-  lastPerfTime  = now;
-  lastPerfBytes = bytes;
+  const now=performance.now(), dt=(now-lastPerfTime)/1000;
+  if(dt<0.15) return;
+  const rate=(bytes-lastPerfBytes)/dt; if(rate<0) return;
+  speedWindow.push(rate); if(speedWindow.length>10) speedWindow.shift();
+  speedHistory.push(rate); if(speedHistory.length>28) speedHistory.shift();
+  lastPerfTime=now; lastPerfBytes=bytes;
   paintSpeed(bytes);
 }
 
 function paintSpeed(bytes) {
-  const avg  = speedWindow.reduce((a,b) => a+b, 0) / (speedWindow.length || 1);
-  const mbps = avg / (1024 * 1024);
-  const sv   = $('speed-val'); if (sv) sv.textContent = mbps.toFixed(2);
-  const bl   = $('bytes-lbl'); if (bl) bl.textContent = `${fmtBytes(bytes)} / ${fmtBytes(totalBytes)}`;
-  const eta  = $('eta-lbl');
-  if (eta && avg > 0) {
-    const rem = totalBytes - bytes;
-    const s   = rem / avg;
-    eta.textContent = s < 60 ? `~${s.toFixed(0)}s remaining` : `~${(s/60).toFixed(1)}m remaining`;
-  }
-  // Bar chart
-  const barsEl = $('speed-bars'); if (!barsEl) return;
-  const arr    = speedHistory;
-  const maxSpd = Math.max(...arr, 1);
-  const pad    = 28 - arr.length;
-  barsEl.innerHTML = [...Array(pad).fill(0), ...arr].map(s => {
-    const f  = s / maxSpd;
-    const h  = Math.max(3, f * 38);
-    const r  = Math.round(73 + f * 95);
-    const g  = Math.round(40 + f * 20);
-    const op = (0.3 + f * 0.7).toFixed(2);
+  const avg=speedWindow.reduce((a,b)=>a+b,0)/(speedWindow.length||1);
+  const mbps=avg/(1024*1024);
+  const sv=$('speed-val'); if(sv) sv.textContent=mbps.toFixed(2);
+  const bl=$('bytes-lbl'); if(bl) bl.textContent=`${fmtBytes(bytes)} / ${fmtBytes(totalBytes)}`;
+  const eta=$('eta-lbl');
+  if(eta&&avg>0){const rem=totalBytes-bytes;const s=rem/avg;eta.textContent=s<60?`~${s.toFixed(0)}s remaining`:`~${(s/60).toFixed(1)}m remaining`;}
+  const barsEl=$('speed-bars'); if(!barsEl) return;
+  const arr=speedHistory, maxSpd=Math.max(...arr,1), pad=28-arr.length;
+  barsEl.innerHTML=[...Array(pad).fill(0),...arr].map(s=>{
+    const f=s/maxSpd,h=Math.max(3,f*36),r=Math.round(73+f*95),g=Math.round(40+f*20),op=(0.3+f*0.7).toFixed(2);
     return `<div class="speed-bar" style="flex:1;height:${h.toFixed(1)}px;background:rgb(${r},${g},246);opacity:${op};"></div>`;
   }).join('');
 }
 
 function updateRing(pct) {
-  const ring  = $('ring-fill');
-  const pctEl = $('ring-pct');
-  if (!ring) return;
-  const circ = 2 * Math.PI * 44;
-  ring.style.strokeDashoffset = (circ * (1 - pct)).toFixed(2);
-  const avg    = speedWindow.length ? speedWindow.reduce((a,b) => a+b,0)/speedWindow.length : 0;
-  const mbps   = avg / (1024 * 1024);
-  const glowPx = Math.min(3 + mbps * 1.2, 30);
-  const glowOp = Math.min(0.4 + mbps * 0.04, 0.95).toFixed(2);
-  const wrap = $('ring-wrap');
-  if (wrap) wrap.style.filter = `drop-shadow(0 0 ${glowPx.toFixed(1)}px rgba(123,92,246,${glowOp}))`;
-  if (pctEl) pctEl.textContent = `${Math.round(pct * 100)}%`;
+  const ring=$('ring-fill'),pctEl=$('ring-pct'); if(!ring) return;
+  const circ=2*Math.PI*44;
+  ring.style.strokeDashoffset=(circ*(1-pct)).toFixed(2);
+  const avg=speedWindow.length?speedWindow.reduce((a,b)=>a+b,0)/speedWindow.length:0;
+  const glow=Math.min(3+(avg/(1024*1024))*1.2,30);
+  const wrap=$('ring-wrap'); if(wrap) wrap.style.filter=`drop-shadow(0 0 ${glow.toFixed(1)}px rgba(123,92,246,${Math.min(0.4+(avg/(1024*1024))*0.04,0.95).toFixed(2)}))`;
+  if(pctEl) pctEl.textContent=`${Math.round(pct*100)}%`;
 }
 
 function finishUI(hashOk) {
-  clearInterval(elapsedTimer);
-  updateRing(1);
-  const s = $('xfer-status');
-  if (s) { s.textContent = isSender ? '✓ Sent' : '✓ Downloaded'; s.style.color = '#22c55e'; }
-  const hashEl = $('hash-status');
-  if (hashEl && !isSender) hashEl.style.display = 'block';
-  const pbtn = $('pause-btn');
-  if (pbtn) { pbtn.disabled = true; pbtn.style.opacity = '0.4'; }
-  const gpbtn = $('global-pause-btn');
-  if (gpbtn) { gpbtn.disabled = true; gpbtn.style.opacity = '0.4'; }
+  clearInterval(elapsedTimer); updateRing(1);
+  const s=$('xfer-status'); if(s){s.textContent=isSender?'✓ Sent':'✓ Downloaded';s.style.color='#22c55e';}
+  const hashEl=$('hash-status'); if(hashEl&&!isSender) hashEl.style.display='block';
+  [$('pause-btn'),$('global-pause-btn')].forEach(b=>{if(b){b.disabled=true;b.style.opacity='0.4';}});
 }
 
 function startElapsedTimer() {
   clearInterval(elapsedTimer);
-  elapsedTimer = setInterval(() => {
-    const el = $('elapsed-lbl');
-    if (el) el.textContent = `${((performance.now() - xferStart) / 1000).toFixed(1)}s elapsed`;
-  }, 500);
+  elapsedTimer=setInterval(()=>{ const el=$('elapsed-lbl'); if(el) el.textContent=`${((performance.now()-xferStart)/1000).toFixed(1)}s elapsed`; },500);
 }
 
 // ══════════════════════════════════════════════════════════════
@@ -1835,40 +2197,35 @@ function startElapsedTimer() {
 // ══════════════════════════════════════════════════════════════
 function cleanup() {
   clearInterval(elapsedTimer);
-  globalIsPaused = false; recvIsPaused = false;
-  if (pauseResolve) { pauseResolve(); pauseResolve = null; }
-  connections.forEach(c => { try { c.conn.close(); } catch(e) {} });
-  connections = [];
-  if (recvConn) { try { recvConn.close(); } catch(e) {} recvConn = null; }
-  if (peer)     { try { peer.destroy();    } catch(e) {} peer = null; }
-  selectedFiles = []; inChunks = []; recvChunkHashes = []; senderChunkHashes = [];
-  speedWindow   = []; speedHistory = [];
-  totalBytes = recvBytes = 0;
-  inMeta = null; transferBlob = null; myCode = null;
+  globalIsPaused=false; recvIsPaused=false;
+  if(pauseResolve){pauseResolve();pauseResolve=null;}
+  recvQueue.length=0; recvProcessing=false;
+  connections.forEach(c=>{try{c.conn.close();}catch(e){}});
+  connections=[];
+  if(recvConn){try{recvConn.close();}catch(e){}recvConn=null;}
+  if(peer){try{peer.destroy();}catch(e){}peer=null;}
+  selectedFiles=[]; inChunks=[]; recvChunkHashes=[]; senderChunkHashes=[];
+  speedWindow=[]; speedHistory=[];
+  totalBytes=recvBytes=0; inMeta=null; transferBlob=null; myCode=null;
+  senderAesKey=null; recvAesKey=null; transferComplete=false;
 }
 
 function onDisconnect() {
-  clearInterval(elapsedTimer);
-  hide('conn-badge');
+  clearInterval(elapsedTimer); hide('conn-badge');
   showToast('Connection dropped','📡','red');
-  const s = $('xfer-status');
-  if (s) { s.textContent = '⚠ Disconnected'; s.style.color = '#ef4444'; }
+  const s=$('xfer-status'); if(s){s.textContent='⚠ Disconnected';s.style.color='#ef4444';}
 }
 
 // ══════════════════════════════════════════════════════════════
 //  TOAST
 // ══════════════════════════════════════════════════════════════
-let _toastTimer = null;
-function showToast(msg, icon, color) {
-  const toast  = $('toast');
-  const iconEl = $('toast-icon-el');
-  const msgEl  = $('toast-msg');
-  if (!toast) return;
-  if (iconEl) iconEl.textContent = icon || 'ℹ';
-  if (msgEl)  msgEl.textContent  = msg;
-  toast.style.display = 'flex';
+let _toastTimer=null;
+function showToast(msg,icon,color) {
+  const toast=$('toast'),ie=$('toast-icon-el'),me=$('toast-msg'); if(!toast) return;
+  if(ie) ie.textContent=icon||'ℹ'; if(me) me.textContent=msg;
+  toast.style.display='flex';
   clearTimeout(_toastTimer);
-  _toastTimer = setTimeout(() => { toast.style.display = 'none'; }, 4000);
+  _toastTimer=setTimeout(()=>{toast.style.display='none';},4000);
 }
 
 // ══════════════════════════════════════════════════════════════
@@ -1876,35 +2233,34 @@ function showToast(msg, icon, color) {
 // ══════════════════════════════════════════════════════════════
 async function boot() {
   dbg('BOOT','boot()');
-  // Init IDB (non-blocking — graceful failure if unavailable)
-  try {
-    await IDB.init();
-    dbg('IDB','IndexedDB initialized');
-  } catch(e) {
-    dbgWarn('IDB','IndexedDB unavailable — resume disabled:', e.message);
-  }
 
-  // Dependency checks
+  // Init IndexedDB
+  try { await IDB.init(); dbg('IDB','Ready'); }
+  catch(e) { dbgWarn('IDB','Unavailable:',e.message); }
+
+  // Init Link Pair (reads localStorage token and starts background peer)
+  LINK_PAIR.init();
+
+  // Dependency check
   const deps = {
-    'WebRTC':    typeof RTCPeerConnection !== 'undefined',
-    'PeerJS':    typeof Peer              !== 'undefined',
-    'JSZip':     typeof JSZip             !== 'undefined',
-    'Web Crypto':typeof crypto?.subtle    !== 'undefined',
-    'IndexedDB': typeof indexedDB         !== 'undefined',
+    WebRTC:   typeof RTCPeerConnection!=='undefined',
+    PeerJS:   typeof Peer!=='undefined',
+    JSZip:    typeof JSZip!=='undefined',
+    Crypto:   typeof crypto?.subtle!=='undefined',
+    IDB:      typeof indexedDB!=='undefined',
   };
-  for (const [n, ok] of Object.entries(deps)) dbg('DEPS',`${ok?'✔':'✘'} ${n}`);
-  if (!deps['WebRTC'])   showToast('WebRTC not supported','❌','red');
-  if (!deps['PeerJS'])   showToast('PeerJS failed to load — check internet','❌','red');
+  for(const [n,ok] of Object.entries(deps)) dbg('DEPS',`${ok?'✔':'✘'} ${n}`);
+  if (!deps.WebRTC) showToast('WebRTC not supported in this browser','❌','red');
+  if (!deps.PeerJS)  showToast('PeerJS failed to load — check internet','❌','red');
+  if (!deps.Crypto)  showToast('Web Crypto API unavailable','⚠️','red');
 
-  showToast('GhostShare v4 ready 👻','👻','violet');
-  dbg('BOOT','✅ Initialized');
+  showToast('GhostShare v5 ready 👻','👻','violet');
+  dbg('BOOT','✅ Ready');
 }
 
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', boot);
-} else {
-  boot();
-}
+if (document.readyState==='loading') {
+  document.addEventListener('DOMContentLoaded',boot);
+} else { boot(); }
 </script>
 </body>
 </html>
