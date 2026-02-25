@@ -9,6 +9,9 @@
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet"/>
 
   <style>
+    /* ══════════════════════════════════════════════
+       DESIGN TOKENS
+    ══════════════════════════════════════════════ */
     :root {
       --violet: #7B5CF6;
       --violet-dim: rgba(123,92,246,0.15);
@@ -23,6 +26,57 @@
       --border-glow: rgba(123,92,246,0.35);
       --text-muted: rgba(255,255,255,0.38);
     }
+
+    /* ══════════════════════════════════════════════
+       MINI TAILWIND SHIM (replaces CDN)
+       Only the utility classes actually used in the HTML
+    ══════════════════════════════════════════════ */
+    .flex          { display: flex; }
+    .inline-flex   { display: inline-flex; }
+    .items-center  { align-items: center; }
+    .items-start   { align-items: flex-start; }
+    .justify-center{ justify-content: center; }
+    .justify-between{justify-content: space-between; }
+    .text-center   { text-align: center; }
+    .text-left     { text-align: left; }
+    .flex-1        { flex: 1 1 0%; }
+    .flex-wrap     { flex-wrap: wrap; }
+    .flex-shrink-0 { flex-shrink: 0; }
+    .font-bold     { font-weight: 700; }
+    .font-semibold { font-weight: 600; }
+    .font-medium   { font-weight: 500; }
+    .w-2           { width: 8px; }
+    .w-8           { width: 32px; }
+    .h-2           { height: 8px; }
+    .h-8           { height: 32px; }
+    .min-w-0       { min-width: 0; }
+    .overflow-hidden { overflow: hidden; }
+    .rounded-full  { border-radius: 9999px; }
+    .rounded-xl    { border-radius: 12px; }
+    .relative      { position: relative; }
+    .fixed         { position: fixed; }
+    .absolute      { position: absolute; }
+    .inset-0       { inset: 0; }
+    .z-50          { z-index: 50; }
+    .top-0         { top: 0; }
+    .left-0        { left: 0; }
+    .right-0       { right: 0; }
+    .bottom-0      { bottom: 0; }
+    .pointer-events-none { pointer-events: none; }
+    /* Spacing — px-N uses 4px scale */
+    .px-4  { padding-left:16px; padding-right:16px; }
+    .px-5  { padding-left:20px; padding-right:20px; }
+    .py-1\.5 { padding-top:6px; padding-bottom:6px; }
+    .py-3  { padding-top:12px; padding-bottom:12px; }
+    .mb-6  { margin-bottom:24px; }
+    .mb-4  { margin-bottom:16px; }
+    .gap-2 { gap:8px; }
+    .gap-3 { gap:12px; }
+    .gap-4 { gap:16px; }
+
+    /* ══════════════════════════════════════════════
+       BASE
+    ══════════════════════════════════════════════ */
     *{box-sizing:border-box;margin:0;padding:0;}
     html{scroll-behavior:smooth;}
     body{font-family:'Outfit',sans-serif;background-color:var(--bg);color:#fff;min-height:100vh;overflow-x:hidden;}
@@ -41,7 +95,9 @@
       mask-image:radial-gradient(ellipse at center,black 30%,transparent 80%);
     }
 
-    /* ── GLASS ── */
+    /* ══════════════════════════════════════════════
+       GLASS & CARDS
+    ══════════════════════════════════════════════ */
     .glass{background:var(--surface);border:1px solid var(--border);backdrop-filter:blur(24px);}
     .glass-card{
       background:rgba(255,255,255,0.035);border:1px solid var(--border);
@@ -49,7 +105,9 @@
     }
     .glass-card:hover{border-color:var(--border-glow);}
 
-    /* ── BUTTONS ── */
+    /* ══════════════════════════════════════════════
+       BUTTONS
+    ══════════════════════════════════════════════ */
     .btn-primary{
       background:linear-gradient(135deg,#6d40f5 0%,#2563eb 100%);
       border:1px solid rgba(109,64,245,0.5);border-radius:12px;
@@ -72,12 +130,18 @@
     .btn-danger:hover{background:rgba(239,68,68,0.2);}
     .btn-amber{background:rgba(245,158,11,0.12);border:1px solid rgba(245,158,11,0.3);border-radius:10px;cursor:pointer;color:#f59e0b;font-weight:600;transition:background 0.2s;}
     .btn-amber:hover{background:rgba(245,158,11,0.2);}
+    .btn-cyan{background:rgba(6,182,212,0.12);border:1px solid rgba(6,182,212,0.3);border-radius:10px;cursor:pointer;color:#06B6D4;font-weight:600;transition:background 0.2s;}
+    .btn-cyan:hover{background:rgba(6,182,212,0.2);}
 
-    /* ── TYPOGRAPHY ── */
+    /* ══════════════════════════════════════════════
+       TYPOGRAPHY
+    ══════════════════════════════════════════════ */
     .mono{font-family:'JetBrains Mono',monospace;}
     .label{font-size:11px;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);}
 
-    /* ── FORMS ── */
+    /* ══════════════════════════════════════════════
+       FORMS
+    ══════════════════════════════════════════════ */
     textarea,input[type="text"],input[type="url"],input[type="password"]{
       font-family:'JetBrains Mono',monospace;font-size:11px;
       background:rgba(0,0,0,0.4);border:1px solid var(--border);
@@ -87,7 +151,9 @@
     textarea:focus,input:focus{border-color:rgba(123,92,246,0.5);box-shadow:0 0 0 3px rgba(123,92,246,0.1);}
     textarea::placeholder,input::placeholder{color:rgba(255,255,255,0.2);}
 
-    /* ── TOGGLE SWITCH ── */
+    /* ══════════════════════════════════════════════
+       TOGGLE SWITCH
+    ══════════════════════════════════════════════ */
     .toggle-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;}
     .toggle-switch{position:relative;width:40px;height:22px;flex-shrink:0;}
     .toggle-switch input{opacity:0;width:0;height:0;}
@@ -98,7 +164,9 @@
     .toggle-label-text{font-size:13px;font-weight:500;color:rgba(255,255,255,0.8);}
     .toggle-sub{font-size:11px;color:var(--text-muted);margin-top:2px;}
 
-    /* ── CODE DISPLAY BOXES ── */
+    /* ══════════════════════════════════════════════
+       CODE DISPLAY BOXES
+    ══════════════════════════════════════════════ */
     .code-boxes{display:flex;gap:8px;justify-content:center;margin:8px 0;}
     .code-box{
       width:52px;height:64px;display:flex;align-items:center;justify-content:center;
@@ -119,12 +187,16 @@
     .code-input-field:focus{border-color:rgba(123,92,246,0.6);box-shadow:0 0 0 4px rgba(123,92,246,0.12),0 0 30px rgba(123,92,246,0.15);}
     .code-input-field::placeholder{color:rgba(255,255,255,0.12);letter-spacing:0.4em;}
 
-    /* ── SCREENS ── */
+    /* ══════════════════════════════════════════════
+       SCREENS
+    ══════════════════════════════════════════════ */
     .screen{display:none;position:relative;z-index:1;}
     .screen.active{display:block;animation:fadeUp 0.4s cubic-bezier(0.16,1,0.3,1);}
     @keyframes fadeUp{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
 
-    /* ── ANIMATIONS ── */
+    /* ══════════════════════════════════════════════
+       ANIMATIONS
+    ══════════════════════════════════════════════ */
     @keyframes logoPulse{0%,100%{box-shadow:0 0 0 0 rgba(123,92,246,0.5);}50%{box-shadow:0 0 0 10px rgba(123,92,246,0);}}
     .logo-icon{animation:logoPulse 3s ease-in-out infinite;}
     @keyframes connectedPulse{0%,100%{box-shadow:0 0 0 0 rgba(34,197,94,0.6);}50%{box-shadow:0 0 0 5px rgba(34,197,94,0);}}
@@ -145,71 +217,273 @@
     @keyframes pairPulse{0%,100%{box-shadow:0 0 0 0 rgba(6,182,212,0.5);}50%{box-shadow:0 0 0 6px rgba(6,182,212,0);}}
     .pair-dot-pulse{animation:pairPulse 2s ease-in-out infinite;}
 
-    /* ── PROGRESS RING ── */
+    /* ══════════════════════════════════════════════
+       PROGRESS RING
+    ══════════════════════════════════════════════ */
     .progress-ring-track{fill:none;stroke:rgba(255,255,255,0.04);stroke-width:7;}
     .progress-ring-fill{fill:none;stroke-width:7;stroke:url(#ringGradient);stroke-linecap:round;transform:rotate(-90deg);transform-origin:50% 50%;transition:stroke-dashoffset 0.35s ease;}
 
-    /* ── DROP ZONE ── */
+    /* ══════════════════════════════════════════════
+       DROP ZONE
+    ══════════════════════════════════════════════ */
     .drop-zone{border:2px dashed rgba(123,92,246,0.3);transition:all 0.3s;cursor:pointer;}
     .drop-zone:hover,.drop-zone.drag-active{border-color:rgba(123,92,246,0.7);background:rgba(123,92,246,0.04);}
     .drop-zone-link{border:2px dashed rgba(6,182,212,0.3);transition:all 0.3s;cursor:pointer;border-radius:16px;}
     .drop-zone-link:hover,.drop-zone-link.drag-active{border-color:rgba(6,182,212,0.7);background:rgba(6,182,212,0.04);}
 
-    /* ── STEP DOTS ── */
+    /* ══════════════════════════════════════════════
+       STEP DOTS
+    ══════════════════════════════════════════════ */
     .step-dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,0.12);transition:all 0.3s;}
     .step-dot.active{background:var(--violet);box-shadow:0 0 8px rgba(123,92,246,0.7);}
 
-    /* ── CONFIG PANEL ── */
+    /* ══════════════════════════════════════════════
+       CONFIG PANEL (collapsible)
+    ══════════════════════════════════════════════ */
     .config-content{overflow:hidden;max-height:0;transition:max-height 0.4s cubic-bezier(0.16,1,0.3,1);}
-    .config-content.open{max-height:700px;}
+    .config-content.open{max-height:900px;}
 
-    /* ── HASH STATUS ── */
+    /* ══════════════════════════════════════════════
+       HASH STATUS BADGES
+    ══════════════════════════════════════════════ */
     .hash-ok{background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.25);border-radius:10px;padding:10px 14px;}
     .hash-fail{background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.25);border-radius:10px;padding:10px 14px;}
     .hash-wait{background:rgba(234,179,8,0.08);border:1px solid rgba(234,179,8,0.2);border-radius:10px;padding:10px 14px;}
 
-    /* ── MODE TOGGLE ── */
+    /* ══════════════════════════════════════════════
+       MODE TOGGLE PILL
+    ══════════════════════════════════════════════ */
     .mode-toggle{display:flex;align-items:center;gap:4px;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:999px;padding:3px;cursor:pointer;user-select:none;}
     .mode-toggle-opt{font-size:11px;font-weight:600;padding:4px 9px;border-radius:999px;transition:all 0.2s;color:var(--text-muted);}
     .mode-toggle-opt.active{background:rgba(123,92,246,0.25);color:#fff;box-shadow:0 0 12px rgba(123,92,246,0.3);}
     .mode-toggle-opt.global.active{background:rgba(6,182,212,0.25);color:#fff;box-shadow:0 0 12px rgba(6,182,212,0.3);}
 
-    /* ── RESUME BANNER ── */
+    /* ══════════════════════════════════════════════
+       RESUME BANNER
+    ══════════════════════════════════════════════ */
     .resume-banner{background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.25);border-radius:14px;padding:14px 18px;margin-bottom:16px;}
 
-    /* ── RECEIVER CARD ── */
+    /* ══════════════════════════════════════════════
+       RECEIVER CARDS
+    ══════════════════════════════════════════════ */
     .receiver-card{background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:14px;margin-bottom:8px;transition:border-color 0.3s;}
     .receiver-card.active-xfer{border-color:rgba(123,92,246,0.3);}
     .receiver-card.done-xfer{border-color:rgba(34,197,94,0.3);}
     .mini-bar-track{height:4px;background:rgba(255,255,255,0.06);border-radius:4px;overflow:hidden;margin-top:8px;}
     .mini-bar-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,#7B5CF6,#2563eb);transition:width 0.35s ease;}
 
-    /* ── LINK PAIR CARD ── */
+    /* ══════════════════════════════════════════════
+       LINK PAIR
+    ══════════════════════════════════════════════ */
     .link-token-display{font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:700;letter-spacing:0.25em;color:#fff;}
 
-    /* ── ENC BADGE ── */
+    /* ══════════════════════════════════════════════
+       SECURITY BADGES
+    ══════════════════════════════════════════════ */
     .enc-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:999px;
       background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.3);font-size:10px;font-weight:600;color:#22c55e;}
     .destruct-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:999px;
       background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);font-size:10px;font-weight:600;color:#ef4444;}
 
-    /* ── SCROLLBAR ── */
+    /* ══════════════════════════════════════════════
+       SCROLLBAR
+    ══════════════════════════════════════════════ */
     ::-webkit-scrollbar{width:3px;}
     ::-webkit-scrollbar-track{background:transparent;}
     ::-webkit-scrollbar-thumb{background:rgba(123,92,246,0.4);border-radius:2px;}
 
-    /* ── TOAST ── */
+    /* ══════════════════════════════════════════════
+       TOAST
+    ══════════════════════════════════════════════ */
     @keyframes toastIn{from{opacity:0;transform:translate(-50%,20px);}to{opacity:1;transform:translate(-50%,0);}}
     #toast.visible{animation:toastIn 0.3s cubic-bezier(0.16,1,0.3,1);}
 
-    /* ── BADGES ── */
+    /* ══════════════════════════════════════════════
+       COLOR BADGES
+    ══════════════════════════════════════════════ */
     .badge-violet{background:var(--violet-dim);border:1px solid rgba(123,92,246,0.25);}
     .badge-cyan{background:var(--cyan-dim);border:1px solid rgba(6,182,212,0.25);}
     .badge-green{background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.25);}
     .badge-red{background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.25);}
+
+    /* ══════════════════════════════════════════════
+       ▶ NEW: GLOBAL DRAG OVERLAY
+       Full-screen drop target that appears whenever
+       any file is dragged over the window.
+    ══════════════════════════════════════════════ */
+    #global-drop-overlay{
+      display:none;position:fixed;inset:0;z-index:9000;
+      background:rgba(3,6,16,0.88);backdrop-filter:blur(8px);
+      align-items:center;justify-content:center;
+      border:3px solid rgba(123,92,246,0.5);
+      transition:opacity 0.2s;
+    }
+    #global-drop-overlay.visible{display:flex;}
+    @keyframes dropPulse{0%,100%{transform:scale(1);}50%{transform:scale(1.06);}}
+    #global-drop-overlay .drop-inner{
+      text-align:center;pointer-events:none;
+      animation:dropPulse 1.4s ease-in-out infinite;
+    }
+    #global-drop-overlay .drop-inner .icon{font-size:72px;margin-bottom:16px;}
+    #global-drop-overlay .drop-inner .title{font-size:28px;font-weight:900;letter-spacing:-0.03em;}
+    #global-drop-overlay .drop-inner .sub{font-size:14px;color:var(--text-muted);margin-top:8px;}
+
+    /* ══════════════════════════════════════════════
+       ▶ NEW: CONNECTION GUARD MODAL
+       Shown to sender before transfer begins when
+       receiver's geolocation is resolved.
+    ══════════════════════════════════════════════ */
+    #geo-modal{
+      display:none;position:fixed;inset:0;z-index:8000;
+      background:rgba(3,6,16,0.85);backdrop-filter:blur(12px);
+      align-items:center;justify-content:center;padding:24px;
+    }
+    #geo-modal.visible{display:flex;}
+    #geo-modal-card{
+      background:rgba(10,14,30,0.95);border:1px solid rgba(123,92,246,0.3);
+      border-radius:20px;padding:28px;max-width:420px;width:100%;
+      box-shadow:0 0 60px rgba(123,92,246,0.2);
+    }
+
+    /* ══════════════════════════════════════════════
+       ▶ NEW: ON-PAGE LOG PANEL
+       Floating bottom-right panel showing real-time
+       transfer events. Collapsed by default.
+    ══════════════════════════════════════════════ */
+    #log-panel{
+      position:fixed;bottom:80px;right:16px;z-index:7000;
+      width:320px;max-height:320px;
+      background:rgba(8,10,24,0.95);border:1px solid rgba(255,255,255,0.08);
+      border-radius:16px;backdrop-filter:blur(20px);
+      display:flex;flex-direction:column;
+      transform:translateY(20px);opacity:0;pointer-events:none;
+      transition:transform 0.3s cubic-bezier(0.16,1,0.3,1),opacity 0.3s;
+    }
+    #log-panel.open{transform:translateY(0);opacity:1;pointer-events:auto;}
+    #log-panel-header{
+      display:flex;align-items:center;justify-content:space-between;
+      padding:10px 14px;border-bottom:1px solid rgba(255,255,255,0.06);flex-shrink:0;
+    }
+    #log-entries{flex:1;overflow-y:auto;padding:8px 0;min-height:0;}
+    .log-entry{display:flex;align-items:flex-start;gap:8px;padding:4px 12px;}
+    .log-entry .ts{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-muted);flex-shrink:0;margin-top:2px;}
+    .log-entry .msg{font-size:11px;line-height:1.4;color:rgba(255,255,255,0.65);}
+    .log-entry.info  .msg{color:rgba(255,255,255,0.65);}
+    .log-entry.ok    .msg{color:#22c55e;}
+    .log-entry.warn  .msg{color:#f59e0b;}
+    .log-entry.error .msg{color:#ef4444;}
+    .log-entry.cyan  .msg{color:#06B6D4;}
+
+    /* Log toggle button (fixed bottom right) */
+    #log-toggle-btn{
+      position:fixed;bottom:24px;right:16px;z-index:7001;
+      background:rgba(8,10,24,0.9);border:1px solid rgba(255,255,255,0.1);
+      border-radius:999px;padding:8px 14px;cursor:pointer;
+      display:flex;align-items:center;gap:7px;
+      font-size:11px;font-weight:600;color:rgba(255,255,255,0.6);
+      transition:background 0.2s,border-color 0.2s;backdrop-filter:blur(12px);
+    }
+    #log-toggle-btn:hover{background:rgba(20,24,50,0.95);border-color:rgba(123,92,246,0.4);color:#fff;}
+    #log-badge{background:var(--violet);color:#fff;border-radius:999px;padding:1px 6px;font-size:9px;font-weight:700;display:none;}
+
+    /* ══════════════════════════════════════════════
+       ▶ NEW: SEND MODE TABS (Files | Text | Folder)
+    ══════════════════════════════════════════════ */
+    .send-tab-bar{display:flex;gap:4px;margin-bottom:14px;background:rgba(255,255,255,0.03);
+      border:1px solid var(--border);border-radius:12px;padding:4px;}
+    .send-tab{flex:1;padding:8px;border:none;background:transparent;cursor:pointer;
+      font-family:'Outfit',sans-serif;font-size:12px;font-weight:600;
+      color:var(--text-muted);border-radius:8px;transition:all 0.2s;}
+    .send-tab.active{background:rgba(123,92,246,0.2);color:#fff;box-shadow:0 0 12px rgba(123,92,246,0.2);}
+
+    /* ══════════════════════════════════════════════
+       ▶ NEW: SECURE TEXT AREA
+    ══════════════════════════════════════════════ */
+    #text-input-area{
+      width:100%;min-height:140px;padding:14px;
+      font-family:'JetBrains Mono',monospace;font-size:12px;line-height:1.6;
+      background:rgba(0,0,0,0.45);border:1.5px solid rgba(123,92,246,0.25);
+      border-radius:14px;color:#fff;resize:vertical;outline:none;
+      transition:border-color 0.25s,box-shadow 0.25s;
+    }
+    #text-input-area:focus{border-color:rgba(123,92,246,0.55);box-shadow:0 0 0 3px rgba(123,92,246,0.1);}
+    #text-input-area::placeholder{color:rgba(255,255,255,0.15);}
+
+    /* ══════════════════════════════════════════════
+       ▶ NEW: RECEIVED TEXT DISPLAY
+    ══════════════════════════════════════════════ */
+    #recv-text-display{
+      background:rgba(6,182,212,0.04);border:1.5px solid rgba(6,182,212,0.2);
+      border-radius:14px;padding:16px;
+      font-family:'JetBrains Mono',monospace;font-size:12px;line-height:1.7;
+      color:rgba(255,255,255,0.82);word-break:break-all;white-space:pre-wrap;
+      max-height:300px;overflow-y:auto;
+    }
+
+    /* ══════════════════════════════════════════════
+       ▶ NEW: TRANSFER HISTORY PANEL (in landing)
+    ══════════════════════════════════════════════ */
+    .history-item{
+      display:flex;align-items:center;gap:10px;padding:9px 14px;
+      border-bottom:1px solid rgba(255,255,255,0.04);font-size:12px;
+    }
+    .history-item:last-child{border-bottom:none;}
+    .history-icon{font-size:16px;flex-shrink:0;}
+    .history-name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:rgba(255,255,255,0.7);}
+    .history-meta{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-muted);flex-shrink:0;}
   </style>
 </head>
 <body>
+
+<!-- ══════════════════════════════════════════════
+     ▶ NEW: GLOBAL DRAG-AND-DROP OVERLAY
+     Appears any time a file is dragged over the window.
+     Handles drops globally and routes to the send flow.
+══════════════════════════════════════════════ -->
+<div id="global-drop-overlay">
+  <div class="drop-inner">
+    <div class="icon">👻</div>
+    <div class="title shimmer-text">Drop to GhostShare!</div>
+    <div class="sub">Release to start sending</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     ▶ NEW: CONNECTION GUARD MODAL
+     Shown to sender when a receiver's country is known.
+     Sender can approve or reject the connection.
+══════════════════════════════════════════════ -->
+<div id="geo-modal">
+  <div id="geo-modal-card">
+    <div style="font-size:22px;font-weight:800;margin-bottom:6px;">🔒 Connection Request</div>
+    <div style="font-size:13px;color:var(--text-muted);margin-bottom:20px;">A receiver wants to download your files</div>
+    <div id="geo-modal-body" style="background:rgba(123,92,246,0.06);border:1px solid rgba(123,92,246,0.2);border-radius:12px;padding:16px;margin-bottom:20px;"></div>
+    <div style="display:flex;gap:10px;">
+      <button id="geo-deny-btn" class="btn-danger" style="flex:1;padding:12px;font-size:13px;">✕ Deny</button>
+      <button id="geo-allow-btn" class="btn-primary" style="flex:1;padding:12px;font-size:13px;">✓ Allow Transfer</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     ▶ NEW: ON-PAGE LOG PANEL
+══════════════════════════════════════════════ -->
+<div id="log-panel">
+  <div id="log-panel-header">
+    <span style="font-size:12px;font-weight:600;">📋 Transfer Log</span>
+    <div style="display:flex;gap:6px;">
+      <button onclick="LOGGER.clear()" style="background:none;border:none;cursor:pointer;font-size:10px;color:var(--text-muted);padding:2px 6px;">Clear</button>
+      <button onclick="toggleLogPanel()" style="background:none;border:none;cursor:pointer;font-size:14px;color:var(--text-muted);">✕</button>
+    </div>
+  </div>
+  <div id="log-entries"></div>
+</div>
+
+<!-- Log toggle button (always visible bottom-right) -->
+<button id="log-toggle-btn" onclick="toggleLogPanel()">
+  <span>📋 Log</span>
+  <span id="log-badge">0</span>
+</button>
 
 <!-- ══ HEADER ══ -->
 <header class="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-5 py-3"
@@ -218,7 +492,7 @@
     <div class="logo-icon w-8 h-8 rounded-xl flex items-center justify-center"
       style="background:linear-gradient(135deg,#7B5CF6,#2563eb);font-size:16px;">👻</div>
     <span style="font-weight:800;font-size:15px;letter-spacing:-0.02em;">Ghost<span style="color:var(--violet);">Share</span></span>
-    <span class="mono" style="font-size:10px;color:rgba(255,255,255,0.2);">v5.0</span>
+    <span class="mono" style="font-size:10px;color:rgba(255,255,255,0.2);">v6.0</span>
   </div>
 
   <div style="display:flex;align-items:center;gap:8px;">
@@ -250,7 +524,7 @@
   <!-- ════ LANDING ════ -->
   <div id="screen-landing" class="screen active">
     <div class="text-center" style="padding:36px 0 24px;">
-      <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full mb-6"
+      <div class="inline-flex items-center gap-2 px-4 py-1\.5 rounded-full mb-6"
         style="background:rgba(255,255,255,0.04);border:1px solid var(--border);">
         <span style="width:6px;height:6px;border-radius:50%;background:var(--violet);display:inline-block;box-shadow:0 0 8px var(--violet);"></span>
         <span style="font-size:12px;color:var(--text-muted);">6-char code · Zero server · Pure P2P</span>
@@ -265,23 +539,35 @@
         A1B2C3 → instant encrypted transfer
       </p>
 
-      <!-- Send / Receive buttons -->
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px;">
-        <button onclick="initSend()" class="glass-card text-left" style="padding:24px;cursor:pointer;">
-          <div style="width:44px;height:44px;border-radius:14px;display:flex;align-items:center;justify-content:center;
-            margin-bottom:16px;background:rgba(123,92,246,0.15);border:1px solid rgba(123,92,246,0.2);font-size:20px;">📤</div>
-          <div style="font-size:16px;font-weight:700;margin-bottom:4px;">Send Files</div>
-          <div style="font-size:12px;color:var(--text-muted);line-height:1.5;">Get a code, share it, done</div>
+      <!-- Send / Receive / Text buttons -->
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:24px;">
+        <button onclick="initSend('files')" class="glass-card text-left" style="padding:18px;cursor:pointer;">
+          <div style="width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;
+            margin-bottom:12px;background:rgba(123,92,246,0.15);border:1px solid rgba(123,92,246,0.2);font-size:18px;">📤</div>
+          <div style="font-size:14px;font-weight:700;margin-bottom:3px;">Send Files</div>
+          <div style="font-size:11px;color:var(--text-muted);line-height:1.4;">Get a code, share it, done</div>
         </button>
-        <button onclick="initReceive()" class="glass-card text-left" style="padding:24px;cursor:pointer;">
-          <div style="width:44px;height:44px;border-radius:14px;display:flex;align-items:center;justify-content:center;
-            margin-bottom:16px;background:rgba(6,182,212,0.12);border:1px solid rgba(6,182,212,0.2);font-size:20px;">📥</div>
-          <div style="font-size:16px;font-weight:700;margin-bottom:4px;">Receive Files</div>
-          <div style="font-size:12px;color:var(--text-muted);line-height:1.5;">Enter a 6-char code</div>
+        <button onclick="initReceive()" class="glass-card text-left" style="padding:18px;cursor:pointer;">
+          <div style="width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;
+            margin-bottom:12px;background:rgba(6,182,212,0.12);border:1px solid rgba(6,182,212,0.2);font-size:18px;">📥</div>
+          <div style="font-size:14px;font-weight:700;margin-bottom:3px;">Receive</div>
+          <div style="font-size:11px;color:var(--text-muted);line-height:1.4;">Enter a 6-char code</div>
+        </button>
+        <!-- ▶ NEW: Text snippet button -->
+        <button onclick="initSend('text')" class="glass-card text-left" style="padding:18px;cursor:pointer;">
+          <div style="width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;
+            margin-bottom:12px;background:rgba(34,197,94,0.12);border:1px solid rgba(34,197,94,0.2);font-size:18px;">📝</div>
+          <div style="font-size:14px;font-weight:700;margin-bottom:3px;">Send Text</div>
+          <div style="font-size:11px;color:var(--text-muted);line-height:1.4;">API keys, links, snippets</div>
         </button>
       </div>
 
-      <!-- ══ LINK PAIR SECTION ══ -->
+      <!-- ▶ Drag-anywhere hint -->
+      <div style="font-size:11px;color:var(--text-muted);margin-bottom:20px;opacity:0.6;">
+        💡 Drag files anywhere on this page to start sending
+      </div>
+
+      <!-- Permanent Link section -->
       <div class="glass-card" style="padding:0;overflow:hidden;margin-bottom:20px;text-align:left;">
         <button onclick="toggleConf('link')" style="width:100%;display:flex;align-items:center;justify-content:space-between;
           padding:14px 16px;cursor:pointer;background:transparent;border:none;color:#fff;">
@@ -293,9 +579,20 @@
         </button>
         <div class="config-content" id="conf-link">
           <div style="padding:0 16px 16px;">
-            <!-- Rendered dynamically by LINK_PAIR._renderUI() -->
             <div id="link-pair-section"></div>
           </div>
+        </div>
+      </div>
+
+      <!-- ▶ NEW: Transfer History -->
+      <div class="glass-card" style="padding:0;overflow:hidden;margin-bottom:20px;text-align:left;">
+        <button onclick="toggleConf('history')" style="width:100%;display:flex;align-items:center;justify-content:space-between;
+          padding:14px 16px;cursor:pointer;background:transparent;border:none;color:#fff;">
+          <span style="display:flex;align-items:center;gap:10px;font-size:13px;font-weight:600;">📜 Transfer History</span>
+          <span id="chev-history" style="transition:transform 0.3s;font-size:12px;color:var(--text-muted);">▼</span>
+        </button>
+        <div class="config-content" id="conf-history">
+          <div id="history-list" style="padding:0 0 8px;"></div>
         </div>
       </div>
 
@@ -307,6 +604,8 @@
         <span class="badge-cyan"   style="padding:5px 11px;border-radius:999px;font-size:11px;font-weight:500;">👥 Multi-Receiver</span>
         <span class="badge-green"  style="padding:5px 11px;border-radius:999px;font-size:11px;font-weight:500;">💥 Auto-Destruct</span>
         <span class="badge-green"  style="padding:5px 11px;border-radius:999px;font-size:11px;font-weight:500;">⏸ Resume on Drop</span>
+        <span class="badge-green"  style="padding:5px 11px;border-radius:999px;font-size:11px;font-weight:500;">📝 Secure Text</span>
+        <span class="badge-violet" style="padding:5px 11px;border-radius:999px;font-size:11px;font-weight:500;">📁 Folder Upload</span>
       </div>
     </div>
   </div><!-- /screen-landing -->
@@ -316,7 +615,7 @@
     <div style="display:flex;align-items:center;gap:12px;margin-top:16px;margin-bottom:24px;">
       <button onclick="goHome()" class="btn-ghost" style="padding:8px 14px;">← Back</button>
       <div>
-        <div style="font-size:17px;font-weight:700;">Send Files</div>
+        <div style="font-size:17px;font-weight:700;" id="send-screen-title">Send Files</div>
         <div style="font-size:11px;color:var(--text-muted);">Share a 6-char code · Multi-receiver</div>
       </div>
       <div style="flex:1;"></div>
@@ -327,8 +626,15 @@
       </div>
     </div>
 
-    <!-- SEND STEP 1: file select + config -->
+    <!-- SEND STEP 1 -->
     <div id="s-step-1">
+
+      <!-- ▶ NEW: Send mode tabs -->
+      <div class="send-tab-bar">
+        <button class="send-tab active" id="tab-files" onclick="setSendMode('files')">📤 Files</button>
+        <button class="send-tab" id="tab-folder" onclick="setSendMode('folder')">📁 Folder</button>
+        <button class="send-tab" id="tab-text"   onclick="setSendMode('text')">📝 Text</button>
+      </div>
 
       <!-- Network Config -->
       <div class="glass-card" style="padding:0;overflow:hidden;margin-bottom:12px;">
@@ -360,7 +666,7 @@
         </div>
       </div>
 
-      <!-- ══ SECURITY PANEL ══ -->
+      <!-- Security Panel -->
       <div class="glass-card" style="padding:0;overflow:hidden;margin-bottom:12px;">
         <button onclick="toggleConf('sec-s')" style="width:100%;display:flex;align-items:center;justify-content:space-between;
           padding:13px 16px;cursor:pointer;background:transparent;border:none;color:#fff;">
@@ -372,7 +678,6 @@
         </button>
         <div class="config-content" id="conf-sec-s">
           <div style="padding:0 16px 16px;">
-
             <!-- AES-GCM Password -->
             <div style="background:rgba(34,197,94,0.05);border:1px solid rgba(34,197,94,0.15);border-radius:12px;padding:14px;margin-bottom:12px;">
               <div class="toggle-row">
@@ -393,9 +698,8 @@
                 <div id="enc-strength" style="margin-top:6px;font-size:11px;color:var(--text-muted);"></div>
               </div>
             </div>
-
             <!-- Auto-Destruct -->
-            <div style="background:rgba(239,68,68,0.05);border:1px solid rgba(239,68,68,0.12);border-radius:12px;padding:14px;">
+            <div style="background:rgba(239,68,68,0.05);border:1px solid rgba(239,68,68,0.12);border-radius:12px;padding:14px;margin-bottom:12px;">
               <div class="toggle-row">
                 <div>
                   <div class="toggle-label-text">💥 Auto-Destruct</div>
@@ -410,27 +714,70 @@
                 Peer ID and connection are permanently revoked the moment the receiver confirms integrity via SHA-256.
               </p>
             </div>
+            <!-- ▶ NEW: Connection Guard Toggle -->
+            <div style="background:rgba(6,182,212,0.05);border:1px solid rgba(6,182,212,0.15);border-radius:12px;padding:14px;">
+              <div class="toggle-row">
+                <div>
+                  <div class="toggle-label-text">🌍 Connection Guard</div>
+                  <div class="toggle-sub">Approve receivers by country before transfer</div>
+                </div>
+                <label class="toggle-switch">
+                  <input type="checkbox" id="geo-guard-toggle" onchange="onGeoGuardToggle()"/>
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- Drop Zone -->
-      <div id="drop-zone" class="drop-zone glass-card"
-        style="padding:36px;text-align:center;border-radius:20px;margin-bottom:12px;"
-        onclick="pickFiles()" ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event)">
-        <div class="float-icon" style="display:inline-block;margin-bottom:14px;font-size:38px;">📄</div>
-        <div style="font-size:15px;font-weight:600;margin-bottom:5px;">Drop files or click to browse</div>
-        <div style="font-size:12px;color:var(--text-muted);">Any type · Any size · Multi-file auto-zipped</div>
-        <input type="file" id="file-fallback" multiple style="display:none;" onchange="onFileInput(this.files)"/>
+      <!-- ▶ FILES mode: Drop Zone -->
+      <div id="mode-files">
+        <div id="drop-zone" class="drop-zone glass-card"
+          style="padding:36px;text-align:center;border-radius:20px;margin-bottom:12px;"
+          onclick="pickFiles()" ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event)">
+          <div class="float-icon" style="display:inline-block;margin-bottom:14px;font-size:38px;">📄</div>
+          <div style="font-size:15px;font-weight:600;margin-bottom:5px;">Drop files or click to browse</div>
+          <div style="font-size:12px;color:var(--text-muted);">Any type · Any size · Multi-file auto-zipped</div>
+          <input type="file" id="file-fallback" multiple style="display:none;" onchange="onFileInput(this.files)"/>
+        </div>
       </div>
 
-      <!-- File list -->
+      <!-- ▶ NEW: FOLDER mode -->
+      <div id="mode-folder" style="display:none;">
+        <div class="drop-zone glass-card"
+          style="padding:36px;text-align:center;border-radius:20px;margin-bottom:12px;cursor:pointer;"
+          onclick="pickFolder()">
+          <div class="float-icon" style="display:inline-block;margin-bottom:14px;font-size:38px;">📁</div>
+          <div style="font-size:15px;font-weight:600;margin-bottom:5px;">Click to select a folder</div>
+          <div style="font-size:12px;color:var(--text-muted);">Directory structure preserved via ZIP</div>
+          <input type="file" id="folder-fallback" webkitdirectory multiple style="display:none;" onchange="onFolderInput(this.files)"/>
+        </div>
+      </div>
+
+      <!-- ▶ NEW: TEXT mode -->
+      <div id="mode-text" style="display:none;">
+        <div class="glass-card" style="padding:16px;margin-bottom:12px;">
+          <div class="label" style="margin-bottom:10px;">📝 Text / Code / Secret to share</div>
+          <textarea id="text-input-area" placeholder="Paste your API key, URL, code snippet, or any text here...
+It will be sent encrypted over WebRTC to the receiver."></textarea>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-top:8px;">
+            <span id="text-char-count" style="font-size:11px;color:var(--text-muted);">0 chars</span>
+            <button onclick="pasteFromClipboard()" class="btn-ghost" style="padding:5px 10px;font-size:11px;">📋 Paste</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- File list (shown after selection) -->
       <div id="files-panel" style="display:none;" class="glass-card">
         <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px 0;">
           <div style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;">
             📦 <span id="files-count-lbl">0 files</span>
           </div>
-          <span class="mono" id="files-size-lbl" style="font-size:11px;color:var(--text-muted);"></span>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span class="mono" id="files-size-lbl" style="font-size:11px;color:var(--text-muted);"></span>
+            <button onclick="clearFiles()" style="background:none;border:none;cursor:pointer;font-size:11px;color:var(--text-muted);padding:2px 6px;">✕ Clear</button>
+          </div>
         </div>
         <div id="files-list" style="padding:10px 16px 14px;max-height:130px;overflow-y:auto;"></div>
       </div>
@@ -448,8 +795,7 @@
       <div class="glass-card" style="padding:26px;text-align:center;margin-bottom:14px;">
         <div class="label" style="margin-bottom:14px;">📶 Share this code with receivers</div>
         <div class="code-boxes" id="code-display"></div>
-        <!-- Active security badges shown below the code -->
-        <div id="active-sec-badges" style="display:flex;justify-content:center;gap:6px;margin-top:12px;"></div>
+        <div id="active-sec-badges" style="display:flex;justify-content:center;gap:6px;margin-top:12px;flex-wrap:wrap;"></div>
         <div style="display:flex;align-items:center;justify-content:center;gap:10px;margin-top:14px;">
           <button onclick="copyCode()" class="btn-ghost" style="padding:7px 14px;font-size:12px;">📋 Copy</button>
           <span class="mono" style="font-size:11px;color:var(--text-muted);">Multiple peers can connect</span>
@@ -461,7 +807,6 @@
         <div id="qr-sender" style="display:flex;justify-content:center;"></div>
       </div>
 
-      <!-- Receiver list / waiting -->
       <div class="glass-card" style="padding:22px;">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
           <div style="font-size:14px;font-weight:600;">Receivers</div>
@@ -503,7 +848,6 @@
       </div>
     </div>
 
-    <!-- RECEIVE STEP 1 -->
     <div id="r-step-1">
       <!-- Resume banner -->
       <div id="resume-banner" class="resume-banner" style="display:none;">
@@ -538,7 +882,7 @@
         </div>
       </div>
 
-      <!-- Security: decryption password -->
+      <!-- Decryption Password -->
       <div class="glass-card" style="padding:0;overflow:hidden;margin-bottom:12px;">
         <button onclick="toggleConf('sec-r')" style="width:100%;display:flex;align-items:center;justify-content:space-between;
           padding:13px 16px;cursor:pointer;background:transparent;border:none;color:#fff;">
@@ -584,7 +928,7 @@
 </main>
 
 <!-- TOAST -->
-<div id="toast" style="display:none;position:fixed;z-index:9999;bottom:24px;left:50%;transform:translateX(-50%);
+<div id="toast" style="display:none;position:fixed;z-index:9999;bottom:70px;left:50%;transform:translateX(-50%);
   background:rgba(10,12,28,0.9);border:1px solid rgba(255,255,255,0.1);
   backdrop-filter:blur(20px);padding:11px 16px;border-radius:14px;
   align-items:center;gap:10px;min-width:200px;max-width:400px;white-space:nowrap;">
@@ -592,8 +936,9 @@
   <span id="toast-msg" style="font-size:13px;font-weight:500;"></span>
 </div>
 
-<!-- ══════ SCRIPTS ══════ -->
-<script src="https://cdn.tailwindcss.com"></script>
+<!-- ══════════════════════════════════════════════
+     SCRIPTS — External Libraries
+══════════════════════════════════════════════ -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js" crossorigin="anonymous"></script>
 <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js" crossorigin="anonymous"></script>
@@ -608,7 +953,7 @@ const _t0 = performance.now();
 function dbg(sec,msg,d){const ts=((performance.now()-_t0)/1e3).toFixed(3);d!==undefined?console.log(`[GS:${sec}] +${ts}s`,msg,d):console.log(`[GS:${sec}] +${ts}s`,msg);}
 function dbgWarn(sec,msg,d){const ts=((performance.now()-_t0)/1e3).toFixed(3);console.warn(`[GS:${sec}] ⚠ +${ts}s`,msg,d||'');}
 function dbgErr(sec,msg,e){const ts=((performance.now()-_t0)/1e3).toFixed(3);console.error(`[GS:${sec}] ✖ +${ts}s`,msg,e||'');}
-dbg('BOOT','══════════ GhostShare v5 init ══════════');
+dbg('BOOT','══════════ GhostShare v6 init ══════════');
 
 // ══════════════════════════════════════════════════════════════
 //  CONSTANTS
@@ -616,6 +961,8 @@ dbg('BOOT','══════════ GhostShare v5 init ══════
 const CHUNK_SIZE  = 64 * 1024;          // 64 KB per chunk
 const HIGH_WATER  = 8  * 1024 * 1024;   // 8 MB backpressure ceiling
 const LOW_WATER   = 1  * 1024 * 1024;   // 1 MB backpressure floor
+const PEER_RECONNECT_DELAYS = [3000, 6000, 12000, 24000, 30000]; // exponential back-off
+const MAX_PEER_RETRIES = 5;
 
 const FREE_TURN_SERVERS = [
   { urls:'turn:openrelay.metered.ca:80' },
@@ -633,45 +980,221 @@ const STUN_SERVERS = [
 ];
 
 // ══════════════════════════════════════════════════════════════
-//  ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀
+//  ▶ MODULE: AUDIO CUES
+//  Uses Web Audio API to generate simple, non-intrusive tones.
+//  No external files needed. Sounds:
+//    - "pop"   : played when a receiver connects
+//    - "chime" : played when a transfer completes
+//    - "error" : played on connection failure
+// ══════════════════════════════════════════════════════════════
+const AUDIO = (() => {
+  let ctx = null;
+  let enabled = true; // user can disable
+
+  function _ctx() {
+    if (!ctx) {
+      try { ctx = new (window.AudioContext || window.webkitAudioContext)(); }
+      catch(e) { return null; }
+    }
+    // Resume suspended context (browsers suspend on load)
+    if (ctx.state === 'suspended') ctx.resume().catch(()=>{});
+    return ctx;
+  }
+
+  /**
+   * Plays a short synthesized tone.
+   * @param {number[]} freqs - array of frequencies to play in sequence
+   * @param {number} dur     - duration per frequency (seconds)
+   * @param {'sine'|'triangle'|'square'} type - oscillator wave type
+   * @param {number} gain    - volume 0–1
+   */
+  function _play(freqs, dur=0.08, type='sine', gain=0.12) {
+    if (!enabled) return;
+    const c = _ctx(); if (!c) return;
+    freqs.forEach((freq, i) => {
+      const osc  = c.createOscillator();
+      const gainN = c.createGain();
+      osc.connect(gainN); gainN.connect(c.destination);
+      osc.type      = type;
+      osc.frequency.setValueAtTime(freq, c.currentTime + i * dur);
+      gainN.gain.setValueAtTime(0, c.currentTime + i * dur);
+      gainN.gain.linearRampToValueAtTime(gain, c.currentTime + i * dur + 0.01);
+      gainN.gain.exponentialRampToValueAtTime(0.001, c.currentTime + i * dur + dur);
+      osc.start(c.currentTime + i * dur);
+      osc.stop(c.currentTime + i * dur + dur + 0.02);
+    });
+  }
+
+  /** Subtle pop — played when a peer connects */
+  function pop()   { _play([880, 1100], 0.06, 'sine', 0.10); }
+
+  /** Two-tone chime — played when transfer completes successfully */
+  function chime() { _play([523, 659, 784, 1047], 0.1, 'triangle', 0.13); }
+
+  /** Low error buzz */
+  function error() { _play([220, 180], 0.12, 'square', 0.08); }
+
+  /** Dismiss / leave tone */
+  function bye()   { _play([660, 440], 0.08, 'sine', 0.08); }
+
+  function toggle(val) { enabled = val !== undefined ? val : !enabled; }
+
+  return { pop, chime, error, bye, toggle, get enabled(){ return enabled; } };
+})();
+
+// ══════════════════════════════════════════════════════════════
+//  ▶ MODULE: LOGGER
+//  Writes to the on-page log panel AND persists events in
+//  IndexedDB so the history panel on the landing screen
+//  can show past transfers even after a page reload.
+// ══════════════════════════════════════════════════════════════
+const LOGGER = (() => {
+  const MAX_VISIBLE = 120; // max entries shown in the panel
+  let   _db     = null;    // set by boot after IDB.init()
+  let   _newCount = 0;     // count of unread entries
+
+  function _ts() {
+    const d = new Date();
+    return `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}:${String(d.getSeconds()).padStart(2,'0')}`;
+  }
+
+  /**
+   * Write a log entry to the on-page panel.
+   * @param {string} msg    - Message text
+   * @param {'info'|'ok'|'warn'|'error'|'cyan'} level - styling
+   */
+  function log(msg, level='info') {
+    const entries = document.getElementById('log-entries');
+    if (!entries) return;
+
+    const div = document.createElement('div');
+    div.className = `log-entry ${level}`;
+    div.innerHTML = `<span class="ts">${_ts()}</span><span class="msg">${escHtml(msg)}</span>`;
+    entries.appendChild(div);
+
+    // Trim to MAX_VISIBLE
+    while (entries.children.length > MAX_VISIBLE) entries.removeChild(entries.firstChild);
+
+    // Auto-scroll to bottom
+    entries.scrollTop = entries.scrollHeight;
+
+    // Badge counter (only when panel is closed)
+    const panel = document.getElementById('log-panel');
+    if (panel && !panel.classList.contains('open')) {
+      _newCount++;
+      const badge = document.getElementById('log-badge');
+      if (badge) { badge.textContent = _newCount > 9 ? '9+' : _newCount; badge.style.display = 'inline'; }
+    }
+
+    // Also mirror to console at a lower level
+    console.log(`[LOG:${level.toUpperCase()}]`, msg);
+  }
+
+  function clear() {
+    const entries = document.getElementById('log-entries');
+    if (entries) entries.innerHTML = '';
+    _newCount = 0;
+    const badge = document.getElementById('log-badge');
+    if (badge) badge.style.display = 'none';
+  }
+
+  function resetBadge() {
+    _newCount = 0;
+    const badge = document.getElementById('log-badge');
+    if (badge) badge.style.display = 'none';
+  }
+
+  /**
+   * Persist a completed transfer record to IDB for history display.
+   * Called by the send/receive completion handlers.
+   */
+  function saveHistory(record) {
+    if (!_db) return;
+    try {
+      const tx = _db.transaction('history', 'readwrite');
+      tx.objectStore('history').put({ ...record, id: Date.now() + Math.random() });
+    } catch(e) { dbgWarn('LOGGER','saveHistory failed:',e); }
+  }
+
+  /**
+   * Load history records and render into #history-list.
+   */
+  async function renderHistory() {
+    const el = document.getElementById('history-list');
+    if (!el || !_db) { if(el) el.innerHTML = '<div style="padding:14px;font-size:12px;color:var(--text-muted);text-align:center;">No history yet</div>'; return; }
+    const tx  = _db.transaction('history','readonly');
+    const req = tx.objectStore('history').getAll();
+    req.onsuccess = () => {
+      const items = (req.result || []).reverse().slice(0, 50);
+      if (!items.length) { el.innerHTML = '<div style="padding:14px;font-size:12px;color:var(--text-muted);text-align:center;">No transfers yet</div>'; return; }
+      el.innerHTML = items.map(r => `
+        <div class="history-item">
+          <span class="history-icon">${r.direction==='send'?'📤':'📥'}</span>
+          <span class="history-name" title="${escHtml(r.name)}">${escHtml(r.name)}</span>
+          <span class="history-meta">${fmtBytes(r.size)} · ${new Date(r.id).toLocaleDateString()}</span>
+          <span style="font-size:10px;color:${r.ok?'#22c55e':'#ef4444'};">${r.ok?'✓':'✗'}</span>
+        </div>`).join('');
+    };
+  }
+
+  function setDb(db) { _db = db; }
+
+  return { log, clear, resetBadge, saveHistory, renderHistory, setDb };
+})();
+
+// ══════════════════════════════════════════════════════════════
+//  ▶ MODULE: GEO
+//  Fetches the current device's approximate country code
+//  from a free, no-auth IP geolocation API.
+//  Used by receivers to attach location info to their
+//  'hello' handshake so the sender can review it.
+//
+//  API: https://ipapi.co/json/ (no key required, 1k/day free)
+//  Falls back gracefully if the fetch fails.
+// ══════════════════════════════════════════════════════════════
+const GEO = (() => {
+  let _country     = null; // 'US', 'DE', etc. — null means unknown
+  let _countryName = null; // 'United States'
+  let _fetched     = false;
+
+  async function fetch() {
+    if (_fetched) return { country:_country, name:_countryName };
+    _fetched = true;
+    try {
+      const r = await Promise.race([
+        window.fetch('https://ipapi.co/json/'),
+        new Promise((_,rej) => setTimeout(()=>rej(new Error('timeout')), 4000)),
+      ]);
+      if (!r.ok) throw new Error(`HTTP ${r.status}`);
+      const data = await r.json();
+      _country     = data.country      || null;
+      _countryName = data.country_name || data.country || 'Unknown';
+      dbg('GEO', `Location: ${_countryName} (${_country})`);
+    } catch(e) {
+      dbgWarn('GEO', 'Could not determine location:', e.message);
+      _country = null; _countryName = 'Unknown';
+    }
+    return { country: _country, name: _countryName };
+  }
+
+  function get() { return { country: _country, name: _countryName }; }
+
+  return { fetch, get };
+})();
+
+// ══════════════════════════════════════════════════════════════
 //  MODULE: AES_CRYPTO
-//  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄
-//
-//  AES-256-GCM encryption for individual 64 KB chunks.
-//
-//  KEY DERIVATION:
-//    PBKDF2(password, salt, 210_000 iterations, SHA-256) → 256-bit key
-//    - 210,000 iterations matches OWASP 2024 recommendation for PBKDF2-SHA256
-//    - Salt: 16 random bytes generated fresh each sender session
-//    - Salt travels in the META control message (public, not secret)
-//
-//  PER-CHUNK ENCRYPTION:
-//    For each chunk: generate 12-byte random IV, run AES-GCM encrypt
-//    Wire format:  [12 bytes IV][N bytes ciphertext+tag]
-//    The 16-byte GCM authentication tag is appended by SubtleCrypto
-//    automatically, so ciphertext is (chunk + 16) bytes longer than
-//    the plaintext. This is transparent to the rest of the code.
-//
-//  WHY PER-CHUNK IVs?
-//    Reusing an IV with AES-GCM on the same key is catastrophic.
-//    Because each chunk uses a fresh random IV the keys can be
-//    derived once and safely reused across all chunks.
-//
-//  HASH INTEGRITY:
-//    Merkle hashes are computed over the PLAINTEXT (post-decrypt) so
-//    integrity is verified on the actual file content, not the cipher.
+//  AES-256-GCM per-chunk encryption via Web Crypto API.
+//  Key derivation: PBKDF2(password, 16-byte salt, 210k iter, SHA-256).
 // ══════════════════════════════════════════════════════════════
 const AES_CRYPTO = (() => {
   const ALG = 'AES-GCM';
-  const IV_LEN = 12;   // 96-bit IV: GCM standard, maximally efficient
+  const IV_LEN = 12;
   const KDF_ITER = 210_000;
 
-  /** Derive a 256-bit AES-GCM key from a password + salt via PBKDF2 */
   async function deriveKey(password, saltBytes) {
     const enc = new TextEncoder();
-    const raw = await crypto.subtle.importKey(
-      'raw', enc.encode(password), 'PBKDF2', false, ['deriveKey']
-    );
+    const raw = await crypto.subtle.importKey('raw', enc.encode(password), 'PBKDF2', false, ['deriveKey']);
     return crypto.subtle.deriveKey(
       { name:'PBKDF2', salt:saltBytes, iterations:KDF_ITER, hash:'SHA-256' },
       raw,
@@ -681,12 +1204,8 @@ const AES_CRYPTO = (() => {
     );
   }
 
-  /**
-   * Encrypt one ArrayBuffer chunk.
-   * Returns ArrayBuffer: [12-byte IV][encrypted+tag]
-   */
   async function encryptChunk(key, buffer) {
-    const iv         = crypto.getRandomValues(new Uint8Array(IV_LEN));
+    const iv = crypto.getRandomValues(new Uint8Array(IV_LEN));
     const ciphertext = await crypto.subtle.encrypt({ name:ALG, iv }, key, buffer);
     const out = new Uint8Array(IV_LEN + ciphertext.byteLength);
     out.set(iv, 0);
@@ -694,18 +1213,12 @@ const AES_CRYPTO = (() => {
     return out.buffer;
   }
 
-  /**
-   * Decrypt one ArrayBuffer chunk.
-   * Input: [12-byte IV][ciphertext+tag]
-   * Returns plaintext ArrayBuffer.
-   */
   async function decryptChunk(key, buffer) {
-    const iv         = new Uint8Array(buffer, 0, IV_LEN);
+    const iv = new Uint8Array(buffer, 0, IV_LEN);
     const ciphertext = buffer.slice(IV_LEN);
     return crypto.subtle.decrypt({ name:ALG, iv }, key, ciphertext);
   }
 
-  /** Generate a random 16-byte salt and return as hex string */
   function genSalt() {
     const b = new Uint8Array(16);
     crypto.getRandomValues(b);
@@ -716,42 +1229,19 @@ const AES_CRYPTO = (() => {
 })();
 
 // ══════════════════════════════════════════════════════════════
-//  ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀
 //  MODULE: LINK_PAIR
-//  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄
-//
-//  Persistent device pairing for zero-click transfers.
-//
-//  HOW IT WORKS:
-//    1. User generates an 8-char token and stores it in localStorage.
-//    2. Both devices store the same token.
-//    3. On page load, the app tries to register PeerJS ID `GSLNK${token}`
-//       as the "host". If that ID is already taken, it becomes the "guest"
-//       and connects to the host. There is no server — PeerJS broker only
-//       relays the SDP handshake.
-//    4. Once paired, any sender session that starts broadcasts its code
-//       over the link channel via { type:'auto-connect', code:'...' }.
-//    5. The partner's page auto-navigates to Receive and connects using
-//       that code without the user touching anything.
-//
-//  TOKENS:
-//    - 8-character alphanumeric, stored in localStorage under 'gs_link_v5'
-//    - The PeerJS peer ID is `GSLNK` + token (13 chars total, no special chars)
-//    - Tokens are permanent — the link survives page refreshes and restarts
-//
-//  RECONNECTION:
-//    If the partner drops, we retry becoming host (or guest) every ~8 seconds.
-//    This handles network blips and tab restarts gracefully.
+//  Persistent device pairing via 8-char token + PeerJS.
+//  Host/guest roles are negotiated automatically.
+//  Reconnect on drop uses PEER_RECONNECT_DELAYS for back-off.
 // ══════════════════════════════════════════════════════════════
 const LINK_PAIR = (() => {
-  const LS_KEY      = 'gs_link_v5';
-  const PEER_PREFIX = 'GSLNK';        // 5 chars + 8-char token = 13 char peer ID
+  const LS_KEY      = 'gs_link_v6';
+  const PEER_PREFIX = 'GSLNK';
   let _token  = null;
   let _peer   = null;
   let _conn   = null;
   let _retryT = null;
-
-  // ── Public API ────────────────────────────────────────────
+  let _retryN = 0;  // current retry index for back-off
 
   function init() {
     _token = localStorage.getItem(LS_KEY);
@@ -768,14 +1258,16 @@ const LINK_PAIR = (() => {
     _renderUI();
     _start();
     showToast('Link token created — share it with your partner!','🔗','cyan');
+    LOGGER.log(`Link token created: ${_token}`, 'cyan');
   }
 
   function saveToken(raw) {
-    const t = (raw || '').trim().toUpperCase().replace(/[^A-Z0-9]/g,'');
+    const t = (raw||'').trim().toUpperCase().replace(/[^A-Z0-9]/g,'');
     if (t.length !== 8) { showToast('Token must be 8 characters','⚠️','red'); return; }
     _token = t;
     localStorage.setItem(LS_KEY, _token);
-    if (_peer) { try { _peer.destroy(); } catch(e){} _peer = null; }
+    if (_peer) { try{_peer.destroy();}catch(e){} _peer=null; }
+    _retryN = 0;
     _renderUI();
     _start();
     showToast('Token saved — searching for partner...','🔗','cyan');
@@ -790,49 +1282,40 @@ const LINK_PAIR = (() => {
     showToast('Link token removed','🗑️','violet');
   }
 
-  function isOnline() {
-    return !!(_conn && _conn.open);
-  }
+  function isOnline() { return !!(_conn && _conn.open); }
 
-  /**
-   * Called by the sender after peer.on('open') fires.
-   * Broadcasts the 6-char code to the linked partner so they
-   * can auto-connect without the user doing anything.
-   */
   function broadcast(code) {
     if (!isOnline()) return;
     try {
       _conn.send(JSON.stringify({ type:'auto-connect', code }));
       dbg('LINK',`Broadcast auto-connect code="${code}"`);
       showToast('Sending to paired device automatically ⚡','🔗','cyan');
+      LOGGER.log(`Auto-broadcast code ${code} to paired device`, 'cyan');
     } catch(e) { dbgErr('LINK','broadcast failed:',e); }
   }
 
-  // ── Private helpers ───────────────────────────────────────
-
+  // ── Private ─────────────────────────────────────────────────
   function _peerId() { return `${PEER_PREFIX}${_token}`; }
 
   function _start() {
     if (!_token) return;
     clearTimeout(_retryT);
-    // Try to register as host; if taken, become guest
     _peer = new Peer(_peerId(), { debug:0 });
     _peer.on('open', () => {
       dbg('LINK',`Host registered: ${_peerId()}`);
-      _peer.on('connection', c => {
-        c.on('open', () => _onPartnerConn(c));
-      });
+      _retryN = 0; // success — reset back-off
+      _peer.on('connection', c => { c.on('open', () => _onPartnerConn(c)); });
     });
     _peer.on('error', e => {
       if (e.type === 'unavailable-id') {
-        // Another device is already host → become guest
         dbg('LINK','ID taken → becoming guest');
-        try { _peer.destroy(); } catch(er){}
-        _peer = null;
+        try{_peer.destroy();}catch(er){} _peer=null;
         _becomeGuest();
-      } else if (e.type === 'server-error' || e.type === 'network') {
-        // PeerJS server unreachable — retry silently
-        _retryT = setTimeout(() => _start(), 12000);
+      } else {
+        // Exponential back-off reconnect
+        const delay = PEER_RECONNECT_DELAYS[Math.min(_retryN++, PEER_RECONNECT_DELAYS.length-1)];
+        dbgWarn('LINK',`Peer error (${e.type}) — retry in ${delay}ms`);
+        _retryT = setTimeout(()=>{ _cleanup(); _start(); }, delay);
       }
     });
   }
@@ -844,38 +1327,34 @@ const LINK_PAIR = (() => {
       const c = _peer.connect(_peerId(), { reliable:true });
       c.on('open',  () => _onPartnerConn(c));
       c.on('error', () => {
-        // Host offline — retry becoming host in 8s
-        _retryT = setTimeout(() => {
-          _cleanup();
-          _start();
-        }, 8000);
+        const delay = PEER_RECONNECT_DELAYS[Math.min(_retryN++, PEER_RECONNECT_DELAYS.length-1)];
+        _retryT = setTimeout(()=>{ _cleanup(); _start(); }, delay);
       });
     });
     _peer.on('error', () => {
-      _retryT = setTimeout(() => { _cleanup(); _start(); }, 12000);
+      const delay = PEER_RECONNECT_DELAYS[Math.min(_retryN++, PEER_RECONNECT_DELAYS.length-1)];
+      _retryT = setTimeout(()=>{ _cleanup(); _start(); }, delay);
     });
   }
 
   function _onPartnerConn(c) {
     _conn = c;
     dbg('LINK','Partner connected!');
+    _retryN = 0;
     _updateBadge(true);
     showToast('Paired device is online!','🔗','cyan');
-    _renderUI(); // update status dot
+    LOGGER.log('Paired device connected', 'ok');
+    AUDIO.pop();
+    _renderUI();
 
     c.on('data', raw => {
       if (typeof raw !== 'string') return;
       let msg;
       try { msg = JSON.parse(raw); } catch(e) { return; }
-
       if (msg.type === 'auto-connect') {
-        /**
-         * Partner is sending files. Navigate to Receive and
-         * auto-connect using the broadcasted code.
-         * setTimeout(0) to let the DOM settle before manipulating it.
-         */
         dbg('LINK',`Auto-connect received, code="${msg.code}"`);
         showToast('Partner is sending — auto-connecting... ⚡','⚡','cyan');
+        LOGGER.log(`Auto-connect triggered (code: ${msg.code})`, 'cyan');
         setTimeout(() => {
           initReceive();
           const inp = $('code-input');
@@ -887,49 +1366,41 @@ const LINK_PAIR = (() => {
 
     c.on('close', () => {
       dbg('LINK','Partner disconnected');
+      LOGGER.log('Paired device disconnected', 'warn');
+      AUDIO.bye();
       _conn = null;
       _updateBadge(false);
       _renderUI();
-      // Attempt to reclaim host role or reconnect as guest
-      _retryT = setTimeout(() => { _cleanup(); _start(); }, 6000);
+      const delay = PEER_RECONNECT_DELAYS[0];
+      _retryT = setTimeout(()=>{ _cleanup(); _start(); }, delay);
     });
   }
 
   function _cleanup() {
     clearTimeout(_retryT);
-    if (_conn) { try { _conn.close(); } catch(e){} _conn = null; }
-    if (_peer) { try { _peer.destroy(); } catch(e){} _peer = null; }
+    if (_conn) { try{_conn.close();}catch(e){} _conn=null; }
+    if (_peer) { try{_peer.destroy();}catch(e){} _peer=null; }
   }
 
   function _updateBadge(online) {
     const badge = $('link-badge');
     if (badge) badge.style.display = online ? 'flex' : 'none';
-    // Also update the header indicator for the link panel
     const hb = $('link-header-badge');
-    if (hb) hb.style.display = (_token) ? 'inline-flex' : 'none';
-    // Update status dot inside rendered UI
-    const dot = $('link-status-dot');
-    const lbl = $('link-status-lbl');
+    if (hb) hb.style.display = _token ? 'inline-flex' : 'none';
+    const dot = $('link-status-dot'), lbl = $('link-status-lbl');
     if (dot) dot.style.background = online ? '#22c55e' : '#f59e0b';
-    if (lbl) {
-      lbl.textContent = online ? 'Partner online' : 'Searching...';
-      lbl.style.color = online ? '#22c55e' : 'var(--text-muted)';
-    }
-    // Enable/disable the quick-send drop zone
+    if (lbl) { lbl.textContent = online ? 'Partner online' : 'Searching...'; lbl.style.color = online ? '#22c55e' : 'var(--text-muted)'; }
     const qdz = $('link-quick-send');
-    if (qdz) qdz.style.opacity = online ? '1' : '0.4';
-    if (qdz) qdz.style.pointerEvents = online ? 'auto' : 'none';
+    if (qdz) { qdz.style.opacity = online ? '1' : '0.4'; qdz.style.pointerEvents = online ? 'auto' : 'none'; }
   }
 
   function _renderUI() {
     const el = $('link-pair-section');
     if (!el) return;
-
     if (!_token) {
       el.innerHTML = `
         <p style="font-size:12px;color:var(--text-muted);margin-bottom:14px;line-height:1.6;">
-          Pair two devices once with a shared 8-char token.
-          Transfers auto-initiate — no code sharing ever again.
+          Pair two devices once with a shared 8-char token. Transfers auto-initiate — no code sharing ever again.
         </p>
         <button onclick="LINK_PAIR.generate()" class="btn-primary" style="width:100%;padding:10px;font-size:13px;margin-bottom:12px;">
           ✨ Create Link Token
@@ -939,9 +1410,7 @@ const LINK_PAIR = (() => {
           <input type="text" id="link-token-input" placeholder="ABCD1234"
             style="flex:1;padding:8px 12px;text-transform:uppercase;letter-spacing:0.12em;font-size:14px;"
             maxlength="8" oninput="this.value=this.value.toUpperCase().replace(/[^A-Z0-9]/g,'')"/>
-          <button onclick="LINK_PAIR.saveToken($('link-token-input').value)" class="btn-ghost" style="padding:8px 14px;font-size:12px;">
-            Save
-          </button>
+          <button onclick="LINK_PAIR.saveToken($('link-token-input').value)" class="btn-ghost" style="padding:8px 14px;font-size:12px;">Save</button>
         </div>`;
     } else {
       const online = isOnline();
@@ -949,70 +1418,60 @@ const LINK_PAIR = (() => {
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
           <div style="display:flex;align-items:center;gap:10px;">
             <div id="link-status-dot" style="width:9px;height:9px;border-radius:50%;background:${online?'#22c55e':'#f59e0b'};flex-shrink:0;transition:background 0.3s;"></div>
-            <span id="link-status-lbl" style="font-size:12px;font-weight:600;color:${online?'#22c55e':'var(--text-muted)'};">
-              ${online ? 'Partner online' : 'Searching...'}
-            </span>
+            <span id="link-status-lbl" style="font-size:12px;font-weight:600;color:${online?'#22c55e':'var(--text-muted)'};">${online?'Partner online':'Searching...'}</span>
           </div>
           <button onclick="LINK_PAIR.clear()" class="btn-danger" style="padding:5px 10px;font-size:11px;">Unlink</button>
         </div>
-
-        <!-- Token display + copy -->
         <div style="display:flex;align-items:center;gap:12px;background:rgba(6,182,212,0.06);border:1px solid rgba(6,182,212,0.18);border-radius:12px;padding:13px;margin-bottom:12px;">
           <div class="link-token-display">${_token}</div>
-          <button onclick="navigator.clipboard?.writeText('${_token}').then(()=>showToast('Token copied!','✅','green'))"
-            class="btn-ghost" style="padding:5px 9px;font-size:11px;">📋</button>
+          <button onclick="navigator.clipboard?.writeText('${_token}').then(()=>showToast('Token copied!','✅','green'))" class="btn-ghost" style="padding:5px 9px;font-size:11px;">📋</button>
           <div style="flex:1;"></div>
           <div id="link-qr" style="width:60px;height:60px;overflow:hidden;border-radius:8px;"></div>
         </div>
-
-        <!-- Quick-send drop zone (enabled only when partner online) -->
         <div id="link-quick-send"
           style="opacity:${online?1:0.4};pointer-events:${online?'auto':'none'};"
-          class="drop-zone-link" style="padding:18px;text-align:center;"
-          onclick="linkQuickSend()" ondragover="onDragOver(event,true)"
-          ondragleave="onDragLeave(event,true)" ondrop="onDrop(event,true)">
+          class="drop-zone-link" style="padding:18px;text-align:center;padding:18px;"
+          onclick="linkQuickSend()" ondragover="onDragOver(event,true)" ondragleave="onDragLeave(event,true)" ondrop="onDrop(event,true)">
           <div style="font-size:24px;margin-bottom:6px;">⚡</div>
           <div style="font-size:13px;font-weight:600;margin-bottom:4px;">Quick Send to Partner</div>
           <div style="font-size:11px;color:var(--text-muted);">Drop file or click — zero-click on their end</div>
         </div>`;
-
-      // Small QR code for the token
-      setTimeout(() => {
-        const qrEl = $('link-qr');
-        if (qrEl && typeof QRCode !== 'undefined') {
-          try {
-            new QRCode(qrEl, { text:_token, width:60, height:60,
-              colorDark:'#06B6D4', colorLight:'#030610',
-              correctLevel:QRCode.CorrectLevel.L });
-          } catch(e) {}
+      setTimeout(()=>{
+        const qrEl=$('link-qr');
+        if(qrEl&&typeof QRCode!=='undefined'){
+          try{new QRCode(qrEl,{text:_token,width:60,height:60,colorDark:'#06B6D4',colorLight:'#030610',correctLevel:QRCode.CorrectLevel.L});}catch(e){}
         }
-      }, 80);
+      },80);
     }
   }
 
-  // Expose the update badge function so external code can call it on reconnect
   return { init, generate, saveToken, clear, isOnline, broadcast, _renderUI, _updateBadge };
 })();
 
 // ══════════════════════════════════════════════════════════════
-//  INDEXEDDB RESUME MODULE (unchanged from v4, same schema)
+//  MODULE: IDB
+//  IndexedDB wrapper. Schema v2 adds 'history' store for
+//  the LOGGER transfer history feature.
 // ══════════════════════════════════════════════════════════════
 const IDB = (() => {
   let db = null;
-  const DB_NAME = 'ghostshare-v5';  // bumped version to avoid schema conflicts
+  const DB_NAME = 'ghostshare-v6';
 
   async function init() {
     return new Promise((resolve, reject) => {
-      const req = indexedDB.open(DB_NAME, 1);
+      const req = indexedDB.open(DB_NAME, 2); // version 2 adds 'history'
       req.onupgradeneeded = e => {
         const d = e.target.result;
         if (!d.objectStoreNames.contains('transfers'))
           d.createObjectStore('transfers', { keyPath:'transferId' });
         if (!d.objectStoreNames.contains('chunks'))
           d.createObjectStore('chunks');
+        // ▶ NEW: history store
+        if (!d.objectStoreNames.contains('history'))
+          d.createObjectStore('history', { keyPath:'id' });
       };
       req.onsuccess  = e => { db = e.target.result; resolve(db); };
-      req.onerror    = ()  => reject(req.error);
+      req.onerror    = () => reject(req.error);
     });
   }
 
@@ -1073,11 +1532,28 @@ const IDB = (() => {
     const store = tx2.objectStore('chunks');
     const range = IDBKeyRange.bound(`${transferId}:0`,`${transferId}:\uffff`);
     const req   = store.openCursor(range);
-    req.onsuccess = e => { const c = e.target.result; if(c){c.delete();c.continue();} };
+    req.onsuccess = e => { const c=e.target.result; if(c){c.delete();c.continue();} };
   }
 
-  return { init, saveChunk, saveMeta, getLatestMeta, loadChunks, clearTransfer };
+  function getDb() { return db; }
+
+  return { init, saveChunk, saveMeta, getLatestMeta, loadChunks, clearTransfer, getDb };
 })();
+
+// ══════════════════════════════════════════════════════════════
+//  CONNECTION GUARD STATE
+//  geoGuardEnabled: user toggled the feature
+//  pendingConnObj:  the connection being gated — stored while
+//                   we show the geo modal to the sender
+// ══════════════════════════════════════════════════════════════
+let geoGuardEnabled = false;
+let pendingConnObj  = null;
+
+function onGeoGuardToggle() {
+  geoGuardEnabled = !!$('geo-guard-toggle')?.checked;
+  _updateSecBadges();
+  LOGGER.log(`Connection Guard ${geoGuardEnabled?'enabled':'disabled'}`, 'info');
+}
 
 // ══════════════════════════════════════════════════════════════
 //  GLOBAL STATE
@@ -1085,17 +1561,19 @@ const IDB = (() => {
 let isGlobal        = false;
 let peer            = null;
 let isSender        = false;
+let sendMode        = 'files'; // 'files' | 'folder' | 'text'
 
 // Sender state
-let connections     = [];          // [{ id, conn, fromChunk, sentBytes, status, cardEl }]
+let connections     = [];
 let selectedFiles   = [];
-let transferBlob    = null;        // { blob, name }
+let transferBlob    = null;
+let textPayload     = null;   // for text mode: { text, name }
 let totalBytes      = 0;
 let xferStart       = 0;
 let globalIsPaused  = false;
 let pauseResolve    = null;
 let senderChunkHashes = [];
-let transferComplete  = false;     // suppresses disconnect toast after success
+let transferComplete  = false;
 
 // Receiver state
 let recvConn        = null;
@@ -1106,19 +1584,8 @@ let recvBytes       = 0;
 let recvFromChunk   = 0;
 let recvIsPaused    = false;
 
-/**
- * RECEIVE QUEUE:
- * Data arrives on the WebRTC DataChannel synchronously and
- * conn.on('data') is called immediately. Because chunk decryption
- * is async (AES-GCM), we cannot await it inline. Instead, every
- * incoming item is pushed to recvQueue and a sequential async
- * processor drains it one item at a time. This guarantees:
- *  - In-order processing even though decrypt is async
- *  - No dropped chunks due to unhandled promise rejection
- *  - Backpressure stays correct (inChunks indexed sequentially)
- */
-const recvQueue       = [];
-let   recvProcessing  = false;
+const recvQueue     = [];
+let   recvProcessing = false;
 
 // Speed tracking
 let speedWindow     = [];
@@ -1128,22 +1595,16 @@ let lastPerfBytes   = 0;
 let elapsedTimer    = null;
 let myCode          = null;
 
-// ── Security state ───────────────────────────────────────────
-
-/**
- * encEnabled:    user toggled the password-protect switch
- * encPassword:   the passphrase entered by the sender
- * senderAesKey:  CryptoKey derived before the first chunk is sent
- * senderSaltHex: 32-char hex of the 16-byte PBKDF2 salt; travels in META
- * recvAesKey:    CryptoKey derived by receiver when META arrives
- * autoDestruct:  destroy peer+conn the moment verify ACK is received
- */
+// Security state
 let encEnabled      = false;
 let encPassword     = '';
 let senderAesKey    = null;
 let senderSaltHex   = '';
 let recvAesKey      = null;
 let autoDestruct    = false;
+
+// Peer reconnect
+let peerRetryCount  = 0;
 
 // ══════════════════════════════════════════════════════════════
 //  UTILITIES
@@ -1161,11 +1622,10 @@ function bufToHex(buf) {
 
 function hexToBytes(hex) {
   const arr = new Uint8Array(hex.length / 2);
-  for (let i = 0; i < hex.length; i += 2) arr[i/2] = parseInt(hex.slice(i,i+2),16);
+  for (let i=0; i<hex.length; i+=2) arr[i/2]=parseInt(hex.slice(i,i+2),16);
   return arr;
 }
 
-/** Merkle root: SHA-256 of concatenated per-chunk SHA-256 hashes */
 async function computeMerkleHash(hashes) {
   if (!hashes.length) return 'empty';
   const combined = new Uint8Array(hashes.length * 32);
@@ -1179,8 +1639,8 @@ function makeTransferId(name, size) {
 
 function fmtBytes(b) {
   if (!b) return '0 B';
-  const u = ['B','KB','MB','GB','TB'];
-  const i = Math.floor(Math.log(b)/Math.log(1024));
+  const u=['B','KB','MB','GB','TB'];
+  const i=Math.floor(Math.log(b)/Math.log(1024));
   return `${(b/Math.pow(1024,i)).toFixed(i>0?1:0)} ${u[i]}`;
 }
 
@@ -1191,7 +1651,7 @@ function escHtml(s) {
 }
 
 function fileEmoji(name) {
-  const ext = (name.split('.').pop()||'').toLowerCase();
+  const ext=(name.split('.').pop()||'').toLowerCase();
   return ({pdf:'📄',doc:'📝',docx:'📝',txt:'📝',md:'📝',
            jpg:'🖼',jpeg:'🖼',png:'🖼',gif:'🖼',webp:'🖼',
            mp4:'🎬',mov:'🎬',mkv:'🎬',avi:'🎬',webm:'🎬',
@@ -1204,56 +1664,65 @@ function fileEmoji(name) {
 // ══════════════════════════════════════════════════════════════
 //  DOM HELPERS
 // ══════════════════════════════════════════════════════════════
-function $(id) { return document.getElementById(id); }
-function show(id) { const e=$(id); if(e) e.style.display=''; }
-function hide(id) { const e=$(id); if(e) e.style.display='none'; }
+function $(id)        { return document.getElementById(id); }
+function show(id)     { const e=$(id); if(e) e.style.display=''; }
+function hide(id)     { const e=$(id); if(e) e.style.display='none'; }
 function showFlex(id) { const e=$(id); if(e) e.style.display='flex'; }
 
 // ══════════════════════════════════════════════════════════════
 //  NAVIGATION
 // ══════════════════════════════════════════════════════════════
 function showScreen(id) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  const t = $(id); if(t) t.classList.add('active');
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  const t=$(id); if(t) t.classList.add('active');
 }
+
 function goHome() {
   cleanup();
   showScreen('screen-landing');
   hide('conn-badge');
-  // Re-render link UI to restore quick-send zone etc.
   LINK_PAIR._renderUI();
   LINK_PAIR._updateBadge(LINK_PAIR.isOnline());
+  LOGGER.renderHistory();
 }
-function initSend() {
+
+function initSend(mode='files') {
   isSender = true;
+  sendMode = mode;
   showScreen('screen-send');
   resetSendUI();
+  setSendMode(mode);
 }
+
 function initReceive() {
   isSender = false;
   showScreen('screen-receive');
   resetReceiveUI();
   checkForResume();
+  // Pre-fetch geo so it's ready when we connect
+  GEO.fetch().catch(()=>{});
 }
+
 function resetSendUI() {
   show('s-step-1'); hide('s-step-2'); hide('s-step-3');
   setStepDots(['sdot-1','sdot-2','sdot-3'],0);
-  const btn = $('btn-start'); if(btn) btn.disabled = true;
+  const btn=$('btn-start'); if(btn) btn.disabled=true;
   hide('files-panel');
-  const fl = $('files-list'); if(fl) fl.innerHTML = '';
-  selectedFiles = [];
-  connections   = [];
-  transferComplete = false;
+  const fl=$('files-list'); if(fl) fl.innerHTML='';
+  selectedFiles=[]; connections=[]; transferComplete=false; textPayload=null;
+  const ta=$('text-input-area'); if(ta) ta.value='';
+  const cc=$('text-char-count'); if(cc) cc.textContent='0 chars';
+  const sp=$('sender-progress-area'); if(sp){ sp.innerHTML=''; delete sp.dataset.rendered; }
 }
+
 function resetReceiveUI() {
   show('r-step-1'); hide('r-step-2');
   setStepDots(['rdot-1','rdot-2'],0);
-  const inp = $('code-input'); if(inp) { inp.value=''; checkCodeReady(); }
-  recvQueue.length = 0;
-  recvProcessing   = false;
-  transferComplete = false;
+  const inp=$('code-input'); if(inp){inp.value='';checkCodeReady();}
+  recvQueue.length=0; recvProcessing=false; transferComplete=false;
 }
-function setStepDots(ids,activeIdx) {
+
+function setStepDots(ids, activeIdx) {
   ids.forEach((id,i)=>{ const e=$(id); if(e) e.classList.toggle('active',i===activeIdx); });
 }
 function showSendStep(n) {
@@ -1268,14 +1737,54 @@ function showReceiveStep(n) {
 }
 
 // ══════════════════════════════════════════════════════════════
-//  MODE TOGGLE
+//  ▶ SEND MODE TABS
+// ══════════════════════════════════════════════════════════════
+function setSendMode(mode) {
+  sendMode = mode;
+  // Update tabs
+  ['files','folder','text'].forEach(m => {
+    const t=$(`tab-${m}`); if(t) t.classList.toggle('active', m===mode);
+    const d=$(`mode-${m}`); if(d) d.style.display = m===mode ? 'block' : 'none';
+  });
+
+  // Update screen title
+  const title=$('send-screen-title');
+  if(title) title.textContent = {files:'Send Files', folder:'Send Folder', text:'Send Secure Text'}[mode];
+
+  // Update start button enabled state
+  _checkStartButton();
+}
+
+function _checkStartButton() {
+  const btn=$('btn-start'); if(!btn) return;
+  if (sendMode==='text') {
+    const ta=$('text-input-area');
+    btn.disabled = !ta || ta.value.trim().length===0;
+  } else {
+    btn.disabled = selectedFiles.length===0;
+  }
+}
+
+// ══════════════════════════════════════════════════════════════
+//  MODE TOGGLE (Local / Global)
 // ══════════════════════════════════════════════════════════════
 function toggleMode() {
   isGlobal = !isGlobal;
-  $('mode-local').classList.toggle('active', !isGlobal);
-  $('mode-global').classList.toggle('active',  isGlobal);
-  showToast(isGlobal ? '🌐 Global mode — TURN relay enabled' : '📶 Local mode — STUN only',
-            isGlobal ? '🌐' : '📶', 'violet');
+  $('mode-local').classList.toggle('active',!isGlobal);
+  $('mode-global').classList.toggle('active', isGlobal);
+  showToast(isGlobal?'🌐 Global mode — TURN relay enabled':'📶 Local mode — STUN only',
+            isGlobal?'🌐':'📶','violet');
+  LOGGER.log(`Network mode: ${isGlobal?'Global (TURN)':'Local (STUN)'}`, 'info');
+}
+
+// ══════════════════════════════════════════════════════════════
+//  LOG PANEL TOGGLE
+// ══════════════════════════════════════════════════════════════
+function toggleLogPanel() {
+  const panel=$('log-panel');
+  if(!panel) return;
+  panel.classList.toggle('open');
+  if(panel.classList.contains('open')) LOGGER.resetBadge();
 }
 
 // ══════════════════════════════════════════════════════════════
@@ -1283,73 +1792,68 @@ function toggleMode() {
 // ══════════════════════════════════════════════════════════════
 function onEncToggle() {
   encEnabled = !!$('enc-toggle')?.checked;
-  const wrap = $('enc-password-wrap');
-  if (wrap) wrap.style.display = encEnabled ? 'block' : 'none';
-  if (!encEnabled) { encPassword = ''; senderAesKey = null; }
+  const wrap=$('enc-password-wrap');
+  if(wrap) wrap.style.display=encEnabled?'block':'none';
+  if(!encEnabled){ encPassword=''; senderAesKey=null; }
   _updateSecBadges();
-  dbg('SEC',`Encryption ${encEnabled?'enabled':'disabled'}`);
 }
 
 function onAutoDestructToggle() {
   autoDestruct = !!$('autodestruct-toggle')?.checked;
-  const hint = $('autodestruct-hint');
-  if (hint) hint.style.display = autoDestruct ? 'block' : 'none';
+  const hint=$('autodestruct-hint');
+  if(hint) hint.style.display=autoDestruct?'block':'none';
   _updateSecBadges();
-  dbg('SEC',`Auto-destruct ${autoDestruct?'armed':'disarmed'}`);
 }
 
 function validateEncPassword() {
-  const pwd = $('enc-password')?.value || '';
-  encPassword = pwd;
-  const el = $('enc-strength');
-  if (!el) return;
-  const len = pwd.length;
-  let txt = '', color = '';
-  if (len === 0)      { txt='';                      color=''; }
-  else if (len < 8)   { txt='⚠ Weak — too short';   color='#ef4444'; }
-  else if (len < 12)  { txt='◑ Fair';                color='#f59e0b'; }
-  else if (len < 20)  { txt='◕ Good';                color='#22c55e'; }
-  else                { txt='● Strong';              color='#a78bfa'; }
-  el.textContent = txt; el.style.color = color;
+  const pwd=$('enc-password')?.value||'';
+  encPassword=pwd;
+  const el=$('enc-strength'); if(!el) return;
+  const len=pwd.length;
+  let txt='',color='';
+  if(len===0){txt='';color='';}
+  else if(len<8){txt='⚠ Weak — too short';color='#ef4444';}
+  else if(len<12){txt='◑ Fair';color='#f59e0b';}
+  else if(len<20){txt='◕ Good';color='#22c55e';}
+  else{txt='● Strong';color='#a78bfa';}
+  el.textContent=txt; el.style.color=color;
 }
 
 function _updateSecBadges() {
-  // Update the mini-badges visible in the closed security panel header
-  const el = $('sec-s-badges');
-  if (!el) return;
-  let html = '';
-  if (encEnabled)    html += `<span class="enc-badge">🔑 AES-256</span>`;
-  if (autoDestruct)  html += `<span class="destruct-badge">💥 Destruct</span>`;
-  el.innerHTML = html;
-
-  // Update the badges shown under the code in step 2
-  const ab = $('active-sec-badges');
-  if (!ab) return;
-  let abHtml = '';
-  if (encEnabled)    abHtml += `<span class="enc-badge">🔑 AES-256-GCM Encrypted</span>`;
-  if (autoDestruct)  abHtml += `<span class="destruct-badge">💥 Auto-Destruct Armed</span>`;
-  ab.innerHTML = abHtml;
+  const el=$('sec-s-badges'); if(!el) return;
+  let html='';
+  if(encEnabled)    html+=`<span class="enc-badge">🔑 AES-256</span>`;
+  if(autoDestruct)  html+=`<span class="destruct-badge">💥 Destruct</span>`;
+  if(geoGuardEnabled) html+=`<span style="display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:999px;background:rgba(6,182,212,0.1);border:1px solid rgba(6,182,212,0.3);font-size:10px;font-weight:600;color:#06B6D4;">🌍 Guard</span>`;
+  el.innerHTML=html;
+  const ab=$('active-sec-badges'); if(!ab) return;
+  let abHtml='';
+  if(encEnabled)      abHtml+=`<span class="enc-badge">🔑 AES-256-GCM Encrypted</span>`;
+  if(autoDestruct)    abHtml+=`<span class="destruct-badge">💥 Auto-Destruct Armed</span>`;
+  if(geoGuardEnabled) abHtml+=`<span style="display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:999px;background:rgba(6,182,212,0.1);border:1px solid rgba(6,182,212,0.3);font-size:10px;font-weight:600;color:#06B6D4;">🌍 Guard Active</span>`;
+  ab.innerHTML=abHtml;
 }
 
 // ══════════════════════════════════════════════════════════════
 //  NETWORK CONFIG
 // ══════════════════════════════════════════════════════════════
 function toggleConf(side) {
-  const panel = $(`conf-${side}`);
-  const chev  = $(`chev-${side}`);
-  if (!panel) return;
-  const open = panel.classList.toggle('open');
-  if (chev) chev.style.transform = open ? 'rotate(180deg)' : '';
+  const panel=$(`conf-${side}`), chev=$(`chev-${side}`);
+  if(!panel) return;
+  const open=panel.classList.toggle('open');
+  if(chev) chev.style.transform=open?'rotate(180deg)':'';
+  // Render history when that section opens
+  if(side==='history' && open) LOGGER.renderHistory();
 }
 
 function buildIceConfig(side) {
-  const iceServers = [...STUN_SERVERS];
-  if (isGlobal) iceServers.push(...FREE_TURN_SERVERS);
+  const iceServers=[...STUN_SERVERS];
+  if(isGlobal) iceServers.push(...FREE_TURN_SERVERS);
   const url  = ($(`turn-url-${side}`)?.value  || '').trim();
   const user = ($(`turn-user-${side}`)?.value || '').trim();
   const pass = ($(`turn-pass-${side}`)?.value || '').trim();
-  if (url) iceServers.push({ urls:url, username:user||undefined, credential:pass||undefined });
-  return { iceServers, iceCandidatePoolSize:10 };
+  if(url) iceServers.push({ urls:url, username:user||undefined, credential:pass||undefined });
+  return { iceServers, iceCandidatePoolSize:10, iceTransportPolicy:'all' };
 }
 
 // ══════════════════════════════════════════════════════════════
@@ -1359,91 +1863,134 @@ async function pickFiles() {
   if ('showOpenFilePicker' in window) {
     try {
       const h = await window.showOpenFilePicker({ multiple:true });
-      selectedFiles = await Promise.all(h.map(x => x.getFile()));
+      selectedFiles = await Promise.all(h.map(x=>x.getFile()));
       renderFileList(selectedFiles);
-    } catch(e) { if (e.name !== 'AbortError') $('file-fallback').click(); }
+    } catch(e) { if(e.name!=='AbortError') $('file-fallback').click(); }
   } else {
     $('file-fallback').click();
   }
 }
-function onFileInput(fl) { selectedFiles = Array.from(fl); renderFileList(selectedFiles); }
-function onDragOver(e, isLink=false)  { e.preventDefault(); $(isLink?'link-quick-send':'drop-zone')?.classList.add('drag-active'); }
-function onDragLeave(e, isLink=false) { $(isLink?'link-quick-send':'drop-zone')?.classList.remove('drag-active'); }
+
+// ▶ NEW: Folder picker — uses webkitdirectory
+function pickFolder() {
+  $('folder-fallback').click();
+}
+
+function onFileInput(fl) {
+  selectedFiles=Array.from(fl);
+  renderFileList(selectedFiles);
+}
+
+// ▶ NEW: Handle folder selection — preserves directory structure
+async function onFolderInput(fl) {
+  selectedFiles = Array.from(fl);
+  if (!selectedFiles.length) return;
+  renderFileList(selectedFiles, true);
+  LOGGER.log(`Folder selected: ${selectedFiles.length} files`, 'info');
+}
+
+function onDragOver(e, isLink=false) {
+  e.preventDefault();
+  $(isLink?'link-quick-send':'drop-zone')?.classList.add('drag-active');
+}
+function onDragLeave(e, isLink=false) {
+  $(isLink?'link-quick-send':'drop-zone')?.classList.remove('drag-active');
+}
 function onDrop(e, isLink=false) {
   e.preventDefault();
   $(isLink?'link-quick-send':'drop-zone')?.classList.remove('drag-active');
-  selectedFiles = Array.from(e.dataTransfer.files);
-  if (isLink) { linkQuickSend(); return; }
-  if (selectedFiles.length) renderFileList(selectedFiles);
+  selectedFiles=Array.from(e.dataTransfer.files);
+  if(isLink){ linkQuickSend(); return; }
+  if(selectedFiles.length) renderFileList(selectedFiles);
 }
 
-function renderFileList(files) {
-  if (!files.length) return;
-  const total = files.reduce((s,f) => s+f.size, 0);
-  const cl = $('files-count-lbl'), sl = $('files-size-lbl'),
-        ll = $('files-list'),     pl = $('files-panel'), btn = $('btn-start');
-  if (cl)  cl.textContent = `${files.length} file${files.length>1?'s':''}`;
-  if (sl)  sl.textContent = fmtBytes(total);
-  if (ll)  ll.innerHTML   = files.map(f=>`
+function renderFileList(files, isFolder=false) {
+  if(!files.length) return;
+  const total=files.reduce((s,f)=>s+f.size,0);
+  const cl=$('files-count-lbl'), sl=$('files-size-lbl'), ll=$('files-list'), pl=$('files-panel'), btn=$('btn-start');
+  const label = isFolder
+    ? `${files.length} files in folder`
+    : `${files.length} file${files.length>1?'s':''}`;
+  if(cl) cl.textContent=label;
+  if(sl) sl.textContent=fmtBytes(total);
+  if(ll) ll.innerHTML=files.slice(0,40).map(f=>`
     <div style="display:flex;align-items:center;gap:8px;font-size:12px;padding:3px 0;">
       <span>${fileEmoji(f.name)}</span>
-      <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:rgba(255,255,255,0.65);">${escHtml(f.name)}</span>
+      <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:rgba(255,255,255,0.65);">${escHtml(f.webkitRelativePath||f.name)}</span>
       <span class="mono" style="color:var(--text-muted);">${fmtBytes(f.size)}</span>
-    </div>`).join('');
-  if (pl)  pl.style.display = 'block';
-  if (btn) btn.disabled = false;
+    </div>`).join('') + (files.length>40?`<div style="font-size:11px;color:var(--text-muted);padding-top:4px;">...and ${files.length-40} more</div>`:'');
+  if(pl) pl.style.display='block';
+  if(btn) btn.disabled=false;
 }
 
-// Link Pair quick-send: drop a file from the landing page
-async function linkQuickSend() {
-  if (!LINK_PAIR.isOnline()) { showToast('Partner offline','⚠️','red'); return; }
-  if (!selectedFiles.length) { pickFiles(); return; }
-  // Navigate to send flow with files pre-selected, then start session
-  initSend();
-  await new Promise(r => setTimeout(r, 50));
-  renderFileList(selectedFiles);
-  // Auto-start session
-  startSenderSession();
+function clearFiles() {
+  selectedFiles=[]; hide('files-panel');
+  const fl=$('files-list'); if(fl) fl.innerHTML='';
+  const btn=$('btn-start'); if(btn) btn.disabled=true;
+}
+
+// ▶ NEW: Clipboard paste for text mode
+async function pasteFromClipboard() {
+  try {
+    const t = await navigator.clipboard.readText();
+    const ta=$('text-input-area');
+    if(ta){ ta.value=t; onTextInput(); }
+    showToast('Pasted from clipboard','📋','cyan');
+  } catch(e) { showToast('Cannot read clipboard — paste manually','⚠️','amber'); }
+}
+
+function onTextInput() {
+  const ta=$('text-input-area'), cc=$('text-char-count');
+  if(cc) cc.textContent=`${(ta?.value||'').length} chars`;
+  _checkStartButton();
 }
 
 // ══════════════════════════════════════════════════════════════
-//  BUILD BLOB
+//  BUILD BLOB (files or folder → ZIP)
 // ══════════════════════════════════════════════════════════════
 async function buildBlob(files) {
-  if (files.length === 1) return { blob:files[0], name:files[0].name };
-  if (typeof JSZip === 'undefined') throw new Error('JSZip not loaded');
-  const zip = new JSZip();
-  for (const f of files) zip.file(f.name, f, { binary:true });
-  const blob = await zip.generateAsync(
+  if (files.length===1 && !files[0].webkitRelativePath) {
+    return { blob:files[0], name:files[0].name };
+  }
+  if (typeof JSZip==='undefined') throw new Error('JSZip not loaded');
+  const zip=new JSZip();
+  for (const f of files) {
+    // Use webkitRelativePath to preserve folder structure, fallback to name
+    const path = f.webkitRelativePath || f.name;
+    zip.file(path, f, { binary:true });
+  }
+  LOGGER.log(`Zipping ${files.length} files...`, 'info');
+  const blob=await zip.generateAsync(
     { type:'blob', compression:'DEFLATE', compressionOptions:{ level:3 } },
-    m => { if(m.percent%25<2) dbg('ZIP',`${m.percent.toFixed(0)}%`); }
+    m=>{ if(m.percent%25<2) dbg('ZIP',`${m.percent.toFixed(0)}%`); }
   );
-  return { blob, name:`ghost-share-${Date.now()}.zip` };
+  // Determine a sensible zip name
+  const folderName = files[0]?.webkitRelativePath?.split('/')[0] || null;
+  const name = folderName ? `${folderName}.zip` : `ghost-share-${Date.now()}.zip`;
+  LOGGER.log(`ZIP ready: ${fmtBytes(blob.size)}`, 'ok');
+  return { blob, name };
 }
 
 // ══════════════════════════════════════════════════════════════
 //  CODE DISPLAY + QR
 // ══════════════════════════════════════════════════════════════
 function displayCode(code) {
-  myCode = code;
-  const el = $('code-display');
-  if (!el) return;
-  el.innerHTML = code.split('').map(ch =>
-    `<div class="code-box">${ch}</div>`
-  ).join('');
+  myCode=code;
+  const el=$('code-display'); if(!el) return;
+  el.innerHTML=code.split('').map(ch=>`<div class="code-box">${ch}</div>`).join('');
   genQR('qr-sender', code, '#7B5CF6');
   _updateSecBadges();
 }
 function copyCode() {
-  if (!myCode) return;
+  if(!myCode) return;
   navigator.clipboard?.writeText(myCode).then(()=>showToast('Code copied!','✅','green'))
     .catch(()=>showToast('Code: '+myCode,'📋','violet'));
 }
 function genQR(cid, text, color) {
-  const el = $(cid); if(!el||typeof QRCode==='undefined') return;
-  el.innerHTML = '';
+  const el=$(cid); if(!el||typeof QRCode==='undefined') return;
+  el.innerHTML='';
   try { new QRCode(el,{text,width:160,height:160,colorDark:color||'#7B5CF6',colorLight:'#030610',correctLevel:QRCode.CorrectLevel.M}); }
-  catch(e) {}
+  catch(e){}
 }
 
 // ══════════════════════════════════════════════════════════════
@@ -1451,318 +1998,419 @@ function genQR(cid, text, color) {
 // ══════════════════════════════════════════════════════════════
 async function checkForResume() {
   try {
-    const meta = await IDB.getLatestMeta();
-    if (!meta) return;
-    if ((Date.now() - meta.timestamp) / 60000 > 60) { IDB.clearTransfer(meta.transferId); return; }
-    const pct = Math.round((meta.receivedCount / meta.totalChunks) * 100);
-    const banner = $('resume-banner'), info = $('resume-info');
-    if (!banner || !info) return;
-    info.innerHTML = `<b style="color:rgba(255,255,255,0.7);">${escHtml(meta.name)}</b> — ${fmtBytes(meta.size)} — ${pct}% received`;
-    banner.style.display = 'block';
-    banner._resumeMeta   = meta;
-  } catch(e) { dbgWarn('RESUME','checkForResume:',e); }
+    const meta=await IDB.getLatestMeta();
+    if(!meta) return;
+    if((Date.now()-meta.timestamp)/60000>60){ IDB.clearTransfer(meta.transferId); return; }
+    const pct=Math.round((meta.receivedCount/meta.totalChunks)*100);
+    const banner=$('resume-banner'), info=$('resume-info');
+    if(!banner||!info) return;
+    info.innerHTML=`<b style="color:rgba(255,255,255,0.7);">${escHtml(meta.name)}</b> — ${fmtBytes(meta.size)} — ${pct}% received`;
+    banner.style.display='block';
+    banner._resumeMeta=meta;
+  } catch(e){ dbgWarn('RESUME','checkForResume:',e); }
 }
+
 function clearResume() {
-  const b = $('resume-banner');
-  if (b?._resumeMeta) IDB.clearTransfer(b._resumeMeta.transferId);
+  const b=$('resume-banner');
+  if(b?._resumeMeta) IDB.clearTransfer(b._resumeMeta.transferId);
   hide('resume-banner');
   showToast('Resume data cleared','🗑️','violet');
 }
 function checkCodeReady() {
-  const v = ($('code-input')?.value||'').trim();
-  const btn = $('btn-connect'); if(btn) btn.disabled = v.length !== 6;
+  const v=($('code-input')?.value||'').trim();
+  const btn=$('btn-connect'); if(btn) btn.disabled=v.length!==6;
+}
+
+// ══════════════════════════════════════════════════════════════
+//  ▶ CONNECTION GUARD MODAL
+//  Shows sender a review screen with receiver's country before
+//  allowing the data transfer to proceed.
+// ══════════════════════════════════════════════════════════════
+function _showGeoModal(connObj, geoInfo) {
+  return new Promise((resolve) => {
+    const modal  = $('geo-modal');
+    const body   = $('geo-modal-body');
+    const allow  = $('geo-allow-btn');
+    const deny   = $('geo-deny-btn');
+    if (!modal || !body) { resolve(true); return; } // fail open
+
+    const flag   = geoInfo.country ? `https://flagcdn.com/24x18/${geoInfo.country.toLowerCase()}.png` : null;
+    const flagImg = flag ? `<img src="${flag}" onerror="this.style.display='none'" style="height:18px;vertical-align:middle;margin-right:6px;border-radius:2px;">` : '🌍 ';
+
+    body.innerHTML = `
+      <div style="font-size:12px;color:var(--text-muted);margin-bottom:8px;">Receiver ID</div>
+      <div class="mono" style="font-size:15px;font-weight:700;margin-bottom:14px;">Receiver ${connObj.id}</div>
+      <div style="font-size:12px;color:var(--text-muted);margin-bottom:6px;">Location</div>
+      <div style="font-size:16px;font-weight:700;">${flagImg}${escHtml(geoInfo.name || 'Unknown')}</div>`;
+
+    modal.classList.add('visible');
+    LOGGER.log(`Connection Guard: receiver from ${geoInfo.name||'Unknown'} — awaiting approval`, 'warn');
+
+    const onAllow = () => {
+      modal.classList.remove('visible');
+      allow.removeEventListener('click', onAllow);
+      deny.removeEventListener('click', onDeny);
+      LOGGER.log(`Connection Guard: ALLOWED`, 'ok');
+      resolve(true);
+    };
+    const onDeny = () => {
+      modal.classList.remove('visible');
+      allow.removeEventListener('click', onAllow);
+      deny.removeEventListener('click', onDeny);
+      try { connObj.conn.close(); } catch(e) {}
+      LOGGER.log(`Connection Guard: DENIED`, 'warn');
+      showToast(`Connection from ${geoInfo.name||'?'} denied`,'🚫','red');
+      resolve(false);
+    };
+
+    allow.addEventListener('click', onAllow);
+    deny.addEventListener('click', onDeny);
+  });
 }
 
 // ══════════════════════════════════════════════════════════════
 //  PEERJS — SENDER
-//  (multi-receiver broadcast, identical to v4 plus enc + destruct)
+//  Multi-receiver, with Connection Guard + text mode support.
 // ══════════════════════════════════════════════════════════════
 async function startSenderSession() {
-  if (!selectedFiles.length) { showToast('Select files first','⚠️','red'); return; }
-
-  // Validate encryption password if enabled
-  if (encEnabled) {
-    encPassword = $('enc-password')?.value || '';
-    if (encPassword.length < 1) {
-      showToast('Enter a passphrase to enable encryption','⚠️','red'); return;
-    }
-  }
-
-  const btn = $('btn-start');
-  if (btn) { btn.disabled=true; btn.textContent='Preparing...'; }
-
-  showToast('Preparing files...','📦','violet');
-  try { transferBlob = await buildBlob(selectedFiles); }
-  catch(e) {
-    dbgErr('BLOB','buildBlob failed:',e);
-    showToast('Failed to prepare files','❌','red');
-    if(btn) { btn.disabled=false; btn.innerHTML='🚀 Generate Code &amp; Start Session'; }
-    return;
-  }
-
-  totalBytes = transferBlob.blob.size;
-
-  // ── Derive AES key if encryption is on ──────────────────
-  if (encEnabled && encPassword) {
-    senderSaltHex = AES_CRYPTO.genSalt();
-    showToast('Deriving encryption key (PBKDF2)...','🔑','violet');
-    try {
-      senderAesKey = await AES_CRYPTO.deriveKey(encPassword, hexToBytes(senderSaltHex));
-      dbg('SEC',`AES key derived, salt=${senderSaltHex.substring(0,8)}...`);
-    } catch(e) {
-      dbgErr('SEC','Key derivation failed:',e);
-      showToast('Key derivation failed','❌','red');
-      if(btn) { btn.disabled=false; btn.innerHTML='🚀 Generate Code &amp; Start Session'; }
-      return;
-    }
+  // Text mode validation
+  if (sendMode==='text') {
+    const ta=$('text-input-area');
+    const txt=(ta?.value||'').trim();
+    if(!txt){ showToast('Enter some text to send','⚠️','red'); return; }
+    textPayload = { text:txt, name:'ghostshare-text.txt' };
+    // Convert text to blob so the existing chunked pipeline handles it
+    const blob = new Blob([new TextEncoder().encode(txt)], { type:'text/plain' });
+    transferBlob = { blob, name:textPayload.name, isText:true };
   } else {
-    senderAesKey = null; senderSaltHex = '';
+    // File / Folder mode
+    if(!selectedFiles.length){ showToast('Select files first','⚠️','red'); return; }
+    if(encEnabled){ encPassword=$('enc-password')?.value||''; if(!encPassword){ showToast('Enter a passphrase to enable encryption','⚠️','red'); return; } }
+    const btn=$('btn-start'); if(btn){btn.disabled=true;btn.textContent='Preparing...';}
+    showToast('Preparing files...','📦','violet');
+    try { transferBlob=await buildBlob(selectedFiles); }
+    catch(e){ dbgErr('BLOB','buildBlob failed:',e); showToast('Failed to prepare files','❌','red'); const b=$('btn-start'); if(b){b.disabled=false;b.innerHTML='🚀 Generate Code &amp; Start Session';} return; }
   }
 
-  // Pre-compute sender Merkle hashes in the background
-  senderChunkHashes = [];
+  const btn=$('btn-start');
+  if(btn){btn.disabled=true;btn.textContent='Starting...';}
+  totalBytes=transferBlob.blob.size;
+
+  // ── Derive AES key if encryption on ──
+  if(encEnabled && encPassword){
+    senderSaltHex=AES_CRYPTO.genSalt();
+    showToast('Deriving encryption key (PBKDF2)...','🔑','violet');
+    LOGGER.log('Deriving AES-256-GCM key (PBKDF2 210k rounds)...', 'info');
+    try {
+      senderAesKey=await AES_CRYPTO.deriveKey(encPassword, hexToBytes(senderSaltHex));
+      LOGGER.log('Encryption key ready', 'ok');
+    } catch(e){ dbgErr('SEC','Key derivation failed:',e); showToast('Key derivation failed','❌','red'); if(btn){btn.disabled=false;btn.innerHTML='🚀 Generate Code &amp; Start Session';} return; }
+  } else { senderAesKey=null; senderSaltHex=''; }
+
+  // Pre-compute Merkle hashes in background
+  senderChunkHashes=[];
   computeSenderHashes(transferBlob.blob);
 
-  const code   = genCode();
-  const iceCfg = buildIceConfig('s');
+  const code=genCode();
+  const iceCfg=buildIceConfig('s');
   dbg('PEER',`Creating sender peer id="${code}"`);
+  LOGGER.log(`Starting session (code: ${code}, mode: ${sendMode})`, 'info');
 
   peer = new Peer(code, { config:iceCfg, debug:0 });
 
-  peer.on('open', id => {
+  peer.on('open', id=>{
     dbg('PEER',`Sender open id="${id}"`);
+    LOGGER.log(`Peer open — code: ${id}`, 'ok');
+    peerRetryCount=0;
     displayCode(id);
     showSendStep(2);
     showToast(`Code: ${id} — share it!`,'📡','violet');
-
-    // Auto-broadcast to linked partner for zero-click receive
     LINK_PAIR.broadcast(id);
   });
 
-  peer.on('connection', c => {
-    const shortId = (c.peer||'').slice(-4).toUpperCase() || `R${connections.length+1}`;
+  peer.on('connection', async c=>{
+    const shortId=(c.peer||'').slice(-4).toUpperCase()||`R${connections.length+1}`;
     dbg('PEER',`New receiver: ${shortId}`);
-    const connObj = { id:shortId, conn:c, fromChunk:0, sentBytes:0, status:'waiting', cardEl:null, _resolveHello:null };
-    connections.push(connObj);
-    c.serialization = 'raw';
+    LOGGER.log(`Receiver ${shortId} connecting...`, 'info');
+    AUDIO.pop();
 
-    c.on('open',  ()  => { showFlex('conn-badge'); updateReceiverCount(); addReceiverCard(connObj); startConnectionLoop(connObj); });
-    c.on('data',  raw => { if(typeof raw==='string'){try{handleSenderCtrlMsg(connObj,JSON.parse(raw));}catch(e){}} });
-    c.on('error', e   => { dbgErr('CONN',`${shortId} error:`,e); connObj.status='error'; updateReceiverCard(connObj); });
-    c.on('close', ()  => { dbgWarn('CONN',`${shortId} closed`); connObj.status='error'; updateReceiverCard(connObj); updateReceiverCount(); });
+    const connObj={ id:shortId, conn:c, fromChunk:0, sentBytes:0, status:'waiting', cardEl:null, _resolveHello:null };
+    c.serialization='raw';
+
+    c.on('open', async ()=>{
+      dbg('PEER',`Receiver ${shortId} open`);
+      showFlex('conn-badge');
+      updateReceiverCount();
+      addReceiverCard(connObj);
+
+      // ── CONNECTION GUARD ────────────────────────────────────
+      if(geoGuardEnabled){
+        // Wait for geo info from hello message (set in c.on('data'))
+        connObj.status='guard-pending';
+        updateReceiverCard(connObj);
+        // We'll proceed inside handleSenderCtrlMsg once hello arrives
+        connections.push(connObj);
+      } else {
+        connections.push(connObj);
+        startConnectionLoop(connObj);
+      }
+    });
+
+    c.on('data', raw=>{ if(typeof raw==='string'){try{handleSenderCtrlMsg(connObj,JSON.parse(raw));}catch(e){}} });
+    c.on('error', e=>{ dbgErr('CONN',`${shortId} error:`,e); connObj.status='error'; updateReceiverCard(connObj); LOGGER.log(`Receiver ${shortId} error: ${e.type||e}`, 'error'); AUDIO.error(); });
+    c.on('close', ()=>{ dbgWarn('CONN',`${shortId} closed`); connObj.status='error'; updateReceiverCard(connObj); updateReceiverCount(); LOGGER.log(`Receiver ${shortId} disconnected`, 'warn'); });
   });
 
-  peer.on('error', e => {
+  peer.on('disconnected', ()=>{
+    dbgWarn('PEER','Sender disconnected from server — attempting reconnect...');
+    LOGGER.log('Disconnected from PeerJS server — reconnecting...', 'warn');
+    _tryPeerReconnect();
+  });
+
+  peer.on('error', e=>{
     dbgErr('PEER','Sender error:',e);
-    if (e.type==='unavailable-id') { peer.destroy(); peer=null; startSenderSession(); }
-    else { showToast(`Peer error: ${e.type}`,'❌','red'); if(btn){btn.disabled=false;btn.innerHTML='🚀 Generate Code &amp; Start Session';} }
+    LOGGER.log(`Peer error: ${e.type}`, 'error');
+    if(e.type==='unavailable-id'){
+      // Code collision — regenerate silently
+      dbg('PEER','Code collision — regenerating...');
+      peer.destroy(); peer=null;
+      startSenderSession();
+    } else if(e.type==='server-error'||e.type==='network'){
+      showToast('Server error — retrying...','⚠️','amber');
+      _tryPeerReconnect();
+    } else {
+      showToast(`Peer error: ${e.type}`,'❌','red');
+      const b=$('btn-start'); if(b){b.disabled=false;b.innerHTML='🚀 Generate Code &amp; Start Session';}
+    }
   });
 }
 
-/** Background pre-compute of chunk hashes over plaintext blob */
+/**
+ * Attempt to reconnect a disconnected peer with exponential back-off.
+ * After MAX_PEER_RETRIES the UI shows an error and gives up.
+ */
+function _tryPeerReconnect() {
+  if(peerRetryCount>=MAX_PEER_RETRIES){ showToast('Could not reconnect — please restart','❌','red'); return; }
+  const delay=PEER_RECONNECT_DELAYS[Math.min(peerRetryCount,PEER_RECONNECT_DELAYS.length-1)];
+  peerRetryCount++;
+  LOGGER.log(`Reconnect attempt ${peerRetryCount}/${MAX_PEER_RETRIES} in ${delay/1000}s`, 'warn');
+  setTimeout(()=>{
+    if(peer && !peer.destroyed){
+      try{ peer.reconnect(); }catch(e){ dbgWarn('PEER','peer.reconnect() threw:',e); }
+    }
+  }, delay);
+}
+
 async function computeSenderHashes(blob) {
-  const n = Math.ceil(blob.size / CHUNK_SIZE);
-  senderChunkHashes = new Array(n);
-  for (let i = 0; i < n; i++) {
-    const start = i * CHUNK_SIZE;
-    const buf   = await blob.slice(start, Math.min(start+CHUNK_SIZE, blob.size)).arrayBuffer();
-    senderChunkHashes[i] = new Uint8Array(await crypto.subtle.digest('SHA-256', buf));
+  const n=Math.ceil(blob.size/CHUNK_SIZE);
+  senderChunkHashes=new Array(n);
+  for(let i=0;i<n;i++){
+    const start=i*CHUNK_SIZE;
+    const buf=await blob.slice(start,Math.min(start+CHUNK_SIZE,blob.size)).arrayBuffer();
+    senderChunkHashes[i]=new Uint8Array(await crypto.subtle.digest('SHA-256',buf));
   }
   dbg('HASH',`All ${n} chunk hashes computed`);
+  LOGGER.log(`SHA-256 pre-hash complete (${n} chunks)`, 'ok');
 }
 
-function handleSenderCtrlMsg(connObj, msg) {
+async function handleSenderCtrlMsg(connObj, msg) {
   dbg('CTRL',`Sender got msg type="${msg.type}" from ${connObj.id}`);
 
-  if (msg.type === 'hello') {
-    connObj.fromChunk = msg.resumeFrom || 0;
-    if (connObj._resolveHello) { connObj._resolveHello(); connObj._resolveHello=null; }
+  if(msg.type==='hello'){
+    connObj.fromChunk=msg.resumeFrom||0;
+    // Attach geo info sent by receiver
+    if(msg.geo) connObj.geo=msg.geo;
+
+    // If connection guard is active, show approval modal
+    if(geoGuardEnabled && connObj.status==='guard-pending'){
+      const geoInfo = msg.geo || { name:'Unknown', country:null };
+      const allowed = await _showGeoModal(connObj, geoInfo);
+      if(!allowed){ connObj.status='error'; updateReceiverCard(connObj); return; }
+      connObj.status='waiting';
+    }
+
+    if(connObj._resolveHello){ connObj._resolveHello(); connObj._resolveHello=null; }
   }
 
-  if (msg.type === 'verify') {
-    const ok = msg.ok;
-    connObj.status = ok ? 'done' : 'error';
+  if(msg.type==='verify'){
+    const ok=msg.ok;
+    connObj.status=ok?'done':'error';
     updateReceiverCard(connObj);
     showToast(ok?`✓ ${connObj.id} verified`:`⚠ ${connObj.id} hash mismatch`,ok?'✅':'⚠️',ok?'green':'red');
+    LOGGER.log(`Receiver ${connObj.id} verify: ${ok?'PASS':'FAIL'}`, ok?'ok':'error');
+    if(ok) AUDIO.chime(); else AUDIO.error();
 
-    // Update UI
-    const vs = $('verify-status');
-    if (vs) vs.innerHTML = ok
-      ? `<div class="hash-ok" style="text-align:center;font-size:13px;font-weight:600;color:#22c55e;">✅ Receiver confirmed every byte is intact</div>`
-      : `<div class="hash-fail" style="text-align:center;font-size:13px;font-weight:600;color:#ef4444;">⚠ Integrity check failed — ask receiver to retry</div>`;
+    const vs=$('verify-status');
+    if(vs) vs.innerHTML=ok
+      ?`<div class="hash-ok" style="text-align:center;font-size:13px;font-weight:600;color:#22c55e;">✅ Receiver confirmed every byte is intact</div>`
+      :`<div class="hash-fail" style="text-align:center;font-size:13px;font-weight:600;color:#ef4444;">⚠ Integrity check failed — ask receiver to retry</div>`;
 
-    // All receivers done?
-    const allDone = connections.every(c => c.status==='done'||c.status==='error');
-    if (allDone) {
-      transferComplete = true;
+    const allDone=connections.every(c=>c.status==='done'||c.status==='error');
+    if(allDone){
+      transferComplete=true;
       finishUI(false);
+      LOGGER.saveHistory({ direction:'send', name:transferBlob?.name||'unknown', size:totalBytes, ok, id:Date.now() });
 
-      // ── AUTO-DESTRUCT ──────────────────────────────────────
-      //  Revoke peer ID + destroy connection immediately after
-      //  at least one successful verify ACK.
-      if (autoDestruct && ok) {
+      if(autoDestruct&&ok){
         dbg('DESTRUCT','Auto-destruct triggered!');
         showToast('💥 Auto-destruct — session destroyed','💥','red');
-        // Brief visual flash then destroy
-        const ring = $('ring-wrap');
-        if (ring) ring.classList.add('destruct-anim');
-        setTimeout(() => {
-          connections.forEach(c => { try{c.conn.close();}catch(e){} });
-          if (peer) { try{peer.destroy();}catch(e){} peer=null; }
+        LOGGER.log('Auto-destruct: session destroyed', 'warn');
+        const ring=$('ring-wrap');
+        if(ring) ring.classList.add('destruct-anim');
+        setTimeout(()=>{
+          connections.forEach(c=>{ try{c.conn.close();}catch(e){} });
+          if(peer){try{peer.destroy();}catch(e){}peer=null;}
           hide('conn-badge');
-          const st = $('xfer-status');
-          if (st) { st.textContent='💥 Session destroyed'; st.style.color='#ef4444'; }
-        }, 600);
+          const st=$('xfer-status'); if(st){st.textContent='💥 Session destroyed';st.style.color='#ef4444';}
+        },600);
       }
     }
   }
 
-  if (msg.type==='pause')  { globalIsPaused=true;  renderGlobalPauseState(true); showToast(`${connObj.id} paused`,'⏸','amber'); }
-  if (msg.type==='resume') { doGlobalResume(); }
+  if(msg.type==='pause') { globalIsPaused=true;  renderGlobalPauseState(true); showToast(`${connObj.id} paused`,'⏸','amber'); }
+  if(msg.type==='resume'){ doGlobalResume(); }
 }
 
 // ── Per-receiver send loop ─────────────────────────────────
 async function startConnectionLoop(connObj) {
-  connObj.status = 'waiting';
+  connObj.status='waiting';
   updateReceiverCard(connObj);
 
-  // Wait for hello (carries resumeFrom)
+  // Wait for hello handshake (or timeout after 5s)
   await Promise.race([
-    new Promise(r => { connObj._resolveHello = r; }),
-    new Promise(r => setTimeout(r, 3000)),
+    new Promise(r=>{ connObj._resolveHello=r; }),
+    new Promise(r=>setTimeout(r,5000)),
   ]);
 
-  const { blob, name } = transferBlob;
-  const totalChunks    = Math.ceil(totalBytes / CHUNK_SIZE);
-  const startChunk     = connObj.fromChunk || 0;
+  if(connObj.status==='error') return; // guard denied
 
-  // META — tell receiver name, size, chunk count, encryption params
+  const { blob, name, isText } = transferBlob;
+  const totalChunks = Math.ceil(totalBytes/CHUNK_SIZE);
+  const startChunk  = connObj.fromChunk||0;
+
+  // Send META
   connObj.conn.send(JSON.stringify({
-    type:       'meta',
-    name,
-    size:       totalBytes,
-    mime:       blob.type || 'application/octet-stream',
-    chunks:     totalChunks,
-    fromChunk:  startChunk,
-    transferId: makeTransferId(name, totalBytes),
-    // Encryption fields (empty strings when not encrypting)
-    encrypted:  !!senderAesKey,
-    salt:       senderSaltHex,  // 32-char hex; '' if no encryption
+    type:'meta', name, size:totalBytes,
+    mime: isText ? 'text/plain' : (blob.type||'application/octet-stream'),
+    chunks:totalChunks, fromChunk:startChunk,
+    transferId:makeTransferId(name,totalBytes),
+    encrypted:!!senderAesKey, salt:senderSaltHex,
+    isText:!!isText,
   }));
-  dbg('XFER',`${connObj.id} META sent (chunk ${startChunk}, enc=${!!senderAesKey})`);
+  LOGGER.log(`→ META: ${name} (${fmtBytes(totalBytes)}) to Receiver ${connObj.id}`, 'info');
 
-  connObj.status    = 'active';
-  connObj.sentBytes = startChunk * CHUNK_SIZE;
+  connObj.status='active';
+  connObj.sentBytes=startChunk*CHUNK_SIZE;
   updateReceiverCard(connObj);
   showSendStep(3);
   renderSenderProgressUI(name);
-  xferStart = performance.now();
+  xferStart=performance.now();
 
-  const rawDC = connObj.conn._dc || connObj.conn.dataChannel;
-  if (rawDC) rawDC.bufferedAmountLowThreshold = LOW_WATER;
+  const rawDC=connObj.conn._dc||connObj.conn.dataChannel;
+  if(rawDC) rawDC.bufferedAmountLowThreshold=LOW_WATER;
 
-  for (let i = startChunk; i < totalChunks; i++) {
+  for(let i=startChunk;i<totalChunks;i++){
     // Pause gate
-    if (globalIsPaused) {
-      await new Promise(r => { pauseResolve = r; });
-    }
+    if(globalIsPaused) await new Promise(r=>{ pauseResolve=r; });
+
+    // Connection check
+    if(!connObj.conn.open){ dbgWarn('XFER',`${connObj.id} conn closed mid-transfer`); connObj.status='error'; updateReceiverCard(connObj); return; }
 
     // Backpressure gate
-    const dc = connObj.conn._dc || connObj.conn.dataChannel;
-    if (dc && dc.bufferedAmount > HIGH_WATER) {
-      await new Promise(r => {
-        if (!dc) return r();
-        const h = () => { dc.removeEventListener('bufferedamountlow',h); r(); };
+    const dc=connObj.conn._dc||connObj.conn.dataChannel;
+    if(dc&&dc.bufferedAmount>HIGH_WATER){
+      await new Promise(r=>{
+        if(!dc) return r();
+        const h=()=>{ dc.removeEventListener('bufferedamountlow',h); r(); };
         dc.addEventListener('bufferedamountlow',h);
-        setTimeout(()=>{dc.removeEventListener('bufferedamountlow',h);r();},10000);
+        setTimeout(()=>{ dc.removeEventListener('bufferedamountlow',h); r(); },10000);
       });
     }
 
-    // Read plaintext chunk
-    const start  = i * CHUNK_SIZE;
-    const end    = Math.min(start + CHUNK_SIZE, totalBytes);
-    let   buffer = await blob.slice(start, end).arrayBuffer();
+    // Read chunk
+    const start=i*CHUNK_SIZE, end=Math.min(start+CHUNK_SIZE,totalBytes);
+    let buffer=await blob.slice(start,end).arrayBuffer();
 
-    // ── ENCRYPT (if enabled) ─────────────────────────────────
-    //  Encryption happens here, after hashing (hashes computed
-    //  separately in computeSenderHashes over plaintext). This
-    //  means Merkle verification always checks the raw file.
-    if (senderAesKey) {
-      buffer = await AES_CRYPTO.encryptChunk(senderAesKey, buffer);
+    // Encrypt if enabled
+    if(senderAesKey){
+      try{ buffer=await AES_CRYPTO.encryptChunk(senderAesKey,buffer); }
+      catch(e){ dbgErr('ENC',`Encrypt chunk ${i} failed:`,e); connObj.status='error'; updateReceiverCard(connObj); AUDIO.error(); return; }
     }
 
-    try { connObj.conn.send(buffer); }
-    catch(e) { dbgErr('XFER',`${connObj.id} send error chunk ${i}:`,e); connObj.status='error'; updateReceiverCard(connObj); return; }
+    try{ connObj.conn.send(buffer); }
+    catch(e){ dbgErr('XFER',`${connObj.id} send error chunk ${i}:`,e); connObj.status='error'; updateReceiverCard(connObj); AUDIO.error(); return; }
 
-    connObj.sentBytes = end;
+    connObj.sentBytes=end;
     updateReceiverCard(connObj);
-
-    const aggBytes = connections.reduce((s,c) => s+c.sentBytes, 0) / connections.length;
+    const aggBytes=connections.reduce((s,c)=>s+c.sentBytes,0)/connections.length;
     tickSpeed(aggBytes);
-    if (i % 64 === 0 || i === totalChunks-1) dbg('XFER',`${connObj.id} ${i+1}/${totalChunks}`);
+    if(i%64===0||i===totalChunks-1) dbg('XFER',`${connObj.id} ${i+1}/${totalChunks}`);
   }
 
-  // DONE
-  const hashes   = await waitForHashes(totalChunks);
-  const fileHash = await computeMerkleHash(hashes);
+  // DONE — wait for hashes + send
+  const hashes=await waitForHashes(totalChunks);
+  const fileHash=await computeMerkleHash(hashes);
   connObj.conn.send(JSON.stringify({ type:'done', hash:fileHash }));
-  connObj.status = 'waiting-verify';
+  connObj.status='waiting-verify';
   updateReceiverCard(connObj);
-  dbg('XFER',`${connObj.id} DONE, hash=${fileHash.substring(0,16)}...`);
+  LOGGER.log(`→ DONE sent to ${connObj.id}, hash=${fileHash.slice(0,16)}...`, 'ok');
 }
 
 async function waitForHashes(n) {
-  const dl = Date.now() + 30000;
-  while (senderChunkHashes.filter(Boolean).length < n && Date.now() < dl)
+  const dl=Date.now()+30000;
+  while(senderChunkHashes.filter(Boolean).length<n&&Date.now()<dl)
     await new Promise(r=>setTimeout(r,100));
   return senderChunkHashes.slice(0,n);
 }
 
-// ── Sender Pause/Resume ─────────────────────────────────────
+// ── Pause/Resume ─────────────────────────────────────────────
 function pauseAll() {
-  globalIsPaused = true; renderGlobalPauseState(true);
-  connections.forEach(c => { try{c.conn.send(JSON.stringify({type:'pause'}));}catch(e){} });
+  globalIsPaused=true; renderGlobalPauseState(true);
+  connections.forEach(c=>{ try{c.conn.send(JSON.stringify({type:'pause'}));}catch(e){} });
+  LOGGER.log('All transfers paused', 'warn');
 }
 function resumeAll() {
   doGlobalResume();
-  connections.forEach(c => { try{c.conn.send(JSON.stringify({type:'resume'}));}catch(e){} });
+  connections.forEach(c=>{ try{c.conn.send(JSON.stringify({type:'resume'}));}catch(e){} });
+  LOGGER.log('All transfers resumed', 'info');
 }
 function doGlobalResume() {
-  globalIsPaused = false;
-  if (pauseResolve) { pauseResolve(); pauseResolve=null; }
+  globalIsPaused=false;
+  if(pauseResolve){pauseResolve();pauseResolve=null;}
   renderGlobalPauseState(false);
 }
 function renderGlobalPauseState(paused) {
-  const btn = $('global-pause-btn'); if(!btn) return;
-  btn.className   = paused ? 'btn-resume' : 'btn-pause';
-  btn.textContent = paused ? '▶ Resume All' : '⏸ Pause All';
-  btn.onclick     = paused ? resumeAll : pauseAll;
+  const btn=$('global-pause-btn'); if(!btn) return;
+  btn.className=paused?'btn-resume':'btn-pause';
+  btn.textContent=paused?'▶ Resume All':'⏸ Pause All';
+  btn.onclick=paused?resumeAll:pauseAll;
 }
 
-// ── Receiver cards ──────────────────────────────────────────
+// ── Receiver cards ─────────────────────────────────────────
 function updateReceiverCount() {
-  const badge = $('receiver-count-badge'), n = connections.length;
-  if (badge) badge.textContent = `${n} connected`;
-  const wi = $('waiting-indicator'), rl = $('receivers-list');
-  if (wi) wi.style.display = n>0?'none':'block';
-  if (rl) rl.style.display = n>0?'block':'none';
+  const badge=$('receiver-count-badge'), n=connections.length;
+  if(badge) badge.textContent=`${n} connected`;
+  const wi=$('waiting-indicator'), rl=$('receivers-list');
+  if(wi) wi.style.display=n>0?'none':'block';
+  if(rl) rl.style.display=n>0?'block':'none';
 }
 function addReceiverCard(co) {
-  const rl = $('receivers-list'); if(!rl) return;
-  const div = document.createElement('div');
-  div.id = `rcard-${co.id}`; div.className='receiver-card';
+  const rl=$('receivers-list'); if(!rl) return;
+  const div=document.createElement('div');
+  div.id=`rcard-${co.id}`; div.className='receiver-card';
   rl.appendChild(div); co.cardEl=div; updateReceiverCard(co);
 }
 function updateReceiverCard(co) {
-  const card = co.cardEl; if(!card) return;
-  const pct  = totalBytes>0?Math.round((co.sentBytes/totalBytes)*100):0;
-  const statusColor = {waiting:'var(--text-muted)',active:'#7B5CF6',paused:'#f59e0b',done:'#22c55e',error:'#ef4444','waiting-verify':'#06B6D4'}[co.status]||'#fff';
-  const statusLabel = {waiting:'Waiting',active:`${pct}%`,paused:'Paused',done:'✓ Done',error:'✗ Error','waiting-verify':'Verifying...'}[co.status]||co.status;
-  card.className = `receiver-card ${co.status==='active'?'active-xfer':co.status==='done'?'done-xfer':''}`;
-  card.innerHTML = `
+  const card=co.cardEl; if(!card) return;
+  const pct=totalBytes>0?Math.round((co.sentBytes/totalBytes)*100):0;
+  const statusColor={waiting:'var(--text-muted)',active:'#7B5CF6',paused:'#f59e0b',done:'#22c55e',error:'#ef4444','waiting-verify':'#06B6D4','guard-pending':'#f59e0b'}[co.status]||'#fff';
+  const statusLabel={waiting:'Waiting',active:`${pct}%`,paused:'Paused',done:'✓ Done',error:'✗ Error','waiting-verify':'Verifying...','guard-pending':'🛡 Guard...'}[co.status]||co.status;
+  const geoTag=co.geo?.name?`<span style="font-size:10px;color:var(--text-muted);margin-left:6px;">🌍 ${escHtml(co.geo.name)}</span>`:'';
+  card.className=`receiver-card ${co.status==='active'?'active-xfer':co.status==='done'?'done-xfer':''}`;
+  card.innerHTML=`
     <div style="display:flex;align-items:center;gap:10px;">
       <div style="width:8px;height:8px;border-radius:50%;background:${statusColor};flex-shrink:0;"></div>
-      <span class="mono" style="font-size:12px;font-weight:600;">Receiver ${co.id}</span>
+      <span class="mono" style="font-size:12px;font-weight:600;">Receiver ${co.id}</span>${geoTag}
       <div style="flex:1;"></div>
       <span style="font-size:12px;font-weight:700;color:${statusColor};">${statusLabel}</span>
       <span class="mono" style="font-size:10px;color:var(--text-muted);">${fmtBytes(co.sentBytes)} / ${fmtBytes(totalBytes)}</span>
@@ -1772,46 +2420,77 @@ function updateReceiverCard(co) {
 
 // ══════════════════════════════════════════════════════════════
 //  PEERJS — RECEIVER
+//  Sends geo info in the hello handshake for Connection Guard.
 // ══════════════════════════════════════════════════════════════
-function connectToSender() {
-  const code = ($('code-input')?.value||'').trim().toUpperCase();
-  if (code.length!==6) { showToast('Enter a 6-character code','⚠️','red'); return; }
-  const btn = $('btn-connect'); if(btn){btn.disabled=true;btn.textContent='Connecting...';}
-  peer = new Peer({ config:buildIceConfig('r'), debug:0 });
-  peer.on('open', () => {
-    recvConn = peer.connect(code, { reliable:true, serialization:'raw' });
-    recvConn.on('open', async () => {
+async function connectToSender() {
+  const code=($('code-input')?.value||'').trim().toUpperCase();
+  if(code.length!==6){ showToast('Enter a 6-character code','⚠️','red'); return; }
+
+  const btn=$('btn-connect'); if(btn){btn.disabled=true;btn.textContent='Connecting...';}
+  LOGGER.log(`Connecting to sender (code: ${code})...`, 'info');
+
+  // Fetch geo in background so we can include it in hello
+  const geoInfo = await GEO.fetch().catch(()=>({ name:'Unknown', country:null }));
+
+  peer=new Peer({ config:buildIceConfig('r'), debug:0 });
+  peer.on('open', ()=>{
+    recvConn=peer.connect(code, { reliable:true, serialization:'raw' });
+    recvConn.on('open', async ()=>{
       dbg('PEER','Connected to sender');
+      LOGGER.log(`Connected to sender (${code})`, 'ok');
+      AUDIO.pop();
       showFlex('conn-badge');
-      const lbl = $('conn-label'); if(lbl){lbl.textContent='Connected';lbl.style.color='#06B6D4';}
+      const lbl=$('conn-label'); if(lbl){lbl.textContent='Connected';lbl.style.color='#06B6D4';}
       showReceiveStep(2);
       renderReceiveWaiting();
-      recvConn.on('data', raw => { recvQueue.push(raw); if(!recvProcessing) _drainRecvQueue(); });
-      // Announce ourselves + resume offset
-      const banner = $('resume-banner');
-      const rm = banner?._resumeMeta;
-      recvFromChunk = rm ? rm.receivedCount : 0;
-      recvConn._resumeMeta = rm || null;
-      recvConn.send(JSON.stringify({ type:'hello', resumeFrom:recvFromChunk }));
+      recvConn.on('data', raw=>{ recvQueue.push(raw); if(!recvProcessing) _drainRecvQueue(); });
+
+      // Announce + resume offset + geo info
+      const banner=$('resume-banner');
+      const rm=banner?._resumeMeta;
+      recvFromChunk=rm?rm.receivedCount:0;
+      recvConn._resumeMeta=rm||null;
+      recvConn.send(JSON.stringify({
+        type:'hello',
+        resumeFrom:recvFromChunk,
+        geo: { name:geoInfo.name, country:geoInfo.country },
+      }));
+      LOGGER.log(`Hello sent (resume=${recvFromChunk}, geo=${geoInfo.name})`, 'info');
     });
-    recvConn.on('error', e => { dbgErr('CONN','recv error:',e); showToast('Connection failed — check code','❌','red'); if(btn){btn.disabled=false;btn.textContent='🔗 Connect & Receive';} });
-    recvConn.on('close', () => {
-      if (inMeta && recvBytes < totalBytes && !transferComplete) {
+
+    recvConn.on('error', e=>{
+      dbgErr('CONN','recv error:',e);
+      LOGGER.log(`Connection error: ${e.type||e}`, 'error');
+      AUDIO.error();
+      showToast(e.type==='peer-unavailable'?'Code not found — check and retry':'Connection failed','❌','red');
+      if(btn){btn.disabled=false;btn.textContent='🔗 Connect & Receive';}
+    });
+
+    recvConn.on('close', ()=>{
+      if(inMeta&&recvBytes<totalBytes&&!transferComplete){
         IDB.saveMeta({ transferId:inMeta.transferId, name:inMeta.name, size:inMeta.size,
           mime:inMeta.mime, totalChunks:inMeta.chunks, receivedCount:inChunks.filter(Boolean).length });
+        LOGGER.log('Connection dropped — transfer state saved for resume', 'warn');
         showToast('Connection dropped — re-enter code to resume','📡','amber');
-      } else if (!transferComplete) { onDisconnect(); }
+      } else if(!transferComplete) { onDisconnect(); }
     });
   });
-  peer.on('error', e => {
+
+  peer.on('error', e=>{
     dbgErr('PEER','recv peer error:',e);
-    showToast(e.type==='peer-unavailable'?`Code not found — check and retry`:`Error: ${e.type}`,'❌','red');
+    LOGGER.log(`Peer error: ${e.type}`, 'error');
+    AUDIO.error();
+    const msg = e.type==='peer-unavailable'
+      ? 'Code not found — check it and retry'
+      : e.type==='server-error' ? 'PeerJS server unreachable — try Global mode'
+      : `Error: ${e.type}`;
+    showToast(msg,'❌','red');
     if(btn){btn.disabled=false;btn.textContent='🔗 Connect & Receive';}
   });
 }
 
 function renderReceiveWaiting() {
-  const el = $('recv-progress-area'); if(!el) return;
+  const el=$('recv-progress-area'); if(!el) return;
   el.innerHTML=`
     <div class="glass-card" style="padding:28px;text-align:center;">
       <div class="pulse-wrap" style="width:56px;height:56px;margin:0 auto 16px;position:relative;">
@@ -1826,69 +2505,56 @@ function renderReceiveWaiting() {
 
 // ══════════════════════════════════════════════════════════════
 //  RECEIVE DATA QUEUE
-//
-//  Sequential async processing of the incoming data stream.
-//  This is required because AES-GCM decryption is async, and
-//  WebRTC delivers chunks to conn.on('data') synchronously.
-//  Without a queue, awaiting decrypt would cause processing of
-//  chunk N+1 to begin before chunk N is stored, corrupting the
-//  inChunks array index.
+//  Sequential async processor — ensures AES-GCM decryption
+//  doesn't reorder chunks.
 // ══════════════════════════════════════════════════════════════
 async function _drainRecvQueue() {
-  recvProcessing = true;
-  while (recvQueue.length > 0) {
-    const item = recvQueue.shift();
+  recvProcessing=true;
+  while(recvQueue.length>0){
+    const item=recvQueue.shift();
     await _processOneRecvItem(item);
   }
-  recvProcessing = false;
+  recvProcessing=false;
 }
 
 async function _processOneRecvItem(data) {
-  // ── Control messages (JSON strings) ─────────────────────
-  if (typeof data === 'string') {
+  // ── Control messages ────────────────────────────────────────
+  if(typeof data==='string'){
     let msg;
-    try { msg = JSON.parse(data); } catch(e) { return; }
+    try{ msg=JSON.parse(data); } catch(e){ return; }
 
-    if (msg.type === 'meta') {
-      dbg('RECV','═══ META ═══', msg);
-      inMeta     = { ...msg, transferId: msg.transferId || makeTransferId(msg.name, msg.size) };
-      totalBytes = msg.size;
-      recvBytes  = 0;
-      recvChunkHashes = [];
+    if(msg.type==='meta'){
+      dbg('RECV','═══ META ═══',msg);
+      LOGGER.log(`← META: ${msg.name} (${fmtBytes(msg.size)}, enc=${msg.encrypted})`, 'info');
+      inMeta={ ...msg, transferId:msg.transferId||makeTransferId(msg.name,msg.size) };
+      totalBytes=msg.size; recvBytes=0; recvChunkHashes=[];
       speedWindow=[]; speedHistory=[]; lastPerfTime=xferStart=performance.now(); lastPerfBytes=0;
 
-      // ── Derive decryption key from META's salt ───────────
-      //  IMPORTANT: this must happen before any binary chunks
-      //  arrive. Since SCTP is ordered and we await this, the
-      //  queue ensures the next item (first chunk) waits.
-      if (msg.encrypted && msg.salt) {
-        const pwd = $('recv-password')?.value || '';
-        if (!pwd) {
+      // Derive decryption key
+      if(msg.encrypted&&msg.salt){
+        const pwd=$('recv-password')?.value||'';
+        if(!pwd){
           showToast('⚠ File is encrypted — enter the passphrase!','🔑','red');
-          // Open the security panel automatically
-          const p = $('conf-sec-r'); if(p&&!p.classList.contains('open')) toggleConf('sec-r');
+          const p=$('conf-sec-r'); if(p&&!p.classList.contains('open')) toggleConf('sec-r');
         }
-        try {
-          recvAesKey = await AES_CRYPTO.deriveKey(pwd, hexToBytes(msg.salt));
-          dbg('SEC','Receiver AES key derived');
-        } catch(e) { dbgErr('SEC','Receiver key derivation failed:',e); recvAesKey=null; }
-      } else {
-        recvAesKey = null;
-      }
+        try{
+          recvAesKey=await AES_CRYPTO.deriveKey(pwd, hexToBytes(msg.salt));
+          LOGGER.log('Decryption key derived', 'ok');
+        } catch(e){ dbgErr('SEC','Receiver key derivation failed:',e); recvAesKey=null; }
+      } else { recvAesKey=null; }
 
-      // Pre-allocate inChunks array
-      inChunks = new Array(msg.chunks).fill(null);
+      inChunks=new Array(msg.chunks).fill(null);
 
-      // If resuming: restore persisted chunks from IDB
-      const rm = recvConn?._resumeMeta;
-      if (rm && msg.fromChunk > 0) {
+      // Restore persisted chunks if resuming
+      const rm=recvConn?._resumeMeta;
+      if(rm&&msg.fromChunk>0){
         dbg('RESUME',`Loading ${msg.fromChunk} chunks from IDB...`);
         showToast(`Resuming from ${Math.round(msg.fromChunk/msg.chunks*100)}%...`,'⏩','cyan');
-        const stored = await IDB.loadChunks(inMeta.transferId, msg.chunks);
-        for (let i = 0; i < msg.fromChunk; i++) {
-          if (stored[i]) { inChunks[i]=stored[i]; recvBytes+=stored[i].byteLength; }
+        LOGGER.log(`Resuming: loading ${msg.fromChunk} chunks from IDB`, 'info');
+        const stored=await IDB.loadChunks(inMeta.transferId,msg.chunks);
+        for(let i=0;i<msg.fromChunk;i++){
+          if(stored[i]){ inChunks[i]=stored[i]; recvBytes+=stored[i].byteLength; }
         }
-        dbg('RESUME',`Restored ${inChunks.filter(Boolean).length} chunks`);
       }
 
       await IDB.saveMeta({ transferId:inMeta.transferId, name:msg.name, size:msg.size,
@@ -1898,57 +2564,42 @@ async function _processOneRecvItem(data) {
       updateRing(recvBytes/totalBytes);
     }
 
-    if (msg.type === 'done') {
+    if(msg.type==='done'){
       dbg('RECV','═══ DONE ═══');
+      LOGGER.log('← DONE received — assembling...', 'ok');
       assembleAndDownload(msg.hash);
     }
 
-    if (msg.type === 'pause') {
-      const st=$('xfer-status'); if(st){st.textContent='⏸ Sender paused';st.style.color='#f59e0b';}
-    }
-    if (msg.type === 'resume') {
-      const st=$('xfer-status'); if(st){st.textContent='Receiving...';st.style.color='var(--text-muted)';}
-    }
+    if(msg.type==='pause'){ const st=$('xfer-status'); if(st){st.textContent='⏸ Sender paused';st.style.color='#f59e0b';} LOGGER.log('Sender paused', 'warn'); }
+    if(msg.type==='resume'){ const st=$('xfer-status'); if(st){st.textContent='Receiving...';st.style.color='var(--text-muted)';} }
     return;
   }
 
-  // ── Binary chunk ─────────────────────────────────────────
-  if (data instanceof ArrayBuffer || data instanceof Uint8Array) {
-    let buf = data instanceof Uint8Array ? data.buffer : data;
+  // ── Binary chunk ────────────────────────────────────────────
+  if(data instanceof ArrayBuffer||data instanceof Uint8Array){
+    let buf=data instanceof Uint8Array?data.buffer:data;
 
-    // ── DECRYPT (if key was derived from META) ──────────────
-    //  Decryption happens here on the received bytes, BEFORE hashing.
-    //  The Merkle hash is over the plaintext, so we decrypt first,
-    //  then hash the plaintext to match what the sender computed.
-    if (recvAesKey) {
-      try {
-        buf = await AES_CRYPTO.decryptChunk(recvAesKey, buf);
-      } catch(e) {
-        dbgErr('RECV','Decrypt failed — wrong password?', e);
-        showToast('Decryption failed — wrong passphrase?','❌','red');
-        return;
-      }
+    if(recvAesKey){
+      try{ buf=await AES_CRYPTO.decryptChunk(recvAesKey,buf); }
+      catch(e){ dbgErr('RECV','Decrypt failed — wrong password?',e); showToast('Decryption failed — wrong passphrase?','❌','red'); AUDIO.error(); return; }
     }
 
-    // Find next empty slot (SCTP delivers in order, so sequential)
-    const idx = inChunks.findIndex(c => c===null);
-    if (idx === -1) { dbgWarn('RECV','Extra chunk ignored'); return; }
+    const idx=inChunks.findIndex(c=>c===null);
+    if(idx===-1){ dbgWarn('RECV','Extra chunk ignored'); return; }
 
-    inChunks[idx] = buf;
-    recvBytes += buf.byteLength;
+    inChunks[idx]=buf;
+    recvBytes+=buf.byteLength;
 
-    // Hash plaintext chunk asynchronously
-    const ci = idx;
-    crypto.subtle.digest('SHA-256', buf).then(h => { recvChunkHashes[ci] = new Uint8Array(h); });
+    const ci=idx;
+    crypto.subtle.digest('SHA-256',buf).then(h=>{ recvChunkHashes[ci]=new Uint8Array(h); });
 
-    // Persist to IDB (fire-and-forget)
-    if (inMeta) {
-      IDB.saveChunk(inMeta.transferId, idx, buf).catch(()=>{});
-      if (idx % 64 === 0)
+    if(inMeta){
+      IDB.saveChunk(inMeta.transferId,idx,buf).catch(()=>{});
+      if(idx%64===0)
         IDB.saveMeta({ ...inMeta, receivedCount:idx+1, totalChunks:inMeta.chunks }).catch(()=>{});
     }
 
-    if (idx % 64 === 0) dbg('RECV',`Chunk #${idx} | ${fmtBytes(recvBytes)}/${fmtBytes(totalBytes)}`);
+    if(idx%64===0) dbg('RECV',`Chunk #${idx} | ${fmtBytes(recvBytes)}/${fmtBytes(totalBytes)}`);
     tickSpeed(recvBytes);
     updateRing(recvBytes/totalBytes);
   }
@@ -1957,56 +2608,90 @@ async function _processOneRecvItem(data) {
 async function assembleAndDownload(expectedHash) {
   dbg('RECV',`assembleAndDownload expectedHash=${expectedHash?.substring(0,16)}`);
 
-  // Wait for all async chunk hashes
-  const totalChunks = inChunks.length;
-  const deadline    = Date.now() + 5000;
-  while (recvChunkHashes.filter(Boolean).length < totalChunks && Date.now() < deadline)
+  const totalChunks=inChunks.length;
+  const deadline=Date.now()+6000;
+  while(recvChunkHashes.filter(Boolean).length<totalChunks&&Date.now()<deadline)
     await new Promise(r=>setTimeout(r,50));
 
-  const hashEl = $('hash-status');
-  if (hashEl) { hashEl.style.display='block'; hashEl.className='hash-wait'; hashEl.innerHTML='<span style="color:#f59e0b;font-weight:600;">🔐 Verifying SHA-256 integrity...</span>'; }
+  const hashEl=$('hash-status');
+  if(hashEl){ hashEl.style.display='block'; hashEl.className='hash-wait'; hashEl.innerHTML='<span style="color:#f59e0b;font-weight:600;">🔐 Verifying SHA-256 integrity...</span>'; }
 
   let hashOk=false, actualHash='';
-  try {
-    const valid = recvChunkHashes.slice(0,totalChunks).filter(Boolean);
-    actualHash  = await computeMerkleHash(valid);
-    hashOk      = (actualHash===expectedHash && valid.length===totalChunks);
-  } catch(e) { dbgErr('RECV','Hash error:',e); }
+  try{
+    const valid=recvChunkHashes.slice(0,totalChunks).filter(Boolean);
+    actualHash=await computeMerkleHash(valid);
+    hashOk=(actualHash===expectedHash&&valid.length===totalChunks);
+  } catch(e){ dbgErr('RECV','Hash error:',e); }
 
-  // Trigger download
-  const blob = new Blob(inChunks.filter(Boolean), { type:inMeta?.mime||'application/octet-stream' });
-  const url  = URL.createObjectURL(blob);
-  const a    = Object.assign(document.createElement('a'),{href:url,download:inMeta?.name||'download'});
-  document.body.appendChild(a); a.click(); document.body.removeChild(a);
-  setTimeout(()=>URL.revokeObjectURL(url),5000);
+  LOGGER.log(`Integrity: ${hashOk?'✓ PASS':'✗ FAIL'} (${actualHash.slice(0,16)}...)`, hashOk?'ok':'error');
 
-  if (hashEl) {
-    hashEl.className = hashOk ? 'hash-ok' : 'hash-fail';
-    hashEl.innerHTML = hashOk
-      ? `<span style="color:#22c55e;font-weight:600;">✓ SHA-256 verified — file intact</span><br/>
-         <span class="mono" style="font-size:10px;color:rgba(255,255,255,0.3);">${actualHash.substring(0,32)}...</span>`
-      : `<span style="color:#ef4444;font-weight:600;">✗ Hash mismatch — data may be corrupt</span>`;
+  // ── If text mode, show inline instead of downloading ─────────
+  if(inMeta?.isText){
+    const text = new TextDecoder().decode(new Uint8Array(inChunks.filter(Boolean).flatMap(b=>Array.from(new Uint8Array(b)))));
+    _showReceivedText(text, hashOk);
+  } else {
+    const blob=new Blob(inChunks.filter(Boolean),{ type:inMeta?.mime||'application/octet-stream' });
+    const url=URL.createObjectURL(blob);
+    const a=Object.assign(document.createElement('a'),{href:url,download:inMeta?.name||'download'});
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    setTimeout(()=>URL.revokeObjectURL(url),5000);
+    showToast(hashOk?`✓ ${inMeta?.name} downloaded`:'⚠ Download done — hash mismatch',
+              hashOk?'✅':'⚠️',hashOk?'green':'red');
   }
 
-  if (recvConn) recvConn.send(JSON.stringify({ type:'verify', ok:hashOk, hash:actualHash }));
-  if (hashOk && inMeta) IDB.clearTransfer(inMeta.transferId);
+  if(hashEl){
+    hashEl.className=hashOk?'hash-ok':'hash-fail';
+    hashEl.innerHTML=hashOk
+      ?`<span style="color:#22c55e;font-weight:600;">✓ SHA-256 verified — file intact</span><br/>
+        <span class="mono" style="font-size:10px;color:rgba(255,255,255,0.3);">${actualHash.substring(0,32)}...</span>`
+      :`<span style="color:#ef4444;font-weight:600;">✗ Hash mismatch — data may be corrupt</span>`;
+  }
 
-  showToast(hashOk?`✓ ${inMeta?.name} downloaded`:'⚠ Download done — hash mismatch',
-            hashOk?'✅':'⚠️', hashOk?'green':'red');
+  if(recvConn) recvConn.send(JSON.stringify({ type:'verify', ok:hashOk, hash:actualHash }));
+  if(hashOk&&inMeta) IDB.clearTransfer(inMeta.transferId);
 
-  transferComplete = true;
+  if(hashOk) AUDIO.chime(); else AUDIO.error();
+
+  LOGGER.saveHistory({ direction:'receive', name:inMeta?.name||'unknown', size:totalBytes, ok:hashOk, id:Date.now() });
+  transferComplete=true;
   finishUI(hashOk);
   inChunks=[]; recvChunkHashes=[];
 }
 
+// ▶ NEW: Render received text inline
+function _showReceivedText(text, verified) {
+  const pa=$('recv-progress-area'); if(!pa) return;
+  // Append text display below progress
+  const existing=document.getElementById('recv-text-wrap');
+  if(!existing){
+    const wrap=document.createElement('div');
+    wrap.id='recv-text-wrap';
+    wrap.innerHTML=`
+      <div class="glass-card" style="padding:18px;margin-top:14px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+          <div style="font-size:14px;font-weight:700;">📝 Received Text ${verified?'<span class="enc-badge" style="margin-left:8px;">✓ Verified</span>':''}</div>
+          <button onclick="_copyReceivedText()" class="btn-ghost" style="padding:6px 12px;font-size:11px;">📋 Copy</button>
+        </div>
+        <div id="recv-text-display" class="recv-text-display">${escHtml(text)}</div>
+      </div>`;
+    pa.appendChild(wrap);
+    showToast('Text received — scroll down to view','📝','cyan');
+  }
+}
+window._copyReceivedText=()=>{
+  const el=$('recv-text-display');
+  if(el) navigator.clipboard?.writeText(el.textContent||'').then(()=>showToast('Text copied!','✅','green'));
+};
+
 // Receiver pause/resume
-function recvPause()  {
+function recvPause(){
   recvIsPaused=true;
   if(recvConn) recvConn.send(JSON.stringify({type:'pause'}));
   const btn=$('pause-btn'); if(btn){btn.className='btn-resume';btn.textContent='▶ Resume';btn.onclick=recvResume;}
   const st=$('xfer-status'); if(st){st.textContent='⏸ Paused';st.style.color='#f59e0b';}
+  LOGGER.log('Transfer paused', 'warn');
 }
-function recvResume() {
+function recvResume(){
   recvIsPaused=false;
   if(recvConn) recvConn.send(JSON.stringify({type:'resume'}));
   const btn=$('pause-btn'); if(btn){btn.className='btn-pause';btn.textContent='⏸ Pause';btn.onclick=recvPause;}
@@ -2025,12 +2710,9 @@ function renderSenderProgressUI(filename) {
       <div style="display:flex;align-items:center;gap:18px;margin-bottom:18px;">
         <div id="ring-wrap" style="position:relative;flex-shrink:0;width:100px;height:100px;">
           <svg width="100" height="100" viewBox="0 0 104 104">
-            <defs>
-              <linearGradient id="ringGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stop-color="#7B5CF6"/>
-                <stop offset="100%" stop-color="#2563eb"/>
-              </linearGradient>
-            </defs>
+            <defs><linearGradient id="ringGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#7B5CF6"/><stop offset="100%" stop-color="#2563eb"/>
+            </linearGradient></defs>
             <circle class="progress-ring-track" cx="52" cy="52" r="44"/>
             <circle id="ring-fill" class="progress-ring-fill" cx="52" cy="52" r="44"
               stroke-dasharray="${circ}" stroke-dashoffset="${circ}"/>
@@ -2062,7 +2744,6 @@ function renderSenderProgressUI(filename) {
         <button id="global-pause-btn" class="btn-pause" style="padding:9px 24px;font-size:12px;" onclick="pauseAll()">⏸ Pause All</button>
       </div>
     </div>
-    <!-- Per-receiver cards -->
     <div class="glass-card" style="padding:14px;margin-bottom:14px;">
       <div class="label" style="margin-bottom:10px;">Receivers</div>
       <div id="sender-receivers-list"></div>
@@ -2085,22 +2766,16 @@ function renderSenderProgressUI(filename) {
 function renderReceiverProgressUI(containerId, filename) {
   const el=$(containerId); if(!el) return;
   const circ=(2*Math.PI*44).toFixed(2);
-
-  // Encryption indicator shown in progress UI
-  const encHint = inMeta?.encrypted
-    ? `<span class="enc-badge" style="margin-left:8px;">🔑 AES-256-GCM</span>` : '';
+  const encHint=inMeta?.encrypted?`<span class="enc-badge" style="margin-left:8px;">🔑 AES-256-GCM</span>`:'';
 
   el.innerHTML=`
     <div class="glass-card" style="padding:18px;margin-bottom:14px;">
       <div style="display:flex;align-items:center;gap:18px;margin-bottom:18px;">
         <div id="ring-wrap" style="position:relative;flex-shrink:0;width:100px;height:100px;">
           <svg width="100" height="100" viewBox="0 0 104 104">
-            <defs>
-              <linearGradient id="ringGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stop-color="#06B6D4"/>
-                <stop offset="100%" stop-color="#7B5CF6"/>
-              </linearGradient>
-            </defs>
+            <defs><linearGradient id="ringGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#06B6D4"/><stop offset="100%" stop-color="#7B5CF6"/>
+            </linearGradient></defs>
             <circle class="progress-ring-track" cx="52" cy="52" r="44"/>
             <circle id="ring-fill" class="progress-ring-fill" cx="52" cy="52" r="44"
               stroke-dasharray="${circ}" stroke-dashoffset="${circ}"/>
@@ -2110,9 +2785,7 @@ function renderReceiverProgressUI(containerId, filename) {
           </div>
         </div>
         <div style="flex:1;min-width:0;">
-          <div style="font-size:12px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:rgba(255,255,255,0.7);margin-bottom:5px;">
-            ${escHtml(filename)}${encHint}
-          </div>
+          <div style="font-size:12px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:rgba(255,255,255,0.7);margin-bottom:5px;">${escHtml(filename)}${encHint}</div>
           <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
             <div class="conn-dot" style="width:7px;height:7px;border-radius:50%;background:#06B6D4;flex-shrink:0;"></div>
             <span id="xfer-status" style="font-size:12px;color:var(--text-muted);">Receiving...</span>
@@ -2139,7 +2812,7 @@ function renderReceiverProgressUI(containerId, filename) {
     </div>`;
 
   startElapsedTimer();
-  if (recvBytes > 0 && totalBytes > 0) updateRing(recvBytes/totalBytes);
+  if(recvBytes>0&&totalBytes>0) updateRing(recvBytes/totalBytes);
 }
 
 // ══════════════════════════════════════════════════════════════
@@ -2161,7 +2834,7 @@ function paintSpeed(bytes) {
   const sv=$('speed-val'); if(sv) sv.textContent=mbps.toFixed(2);
   const bl=$('bytes-lbl'); if(bl) bl.textContent=`${fmtBytes(bytes)} / ${fmtBytes(totalBytes)}`;
   const eta=$('eta-lbl');
-  if(eta&&avg>0){const rem=totalBytes-bytes;const s=rem/avg;eta.textContent=s<60?`~${s.toFixed(0)}s remaining`:`~${(s/60).toFixed(1)}m remaining`;}
+  if(eta&&avg>0){ const rem=totalBytes-bytes, s=rem/avg; eta.textContent=s<60?`~${s.toFixed(0)}s remaining`:`~${(s/60).toFixed(1)}m remaining`; }
   const barsEl=$('speed-bars'); if(!barsEl) return;
   const arr=speedHistory, maxSpd=Math.max(...arr,1), pad=28-arr.length;
   barsEl.innerHTML=[...Array(pad).fill(0),...arr].map(s=>{
@@ -2206,15 +2879,78 @@ function cleanup() {
   if(peer){try{peer.destroy();}catch(e){}peer=null;}
   selectedFiles=[]; inChunks=[]; recvChunkHashes=[]; senderChunkHashes=[];
   speedWindow=[]; speedHistory=[];
-  totalBytes=recvBytes=0; inMeta=null; transferBlob=null; myCode=null;
-  senderAesKey=null; recvAesKey=null; transferComplete=false;
+  totalBytes=recvBytes=0; inMeta=null; transferBlob=null; textPayload=null; myCode=null;
+  senderAesKey=null; recvAesKey=null; transferComplete=false; peerRetryCount=0;
 }
 
 function onDisconnect() {
   clearInterval(elapsedTimer); hide('conn-badge');
+  LOGGER.log('Connection dropped unexpectedly', 'error');
+  AUDIO.error();
   showToast('Connection dropped','📡','red');
   const s=$('xfer-status'); if(s){s.textContent='⚠ Disconnected';s.style.color='#ef4444';}
 }
+
+// ══════════════════════════════════════════════════════════════
+//  LINK PAIR — quick send
+// ══════════════════════════════════════════════════════════════
+async function linkQuickSend() {
+  if(!LINK_PAIR.isOnline()){ showToast('Partner offline','⚠️','red'); return; }
+  if(!selectedFiles.length){ pickFiles(); return; }
+  initSend('files');
+  await new Promise(r=>setTimeout(r,50));
+  renderFileList(selectedFiles);
+  startSenderSession();
+}
+
+// ══════════════════════════════════════════════════════════════
+//  ▶ GLOBAL DRAG-AND-DROP OVERLAY
+//  Listens on the window for any dragenter event and shows a
+//  full-screen "Drop to Share!" overlay. On drop it routes
+//  the files to the send flow automatically.
+// ══════════════════════════════════════════════════════════════
+(function initGlobalDrop(){
+  const overlay = document.getElementById('global-drop-overlay');
+  if(!overlay) return;
+
+  let _enterCount = 0; // tracks nested dragenter/dragleave pairs
+
+  window.addEventListener('dragenter', e=>{
+    e.preventDefault();
+    _enterCount++;
+    overlay.classList.add('visible');
+  });
+
+  window.addEventListener('dragleave', e=>{
+    _enterCount = Math.max(0, _enterCount-1);
+    if(_enterCount===0) overlay.classList.remove('visible');
+  });
+
+  window.addEventListener('dragover', e=>{ e.preventDefault(); });
+
+  window.addEventListener('drop', e=>{
+    e.preventDefault();
+    _enterCount=0;
+    overlay.classList.remove('visible');
+
+    const files = Array.from(e.dataTransfer?.files||[]);
+    if(!files.length) return;
+
+    // If we're on the landing screen, auto-navigate to send
+    const landingActive = document.getElementById('screen-landing')?.classList.contains('active');
+    if(landingActive){
+      selectedFiles=files;
+      initSend('files');
+      // Small delay for the screen transition
+      setTimeout(()=>{ renderFileList(files); }, 80);
+      LOGGER.log(`Global drop: ${files.length} file(s) dropped`, 'info');
+    } else if(document.getElementById('screen-send')?.classList.contains('active')){
+      // Already on send screen — update file list
+      selectedFiles=files;
+      renderFileList(files);
+    }
+  });
+})();
 
 // ══════════════════════════════════════════════════════════════
 //  TOAST
@@ -2225,7 +2961,7 @@ function showToast(msg,icon,color) {
   if(ie) ie.textContent=icon||'ℹ'; if(me) me.textContent=msg;
   toast.style.display='flex';
   clearTimeout(_toastTimer);
-  _toastTimer=setTimeout(()=>{toast.style.display='none';},4000);
+  _toastTimer=setTimeout(()=>{ toast.style.display='none'; },4000);
 }
 
 // ══════════════════════════════════════════════════════════════
@@ -2233,32 +2969,51 @@ function showToast(msg,icon,color) {
 // ══════════════════════════════════════════════════════════════
 async function boot() {
   dbg('BOOT','boot()');
+  LOGGER.log('GhostShare v6 initializing...', 'info');
 
   // Init IndexedDB
-  try { await IDB.init(); dbg('IDB','Ready'); }
-  catch(e) { dbgWarn('IDB','Unavailable:',e.message); }
+  try {
+    const db = await IDB.init();
+    LOGGER.setDb(db);
+    LOGGER.log('IndexedDB ready', 'ok');
+    dbg('IDB','Ready');
+  } catch(e) { dbgWarn('IDB','Unavailable:',e.message); }
 
-  // Init Link Pair (reads localStorage token and starts background peer)
+  // Init Permanent Link
   LINK_PAIR.init();
 
   // Dependency check
-  const deps = {
-    WebRTC:   typeof RTCPeerConnection!=='undefined',
-    PeerJS:   typeof Peer!=='undefined',
-    JSZip:    typeof JSZip!=='undefined',
-    Crypto:   typeof crypto?.subtle!=='undefined',
-    IDB:      typeof indexedDB!=='undefined',
+  const deps={
+    WebRTC:  typeof RTCPeerConnection!=='undefined',
+    PeerJS:  typeof Peer!=='undefined',
+    JSZip:   typeof JSZip!=='undefined',
+    QRCode:  typeof QRCode!=='undefined',
+    Crypto:  typeof crypto?.subtle!=='undefined',
+    IDB:     typeof indexedDB!=='undefined',
+    Audio:   typeof AudioContext!=='undefined'||typeof webkitAudioContext!=='undefined',
   };
-  for(const [n,ok] of Object.entries(deps)) dbg('DEPS',`${ok?'✔':'✘'} ${n}`);
-  if (!deps.WebRTC) showToast('WebRTC not supported in this browser','❌','red');
-  if (!deps.PeerJS)  showToast('PeerJS failed to load — check internet','❌','red');
-  if (!deps.Crypto)  showToast('Web Crypto API unavailable','⚠️','red');
+  for(const [n,ok] of Object.entries(deps)){
+    dbg('DEPS',`${ok?'✔':'✘'} ${n}`);
+    LOGGER.log(`${ok?'✔':'✘'} ${n}`, ok?'ok':'warn');
+  }
 
-  showToast('GhostShare v5 ready 👻','👻','violet');
+  if(!deps.WebRTC) showToast('WebRTC not supported in this browser','❌','red');
+  if(!deps.PeerJS)  showToast('PeerJS failed to load — check internet connection','❌','red');
+  if(!deps.Crypto)  showToast('Web Crypto API unavailable','⚠️','red');
+
+  // Wire up text input listener
+  const ta=$('text-input-area');
+  if(ta) ta.addEventListener('input', onTextInput);
+
+  // Pre-fetch geo silently in the background
+  GEO.fetch().catch(()=>{});
+
+  showToast('GhostShare v6 ready 👻','👻','violet');
+  LOGGER.log('Ready 👻', 'ok');
   dbg('BOOT','✅ Ready');
 }
 
-if (document.readyState==='loading') {
+if(document.readyState==='loading'){
   document.addEventListener('DOMContentLoaded',boot);
 } else { boot(); }
 </script>
