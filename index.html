@@ -401,7 +401,8 @@
       <div class="glass-card" style="padding:20px;margin-bottom:16px;text-align:center;">
         <div class="label" style="margin-bottom:12px;">🔲 QR Code (scan on mobile)</div>
         <div id="qr-sender" style="display:flex;justify-content:center;"></div>
-        <p style="font-size:10px;color:var(--text-muted);margin-top:10px;">Receiver scans → opens app → enters code automatically</p>
+        <!-- FIX B15: corrected description — QR contains raw code text, not a deep-link URL -->
+        <p style="font-size:10px;color:var(--text-muted);margin-top:10px;">Receiver scans → copies the displayed code → enters it manually</p>
       </div>
 
       <div class="glass-card" style="padding:32px;text-align:center;">
@@ -564,7 +565,7 @@ let isSender    = false;
 
 // File state
 let selectedFiles = [];
-let transferBlob  = null; // final blob to send (single or zip)
+let transferBlob  = null; // {blob, name} — prepared blob to send
 let totalBytes    = 0;
 let sentBytes     = 0;
 let recvBytes     = 0;
@@ -593,6 +594,12 @@ let elapsedTimer  = null;
 
 // PeerJS peer code
 let myCode        = null;
+
+// FIX B3 / B14: Guard flag — suppress onDisconnect and peer-error toasts
+// during intentional cleanup (user clicking Back / goHome).
+// Set true before closing connections; reset via setTimeout after event
+// flush completes (events can fire synchronously in Chromium on .close()).
+let _cleaningUp   = false;
 
 dbg('STATE','All state variables initialized');
 
@@ -691,12 +698,14 @@ function goHome(){
 }
 function initSend(){
   dbg('NAV','initSend()');
+  cleanup(); // ensure clean state before starting a new session
   isSender=true;
   showScreen('screen-send');
   resetSendUI();
 }
 function initReceive(){
   dbg('NAV','initReceive()');
+  cleanup(); // ensure clean state before starting a new session
   isSender=false;
   showScreen('screen-receive');
   resetReceiveUI();
@@ -708,6 +717,8 @@ function resetSendUI(){
   hide('files-panel');
   const fl=$('files-list');if(fl) fl.innerHTML='';
   selectedFiles=[];
+  // FIX B17: also reset transferBlob so stale blob doesn't linger
+  transferBlob=null;
 }
 function resetReceiveUI(){
   show('r-step-1');hide('r-step-2');
@@ -816,9 +827,8 @@ function displayCode(code){
     `<div class="code-box">${ch}</div>`
   ).join('');
 
-  // Generate QR with the receiver URL (if we can) or just the code
-  const qrText=code; // just the code; receiver types it in
-  genQR('qr-sender',qrText,'#7B5CF6');
+  // FIX B15: QR contains the raw 6-char code — receiver reads it and types it in manually
+  genQR('qr-sender',code,'#7B5CF6');
 }
 function copyCode(){
   if(!myCode) return;
@@ -855,21 +865,25 @@ async function startSenderSession(){
   if(!selectedFiles.length){showToast('Select files first','⚠️','red');return;}
 
   const btn=$('btn-start');
-  if(btn){btn.disabled=true;btn.textContent='Connecting...';}
+  if(btn){btn.disabled=true;btn.textContent='Preparing...';}
 
   // Build blob (zip if multiple files)
   showToast('Preparing files...','📦','violet');
   try{
+    // FIX B20: wrap buildBlob in try/catch — File handles can be revoked (FSA)
     transferBlob=await buildBlob(selectedFiles);
   }catch(e){
     dbgErr('BLOB','buildBlob failed:',e);
-    showToast('Failed to prepare files','❌','red');
+    showToast('Failed to prepare files: '+e.message,'❌','red');
     if(btn){btn.disabled=false;btn.innerHTML='🚀 Generate Code &amp; Start Session';}
     return;
   }
 
-  totalBytes=transferBlob.size;
+  // FIX B1: transferBlob is {blob, name} — use .blob.size, not .size
+  totalBytes=transferBlob.blob.size;
   dbg('PEER',`blob ready: ${fmtBytes(totalBytes)}`);
+
+  if(btn) btn.textContent='Connecting...';
 
   const code=genCode();
   const iceCfg=buildIceConfig('s');
@@ -907,7 +921,12 @@ async function startSenderSession(){
 
       showSendStep(3);
       setupSenderDC();
-      beginTransfer();
+      // FIX B7: attach .catch() so unhandled async rejection is surfaced to the user
+      beginTransfer().catch(e=>{
+        dbgErr('XFER','beginTransfer threw:',e);
+        showToast('Transfer error: '+e.message,'❌','red');
+        const s=$('xfer-status');if(s){s.textContent='⚠ Error';s.style.color='#ef4444';}
+      });
     });
 
     conn.on('error',e=>dbgErr('CONN','conn error:',e));
@@ -919,6 +938,8 @@ async function startSenderSession(){
   });
 
   peer.on('error',e=>{
+    // FIX B14: suppress stale events that fire after intentional cleanup
+    if(_cleaningUp) return;
     dbgErr('PEER','Peer error:',e);
     if(e.type==='unavailable-id'){
       dbg('PEER','ID taken, generating new code');
@@ -926,10 +947,15 @@ async function startSenderSession(){
       peer=null;
       startSenderSession(); // retry with new code
     }else if(e.type==='server-error'||e.type==='network'){
+      // FIX B11: cleanup peer state so user can retry cleanly
+      cleanup();
       showToast('PeerJS server unreachable — check internet','❌','red');
       if(btn){btn.disabled=false;btn.innerHTML='🚀 Generate Code &amp; Start Session';}
     }else{
+      // FIX B11: cleanup peer state on other fatal errors too
+      cleanup();
       showToast(`Peer error: ${e.type}`,'❌','red');
+      if(btn){btn.disabled=false;btn.innerHTML='🚀 Generate Code &amp; Start Session';}
     }
   });
 }
@@ -957,6 +983,8 @@ function handleSenderMessage(msg){
     const hashEl=$('hash-status');
     const verifyEl=$('verify-status');
     if(hashEl){
+      // FIX B2: hash-status starts display:none — must be shown explicitly here
+      hashEl.style.display='block';
       hashEl.className=ok?'hash-ok':'hash-fail';
       hashEl.innerHTML=ok
         ?'<span style="color:#22c55e;font-weight:600;">✓ Receiver verified file integrity (SHA-256 match)</span>'
@@ -1029,7 +1057,11 @@ function connectToSender(){
   });
 
   peer.on('error',e=>{
+    // FIX B14: suppress events that fire after intentional cleanup
+    if(_cleaningUp) return;
     dbgErr('PEER','Receiver peer error:',e);
+    // FIX B10: cleanup peer/conn state before showing error so user can retry cleanly
+    cleanup();
     if(e.type==='peer-unavailable'){
       showToast(`Code "${code}" not found — check code and try again`,'❌','red');
     }else if(e.type==='server-error'||e.type==='network'){
@@ -1066,6 +1098,7 @@ function renderReceiveWaiting(){
 async function buildBlob(files){
   if(files.length===1){
     dbg('BLOB','Single file — no zip needed');
+    // files[0] is a File (extends Blob) — .size, .type, .slice() all work
     return {blob:files[0],name:files[0].name};
   }
   dbg('BLOB',`${files.length} files → JSZip`);
@@ -1103,16 +1136,11 @@ async function buildBlob(files){
 // ══════════════════════════════════════════════════════════════
 async function beginTransfer(){
   dbg('XFER','════ beginTransfer() START ════');
-  let blobResult;
-  if(transferBlob){
-    // Already built in startSenderSession
-    blobResult=transferBlob;
-  }else{
-    blobResult=await buildBlob(selectedFiles);
-  }
-  const {blob,name}=typeof blobResult==='object'&&blobResult.blob
-    ? blobResult
-    : {blob:blobResult,name:selectedFiles[0]?.name||'file'};
+
+  // FIX B16: buildBlob always returns {blob,name}; remove the dead-code
+  // ternary that guarded against a non-object result (unreachable branch).
+  // transferBlob was set in startSenderSession() before this call.
+  const {blob,name}=transferBlob;
 
   totalBytes=blob.size;
   sentBytes=0;
@@ -1128,11 +1156,6 @@ async function beginTransfer(){
   dbg('XFER',`"${name}" ${fmtBytes(totalBytes)} ${totalChunks} chunks`);
 
   // ── SEND META ──────────────────────────────────────────────
-  // The META message tells the receiver: filename, total size, MIME,
-  // chunk count. Receiver uses this to init its progress UI.
-  // We do NOT include the hash here — it's computed during sending
-  // and sent in the DONE message. This way hashing is free (piggybacks
-  // on the chunk reads already needed for sending).
   const meta={type:'meta',name,size:totalBytes,mime:blob.type||'application/octet-stream',chunks:totalChunks};
   dbg('XFER','Sending META:',meta);
   conn.send(JSON.stringify(meta));
@@ -1140,68 +1163,77 @@ async function beginTransfer(){
   renderProgressUI('sender-progress-area',name,true);
 
   // Set backpressure threshold on the underlying RTCDataChannel.
-  // PeerJS stores it as conn._dc (private but stable across 1.x versions).
-  // bufferedAmountLowThreshold: fires 'bufferedamountlow' event when
-  // the send buffer drains from HIGH_WATER down to this level.
-  const rawDC=conn._dc||conn.dataChannel;
+  // PeerJS exposes .dataChannel as a public getter in 1.5.x,
+  // with ._dc as the internal backing field.
+  const rawDC=conn.dataChannel||conn._dc;
   if(rawDC){
     rawDC.bufferedAmountLowThreshold=LOW_WATER;
     dbg('XFER',`bufferedAmountLowThreshold=${fmtBytes(LOW_WATER)}`);
   }
 
   // ── CHUNK LOOP ─────────────────────────────────────────────
+  // FIX B8/B9: wrap loop in try/finally to guarantee elapsedTimer cleanup
+  // and add per-send try/catch to surface DataChannel errors to the UI.
   let offset=0;
   let chunkIdx=0;
 
-  while(offset<totalBytes){
+  try{
+    while(offset<totalBytes){
 
-    // ── PAUSE GATE ──────────────────────────────────────────
-    if(isPaused){
-      dbg('XFER',`PAUSED at chunk ${chunkIdx}, offset ${fmtBytes(offset)}`);
-      await new Promise(resolve=>{pauseResolve=resolve;});
-      dbg('XFER','RESUMED');
+      // ── PAUSE GATE ──────────────────────────────────────────
+      if(isPaused){
+        dbg('XFER',`PAUSED at chunk ${chunkIdx}, offset ${fmtBytes(offset)}`);
+        await new Promise(resolve=>{pauseResolve=resolve;});
+        dbg('XFER','RESUMED');
+      }
+
+      // ── BACKPRESSURE GATE ───────────────────────────────────
+      const dc=conn.dataChannel||conn._dc;
+      if(dc&&dc.bufferedAmount>HIGH_WATER){
+        dbgWarn('XFER',`BACKPRESSURE: ${fmtBytes(dc.bufferedAmount)} → waiting`);
+        await new Promise(resolve=>{
+          if(!dc) return resolve();
+          const handler=()=>{dc.removeEventListener('bufferedamountlow',handler);resolve();};
+          dc.addEventListener('bufferedamountlow',handler);
+          // Safety timeout 10s — in case event never fires
+          setTimeout(()=>{dc.removeEventListener('bufferedamountlow',handler);resolve();},10000);
+        });
+        dbg('XFER',`BACKPRESSURE: resumed, buffered=${fmtBytes(dc?.bufferedAmount||0)}`);
+      }
+
+      // ── READ CHUNK ──────────────────────────────────────────
+      const end=Math.min(offset+CHUNK_SIZE,totalBytes);
+      const slice=blob.slice(offset,end);
+      const buffer=await slice.arrayBuffer();
+
+      // ── HASH CHUNK ──────────────────────────────────────────
+      // FIX B6: wrap conn.send in try/catch — throws DOMException if
+      // DataChannel closes unexpectedly mid-transfer. Without this, the
+      // async function dies silently with no user-facing error.
+      try{
+        conn.send(buffer);
+      }catch(sendErr){
+        throw new Error(`DataChannel send failed: ${sendErr.message}`);
+      }
+
+      const chunkHash=await crypto.subtle.digest('SHA-256',buffer);
+      senderChunkHashes.push(new Uint8Array(chunkHash));
+
+      offset+=buffer.byteLength;
+      sentBytes=offset;
+      chunkIdx++;
+
+      if(chunkIdx%64===0||offset>=totalBytes){
+        dbg('XFER',`Chunk ${chunkIdx}/${totalChunks} | ${fmtBytes(sentBytes)}/${fmtBytes(totalBytes)}`);
+      }
+
+      tickSpeed(sentBytes);
+      updateRing(sentBytes/totalBytes);
     }
-
-    // ── BACKPRESSURE GATE ───────────────────────────────────
-    // dc.bufferedAmount = bytes sitting in the OS TCP send buffer.
-    // If this grows past HIGH_WATER (8MB), we'd risk OOM on the
-    // browser tab. We pause and wait for 'bufferedamountlow' (1MB).
-    const dc=conn._dc||conn.dataChannel;
-    if(dc&&dc.bufferedAmount>HIGH_WATER){
-      dbgWarn('XFER',`BACKPRESSURE: ${fmtBytes(dc.bufferedAmount)} → waiting`);
-      await new Promise(resolve=>{
-        if(!dc) return resolve();
-        const handler=()=>{dc.removeEventListener('bufferedamountlow',handler);resolve();};
-        dc.addEventListener('bufferedamountlow',handler);
-        // Safety timeout 10s — in case event never fires
-        setTimeout(()=>{dc.removeEventListener('bufferedamountlow',handler);resolve();},10000);
-      });
-      dbg('XFER',`BACKPRESSURE: resumed, buffered=${fmtBytes(dc?.bufferedAmount||0)}`);
-    }
-
-    // ── READ CHUNK ──────────────────────────────────────────
-    const end=Math.min(offset+CHUNK_SIZE,totalBytes);
-    const slice=blob.slice(offset,end);
-    const buffer=await slice.arrayBuffer(); // reads exactly those bytes
-
-    // ── HASH CHUNK (concurrent with network I/O) ─────────────
-    // conn.send() is synchronous — it queues data immediately.
-    // crypto.subtle.digest() is async but runs in the SAME microtask
-    // queue, so hash computation overlaps with the kernel sending data.
-    conn.send(buffer); // send raw ArrayBuffer → DTLS encrypts it
-    const chunkHash=await crypto.subtle.digest('SHA-256',buffer);
-    senderChunkHashes.push(new Uint8Array(chunkHash));
-
-    offset+=buffer.byteLength;
-    sentBytes=offset;
-    chunkIdx++;
-
-    if(chunkIdx%64===0||offset>=totalBytes){
-      dbg('XFER',`Chunk ${chunkIdx}/${totalChunks} | ${fmtBytes(sentBytes)}/${fmtBytes(totalBytes)}`);
-    }
-
-    tickSpeed(sentBytes);
-    updateRing(sentBytes/totalBytes);
+  }finally{
+    // FIX B9: always clear elapsedTimer, even if loop throws
+    clearInterval(elapsedTimer);
+    elapsedTimer=null;
   }
 
   // ── COMPUTE FINAL MERKLE HASH ──────────────────────────────
@@ -1210,7 +1242,6 @@ async function beginTransfer(){
   dbg('XFER',`Merkle root: ${fileHash.substring(0,16)}...`);
 
   // ── DONE MESSAGE ───────────────────────────────────────────
-  // Includes the Merkle hash so receiver can verify integrity.
   conn.send(JSON.stringify({type:'done',hash:fileHash}));
   dbg('XFER','DONE signal sent');
 
@@ -1228,6 +1259,7 @@ function handleIncoming(data){
     try{msg=JSON.parse(data);}
     catch(e){dbgWarn('RECV','Bad JSON:',e);return;}
 
+    // FIX B9: use else-if chain — only one branch should execute per message
     if(msg.type==='meta'){
       dbg('RECV','════ META ════',msg);
       inMeta=msg;
@@ -1242,60 +1274,105 @@ function handleIncoming(data){
       speedHistory=[];
       isPaused=false;
       renderProgressUI('recv-progress-area',msg.name,false);
-    }
-
-    if(msg.type==='done'){
+    }else if(msg.type==='done'){
       dbg('RECV','════ DONE ════ hash=',msg.hash?.substring(0,16));
       assembleAndDownload(msg.hash);
-    }
-
-    if(msg.type==='pause'){
+    }else if(msg.type==='pause'){
       dbg('RECV','Sender paused');
       const statusEl=$('xfer-status');
       if(statusEl){statusEl.textContent='⏸ Sender paused';statusEl.style.color='#eab308';}
-    }
-
-    if(msg.type==='resume'){
+    }else if(msg.type==='resume'){
       dbg('RECV','Sender resumed');
       const statusEl=$('xfer-status');
       if(statusEl){statusEl.textContent='Receiving...';statusEl.style.color='var(--text-muted)';}
     }
 
-  }else if(data instanceof ArrayBuffer||data instanceof Uint8Array){
-    const buf=data instanceof Uint8Array?data.buffer:data;
-    inChunks.push(buf);
-    recvBytes+=buf.byteLength;
-    // Hash chunk for Merkle verification — stored by chunk index
-    // to guarantee ordering even if Promise callbacks interleave
-    const chunkIdx=inChunks.length-1;
-    crypto.subtle.digest('SHA-256',buf).then(h=>{
-      recvChunkHashes[chunkIdx]=new Uint8Array(h);
-    });
+  // FIX B4: Correct Uint8Array → ArrayBuffer extraction.
+  // data.buffer gives the ENTIRE backing buffer; if the UA delivers a
+  // typed-array view with byteOffset > 0 or byteLength < buffer.byteLength
+  // (can happen in some PeerJS/browser combos), we'd store wrong bytes and
+  // compute an incorrect SHA-256. Use .slice() to get an exact copy.
+  }else if(data instanceof ArrayBuffer){
+    _processIncomingBinary(data);
 
-    if(inChunks.length%64===0){
-      dbg('RECV',`Chunk #${inChunks.length} | ${fmtBytes(recvBytes)}/${fmtBytes(totalBytes)}`);
-    }
-    tickSpeed(recvBytes);
-    updateRing(recvBytes/totalBytes);
+  }else if(data instanceof Uint8Array){
+    // FIX B4: slice to extract only the relevant portion of the backing buffer
+    const buf=data.buffer.slice(data.byteOffset, data.byteOffset+data.byteLength);
+    _processIncomingBinary(buf);
+
+  // FIX B5: handle Blob — Firefox and some WebRTC polyfills deliver binary
+  // DataChannel data as Blob objects. Convert asynchronously then process.
+  // We capture the chunk index BEFORE the async gap to preserve ordering.
+  }else if(data instanceof Blob){
+    dbg('RECV','Got Blob (Firefox/polyfill) — converting to ArrayBuffer');
+    // Reserve the slot index before awaiting so ordering is maintained
+    const slotIdx=inChunks.length;
+    inChunks.push(null); // placeholder to reserve ordering slot
+    data.arrayBuffer().then(buf=>{
+      inChunks[slotIdx]=buf;
+      recvBytes+=buf.byteLength;
+      crypto.subtle.digest('SHA-256',buf).then(h=>{
+        recvChunkHashes[slotIdx]=new Uint8Array(h);
+      }).catch(e=>dbgErr('RECV',`Chunk hash[${slotIdx}] failed:`,e));
+      tickSpeed(recvBytes);
+      updateRing(totalBytes>0?recvBytes/totalBytes:0);
+    }).catch(e=>dbgErr('RECV','Blob→ArrayBuffer failed:',e));
+
   }else{
-    dbgWarn('RECV',`Unknown data type: ${typeof data}`);
+    dbgWarn('RECV',`Unknown data type: ${typeof data} — ${data?.constructor?.name}`);
   }
+}
+
+/**
+ * Process a confirmed ArrayBuffer chunk from the wire.
+ * Called by both the ArrayBuffer and Uint8Array branches of handleIncoming.
+ */
+function _processIncomingBinary(buf){
+  const chunkIdx=inChunks.length;
+  inChunks.push(buf);
+  recvBytes+=buf.byteLength;
+
+  // Hash chunk for Merkle verification — index captured before async gap
+  crypto.subtle.digest('SHA-256',buf).then(h=>{
+    recvChunkHashes[chunkIdx]=new Uint8Array(h);
+  }).catch(e=>{
+    // FIX B13: log hash failure; assembleAndDownload will detect the gap
+    dbgErr('RECV',`Chunk hash[${chunkIdx}] computation failed:`,e);
+  });
+
+  if(inChunks.length%64===0){
+    dbg('RECV',`Chunk #${inChunks.length} | ${fmtBytes(recvBytes)}/${fmtBytes(totalBytes)}`);
+  }
+  tickSpeed(recvBytes);
+  updateRing(totalBytes>0?recvBytes/totalBytes:0);
 }
 
 async function assembleAndDownload(expectedHash){
   dbg('RECV',`assembleAndDownload() expectedHash=${expectedHash?.substring(0,16)}`);
 
+  // FIX B21: guard against DONE arriving before META (empty inMeta)
+  if(!inMeta){
+    dbgWarn('RECV','DONE received before META — cannot assemble');
+    showToast('Protocol error: DONE before META — retry transfer','❌','red');
+    return;
+  }
+
+  // Filter out null placeholders left by Blob async conversion
+  const realChunks=inChunks.filter(c=>c!==null);
+  const totalChunks=realChunks.length;
+
   // ── WAIT FOR ALL CHUNK HASHES ──────────────────────────────
-  // Chunk hash computations are async; wait until all inChunks.length
-  // hashes are in the array. Poll briefly up to 5s.
-  const totalChunks=inChunks.length;
-  const waitMs=Math.min(5000, totalChunks*2); // ~2ms per chunk
-  const deadline=Date.now()+waitMs;
+  // Chunk hash computations are async; poll until all hashes are ready.
+  // FIX B12: raised the per-chunk budget and increased the hard cap from
+  // 5000ms to 15000ms. WebCrypto SHA-256 is hardware-accelerated but on
+  // older/slower devices a 1GB file (~16K chunks) needs headroom.
+  const maxWaitMs=Math.max(5000, Math.min(15000, totalChunks*3));
+  const deadline=Date.now()+maxWaitMs;
   while(recvChunkHashes.filter(Boolean).length<totalChunks && Date.now()<deadline){
     await new Promise(r=>setTimeout(r,50));
   }
   const ready=recvChunkHashes.filter(Boolean).length;
-  dbg('RECV',`Chunk hashes ready: ${ready}/${totalChunks}`);
+  dbg('RECV',`Chunk hashes ready: ${ready}/${totalChunks} (waited up to ${maxWaitMs}ms)`);
 
   const hashEl=$('hash-status');
   if(hashEl){
@@ -1307,25 +1384,30 @@ async function assembleAndDownload(expectedHash){
   let hashOk=false;
   let actualHash='';
   try{
-    // Use only the hashes we have (ordered by chunk index)
+    // FIX B13: use only the hashes we have (ordered by slot index).
+    // filter(Boolean) correctly handles sparse arrays and gaps caused by
+    // failed hash promises — if count mismatches, hashOk will be false.
     const validHashes=recvChunkHashes.slice(0,totalChunks).filter(Boolean);
+    if(validHashes.length!==totalChunks){
+      dbgWarn('RECV',`Hash gap: only ${validHashes.length}/${totalChunks} computed — marking as fail`);
+    }
     actualHash=await computeMerkleHash(validHashes);
-    hashOk=(actualHash===expectedHash&&validHashes.length===totalChunks);
+    hashOk=(actualHash===expectedHash && validHashes.length===totalChunks);
     dbg('RECV',`Hash: expected=${expectedHash?.substring(0,16)} actual=${actualHash.substring(0,16)} ok=${hashOk}`);
   }catch(e){
     dbgErr('RECV','Hash verification error:',e);
   }
 
   // ── DOWNLOAD ───────────────────────────────────────────────
-  const blob=new Blob(inChunks,{type:inMeta?.mime||'application/octet-stream'});
+  const blob=new Blob(realChunks,{type:inMeta.mime||'application/octet-stream'});
   const url=URL.createObjectURL(blob);
   const a=document.createElement('a');
-  a.href=url;a.download=inMeta?.name||'download';
+  a.href=url;a.download=inMeta.name||'download';
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
   setTimeout(()=>URL.revokeObjectURL(url),5000);
-  dbg('RECV',`Download triggered: "${inMeta?.name}" ${fmtBytes(blob.size)}`);
+  dbg('RECV',`Download triggered: "${inMeta.name}" ${fmtBytes(blob.size)}`);
 
   // ── UPDATE UI ──────────────────────────────────────────────
   if(hashEl){
@@ -1343,7 +1425,7 @@ async function assembleAndDownload(expectedHash){
     dbg('RECV',`Sent VERIFY ack ok=${hashOk}`);
   }
 
-  showToast(hashOk?`✓ ${inMeta?.name} downloaded & verified`:'⚠ Download done — hash mismatch!',
+  showToast(hashOk?`✓ ${inMeta.name} downloaded & verified`:'⚠ Download done — hash mismatch!',
     hashOk?'✅':'⚠️', hashOk?'green':'red');
 
   finishUI(hashOk);
@@ -1445,20 +1527,20 @@ function renderProgressUI(containerId,filename,showPauseBtn){
       </div>
 
       ${showPauseBtn?`
-      <!-- Pause/Resume button -->
+      <!-- Pause/Resume button — only shown for sender -->
       <div style="margin-top:16px;text-align:center;">
         <button id="pause-btn" class="btn-pause" style="padding:10px 28px;font-size:13px;"
           onclick="pauseTransfer()">⏸ Pause</button>
       </div>`:''}
     </div>
 
-    <!-- Hash status -->
+    <!-- Hash status — shown after transfer completes (both sides) -->
     <div id="hash-status" class="hash-wait" style="margin-bottom:12px;display:none;">
       <span style="color:#eab308;font-weight:600;">🔐 Awaiting hash verification...</span>
     </div>
 
-    <!-- Verify status (sender only) -->
-    <div id="verify-status" style="margin-bottom:12px;"></div>
+    <!-- FIX B18: verify-status only rendered for sender side to avoid empty DOM waste -->
+    ${showPauseBtn?'<div id="verify-status" style="margin-bottom:12px;"></div>':''}
   `;
 
   startElapsedTimer();
@@ -1535,13 +1617,14 @@ function updateRing(pct){
 function finishUI(hashOk){
   dbg('UI','finishUI()');
   clearInterval(elapsedTimer);
+  elapsedTimer=null;
   updateRing(1);
   const s=$('xfer-status');
   if(s){
     s.textContent=isSender?'✓ Sent':'✓ Downloaded';
     s.style.color='#22c55e';
   }
-  // Show hash status panel
+  // Show hash status panel for receiver (sender's is shown via handleSenderMessage)
   const hashEl=$('hash-status');
   if(hashEl&&!isSender) hashEl.style.display='block';
 
@@ -1574,20 +1657,44 @@ function genQR(containerId,text,color){
 function cleanup(){
   dbg('CLEANUP','cleanup()');
   clearInterval(elapsedTimer);
+  elapsedTimer=null;
   isPaused=false;
   if(pauseResolve){pauseResolve();pauseResolve=null;}
+
+  // FIX B3 / B14: set _cleaningUp BEFORE calling .close()/.destroy()
+  // so that the 'close' / 'error' event handlers (which fire synchronously
+  // in Chromium) see the flag and skip the onDisconnect() toast.
+  _cleaningUp=true;
   if(conn){try{conn.close();}catch(e){} conn=null;}
   if(peer){try{peer.destroy();}catch(e){} peer=null;}
-  selectedFiles=[];inChunks=[];recvChunkHashes=[];senderChunkHashes=[];
-  speedWindow=[];speedHistory=[];
+  // Reset flag after a short delay to allow any pending async event callbacks
+  // (which may fire on the next microtask/macrotask) to also see the flag.
+  setTimeout(()=>{_cleaningUp=false;},200);
+
+  selectedFiles=[];
+  inChunks=[];
+  recvChunkHashes=[];
+  senderChunkHashes=[];
+  speedWindow=[];
+  speedHistory=[];
   totalBytes=sentBytes=recvBytes=0;
-  inMeta=null;transferBlob=null;myCode=null;
+  inMeta=null;
+  // FIX B17: reset transferBlob here (was already cleaned up in cleanup but
+  // resetSendUI also now clears it for belt-and-suspenders safety)
+  transferBlob=null;
+  myCode=null;
   dbg('CLEANUP','State reset');
 }
 
 function onDisconnect(){
+  // FIX B3: skip erroneous toast when disconnect is caused by intentional cleanup
+  if(_cleaningUp){
+    dbg('CLEANUP','onDisconnect suppressed during cleanup');
+    return;
+  }
   dbgWarn('PEER','onDisconnect()');
   clearInterval(elapsedTimer);
+  elapsedTimer=null;
   hide('conn-badge');
   showToast('Connection dropped — refresh to retry','📡','red');
   const s=$('xfer-status');
